@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when security auditing is needed after implementation
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

@@ -20,6 +20,7 @@ description: |
     Identifying when to use Tailwind CSS expertise for design implementation
     </commentary>
   </example>
+tools: LS, Read, Grep, Glob, Write, Edit, MultiEdit
 ---
 
 # Tailwind CSS Expert

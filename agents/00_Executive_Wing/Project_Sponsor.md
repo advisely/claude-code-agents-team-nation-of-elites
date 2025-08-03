@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when executive oversight and resource decisions are needed
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

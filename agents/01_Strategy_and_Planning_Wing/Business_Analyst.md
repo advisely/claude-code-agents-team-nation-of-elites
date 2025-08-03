@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when user story elaboration is needed
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when technology evaluation and architecture design are needed
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when program-level resource optimization is needed
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

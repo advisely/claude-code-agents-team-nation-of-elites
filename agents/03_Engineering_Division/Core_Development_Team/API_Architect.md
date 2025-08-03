@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when API design is needed to support frontend features
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

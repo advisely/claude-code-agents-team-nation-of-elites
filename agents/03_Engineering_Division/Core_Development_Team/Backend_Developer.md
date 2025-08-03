@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when to delegate to frontend specialist
     </commentary>
-  </example
+  </example>
 tools: LS, Read, Grep, Glob, Bash
 ---
 

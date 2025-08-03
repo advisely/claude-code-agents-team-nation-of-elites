@@ -19,7 +19,7 @@ description: |
     <commentary>
     Recognizing when to delegate implementation coordination
     </commentary>
-  </example
+  </example>
 tools: Read, Grep, Glob, LS, Bash
 ---
 
