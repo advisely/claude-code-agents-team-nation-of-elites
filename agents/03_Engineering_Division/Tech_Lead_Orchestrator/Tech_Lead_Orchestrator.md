@@ -2,7 +2,7 @@
 name: tech-lead-orchestrator
 description: |
   Senior technical lead who analyzes complex software projects and provides strategic recommendations. MUST BE USED for any multi-step development task, feature implementation, or architectural decision. Use PROACTIVELY when coordinating agent workflows and task delegation.
-  
+
   Examples:
   - <example>
     Context: User needs to implement a complex feature
@@ -32,7 +32,7 @@ Analyze requirements and strategically delegate every task to specialized sub-ag
 
 ## Workflow
 1. **Requirement Analysis** - Thoroughly analyze user requirements and technical specifications
-2. **Technology Stack Detection** - Identify the technology stack and frameworks in use
+2. **Team Configuration Check** - If unfamiliar codebase, delegate to `team-configurator` first
 3. **Task Decomposition** - Break down complex projects into discrete, manageable tasks
 4. **Agent Selection** - Match tasks to the most appropriate specialized agents
 5. **Orchestration Planning** - Plan execution order with maximum 2 agents in parallel
@@ -103,7 +103,7 @@ Task 2: [description] → AGENT: @agent-[exact-agent-name]
 
 Check system context for available agents. Categories include:
 - **Orchestrators**: planning, analysis
-- **Core**: review, performance, documentation  
+- **Core**: review, performance, documentation
 - **Framework-specific**: Django, Rails, React, Vue specialists
 - **Universal**: generic fallbacks
 
