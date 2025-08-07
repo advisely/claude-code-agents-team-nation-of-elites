@@ -90,6 +90,7 @@ Provide detailed test planning documentation:
 
 ## Delegation Cues
 
+* For automated validation implementation → delegate to `qa-engineer`
 * For test automation implementation → delegate to `automated-test-scripter`
 * For visual UI testing → delegate to `visual-regression-specialist`
 * For performance testing execution → delegate to `performance-optimizer`

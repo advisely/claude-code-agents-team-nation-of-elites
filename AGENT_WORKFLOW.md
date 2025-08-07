@@ -56,6 +56,7 @@ Documentation Specialist (Final Documentation)
   - **Autodesk Cloud Construction Expert**: Construction management and BIM coordination
 
 ### Quality & Operations
+- **QA Engineer**: Automated validation implementation
 - **Code Reviewer**: Code quality, security review
 - **Performance Optimizer**: Performance analysis and optimization
 - **Cyber Sentinel**: Security analysis and hardening

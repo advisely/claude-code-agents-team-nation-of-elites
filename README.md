@@ -78,7 +78,7 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 ├── 03_Engineering_Division/
 │   └── (Tech Lead, Developers, Specialists)
 ├── 04_Quality_Assurance_Battalion/
-│   └── (QA Planners, Testers)
+│   └── (QA Engineer, QA Planners, Testers)
 ├── 05_SecOps_and_Infrastructure_Division/
 │   └── (DevOps, Security, Cloud Architects)
 └── 06_AI_and_Machine_Learning_Division/
