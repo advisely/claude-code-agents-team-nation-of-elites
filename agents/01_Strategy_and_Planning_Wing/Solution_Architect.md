@@ -103,5 +103,6 @@ Provide comprehensive architectural documentation that teams can implement:
 * If detailed API design is needed → delegate to `api-architect`
 * If security review is required → delegate to `cyber-sentinel`
 * If UI/UX architecture is needed → delegate to `ux-ui-architect`
+* If functional process analysis is needed → delegate to `functional-analyst`
 * If implementation planning is required → delegate to `tech-lead-orchestrator`
 * If documentation is required → delegate to `documentation-specialist`

@@ -91,6 +91,7 @@ Provide clear executive direction and decisions:
 * For technical implementation planning → delegate to `tech-lead-orchestrator`
 * For detailed progress reporting → delegate to `project-manager-scrum-master`
 * For business requirements analysis → delegate to `business-analyst`
+* For functional process analysis → delegate to `functional-analyst`
 * If documentation is required → delegate to `documentation-specialist`
 
 ## Workflow Triggers

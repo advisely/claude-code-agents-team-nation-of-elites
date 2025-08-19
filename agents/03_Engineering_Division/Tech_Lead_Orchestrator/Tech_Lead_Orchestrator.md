@@ -83,6 +83,7 @@ Task 2: [description] → AGENT: @agent-[exact-agent-name]
 
 * For backend implementation → delegate to `backend-developer` or framework-specific expert
 * For frontend implementation → delegate to `frontend-developer` or framework-specific expert
+* For Next.js applications → delegate to `nextjs-expert`
 * For API design → delegate to `api-architect`
 * For code review → delegate to `code-reviewer`
 * For performance optimization → delegate to `performance-optimizer`
@@ -104,7 +105,7 @@ Task 2: [description] → AGENT: @agent-[exact-agent-name]
 Check system context for available agents. Categories include:
 - **Orchestrators**: planning, analysis
 - **Core**: review, performance, documentation
-- **Framework-specific**: Django, Rails, React, Vue specialists
+- **Framework-specific**: Django, Rails, React, Vue, Next.js specialists
 - **Universal**: generic fallbacks
 
 Selection rules:
