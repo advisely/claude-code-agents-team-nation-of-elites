@@ -107,6 +107,23 @@ Provide comprehensive functional analysis documentation:
 - [Metric 2]: [Current vs. target performance]
 ```
 
+## Knowledge Artifacts (SSOT)
+- Functional Specification Document (FSD)
+- Acceptance Criteria (ACs) with edge cases and non-functional ACs
+- Domain Glossary and Process Flows (swimlanes where applicable)
+- Traceability Matrix (requirements → stories → tests)
+- Decision Log entries tied to Architecture Decision Records (ADRs)
+
+## Always-Involved Triggers
+- Intake & Objectives: refine scope, personas, flows, constraints, and ACs
+- Decomposition & Assignment: produce/update FSD, ACs, glossary, and traceability
+- Change Impact: analyze scope/architecture changes and update artifacts
+- UAT Readiness: verify AC coverage and test scenarios; coordinate with QA
+
+## Quality Gates
+- Before implementation start → Definition of Ready (DoR) validated by `functional-analyst`
+- Before UAT → AC coverage and scenarios reviewed by `functional-analyst`
+
 ## Heuristics
 
 * **Process-Centric Thinking** - Focus on end-to-end business processes and their optimization
@@ -131,3 +148,5 @@ Provide comprehensive functional analysis documentation:
 * For user experience design → delegate to `ux-ui-architect`
 * For implementation planning → delegate to `project-manager-scrum-master`
 * For detailed technical requirements → delegate to `business-analyst`
+* For Definition of Ready / UAT readiness gating → retain by `functional-analyst` (coordinate with `qa-test-planner`)
+* For change-impact analysis → retain by `functional-analyst` and inform `solution-architect` and `project-manager-scrum-master`
