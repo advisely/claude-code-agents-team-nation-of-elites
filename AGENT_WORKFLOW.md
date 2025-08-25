@@ -99,6 +99,22 @@ Documentation Specialist (Final Documentation)
 - Before merging to main branch
 - Security review needed
 
+## Thinking Policies & Enforcement
+
+The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across all roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
+
+- **Architects (Solution, UX/UI, API, Cloud):** 600–800 tokens
+- **Analysts (Business/Functional Analyst, QA Test Planner):** 400–600 tokens
+- **Framework Specialists (React/Vue/Next.js, Tailwind, etc.):** 200–300 tokens
+- **SecOps/Infra/DevOps (Cyber Sentinel, Infra Specialist, DevOps Engineer):** 200–300 tokens
+- **Implementers (Backend, Frontend, QA Engineer, automation):** 100–200 tokens
+- **Orchestrator:** ≤300 tokens
+
+Guardrails (enforced):
+- Trigger thinking only for complex tradeoffs/uncertainty. Stop at role budget.
+- Output concise rationale sections only (bullets). No raw chain-of-thought.
+- After two passes, if uncertainty remains → request clarification or delegate to an appropriate role.
+
 ## Workflow Examples
 
 ### New Feature Request

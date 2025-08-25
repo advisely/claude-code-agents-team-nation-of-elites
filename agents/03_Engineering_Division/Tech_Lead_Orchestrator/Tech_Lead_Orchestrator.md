@@ -33,19 +33,25 @@ Analyze requirements and strategically delegate every task to specialized sub-ag
 ## Workflow
 1. **Requirement Analysis** - Thoroughly analyze user requirements and technical specifications
 2. **Team Configuration Check** - If unfamiliar codebase, delegate to `team-configurator` first
-3. **Task Decomposition** - Break down complex projects into discrete, manageable tasks
-4. **Agent Selection** - Match tasks to the most appropriate specialized agents
-5. **Orchestration Planning** - Plan execution order with maximum 2 agents in parallel
-6. **Assignment Documentation** - Document all task assignments in the mandatory format
-7. **Coordination Instructions** - Provide clear delegation instructions to the main agent
-8. **Pattern Application** - Apply common orchestration patterns where appropriate
-9. **Validation** - Ensure all tasks are assigned and format requirements are met
-10. **Handoff** - Transfer control to the main agent for execution coordination
+3. **Reasoning & Planning (internal)** - Use an internal scratchpad to validate task decomposition and agent selection; keep to ≤300 tokens and surface only a brief summary in the final output
+4. **Task Decomposition** - Break down complex projects into discrete, manageable tasks
+5. **Agent Selection** - Match tasks to the most appropriate specialized agents
+6. **Orchestration Planning** - Plan execution order with maximum 2 agents in parallel
+7. **Assignment Documentation** - Document all task assignments in the mandatory format
+8. **Coordination Instructions** - Provide clear delegation instructions to the main agent
+9. **Pattern Application** - Apply common orchestration patterns where appropriate
+10. **Validation** - Ensure all tasks are assigned and format requirements are met
+11. **Handoff** - Transfer control to the main agent for execution coordination
 
 ## Output Format
 Provide structured orchestration documentation that other agents can follow:
 
 ```
+### Reasoning Summary
+- [Key assumptions and constraints]
+- [Decomposition and agent selection rationale]
+- [Risks & mitigations]
+
 ### Task Analysis
 - [Project summary - 2-3 bullets]
 - [Technology stack detected]
@@ -97,6 +103,8 @@ Task 2: [description] → AGENT: @agent-[exact-agent-name]
 3. Use MANDATORY FORMAT exactly
 4. Find agents from system context
 5. Use exact agent names only
+6. Enforce role-based thinking budgets and guardrails (see Thinking Policy & Budgets)
+7. If uncertainty persists after 2 internal passes, delegate discovery to `business-analyst` or `team-configurator`
 
 **FAILURE TO USE THIS FORMAT CAUSES ORCHESTRATION FAILURE**
 
@@ -112,6 +120,20 @@ Selection rules:
 - Prefer specific over generic (django-backend-expert > backend-developer)
 - Match technology exactly (Django API → django-api-developer)
 - Use universal agents only when no specialist exists
+
+## Thinking Policy & Budgets
+
+Apply internal, concise reasoning before irreversible choices. Do NOT emit raw chain-of-thought; surface only brief summaries.
+
+- **Architects (solution/api/data/security)**: 600–800 tokens internal. Produce a 3–6 bullet summary of key decisions/tradeoffs.
+- **Analysts (business/functional)**: 400–600 tokens internal. Summarize assumptions, open questions, and rationale.
+- **Orchestrator (this role)**: ≤300 tokens internal to validate decomposition and agent selection.
+- **Framework Specialists**: 200–300 tokens internal focused on render/data/perf strategy.
+- **Implementers (frontend/backend/general devs)**: 100–200 tokens; focus on actionable steps, not extended reasoning.
+
+Guardrails:
+- Stop at budget. If still uncertain, summarize uncertainty and delegate clarification (BA/architect/team-configurator).
+- Do not begin implementation until architecture and analysis outputs are approved/accepted.
 
 ## Common Patterns
 

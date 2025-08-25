@@ -92,6 +92,25 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 -   **`04_Quality_Assurance_Battalion`**: Systematically tests the software to ensure it's bug-free and meets requirements.
 -   **`05_SecOps_and_Infrastructure_Division`**: Deploys the application to a secure, scalable production environment.
 -   **`06_AI_and_Machine_Learning_Division`**: Integrates data-driven intelligence and machine learning capabilities into the product.
+-   **`07_Orchestrators`**: Coordinates multi-agent execution and team setup.
+    - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates).
+    - `team-configurator`: Team setup orchestrator (stack detection, subagent selection, CLAUDE.md config).
+
+## 🧠 Thinking Policies & Budgets
+
+The orchestrator enforces explicit, budgeted internal reasoning across roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
+
+- **Architects (Solution, UX/UI, API, Cloud):** 600–800 tokens
+- **Analysts (e.g., Business/Functional Analyst, QA Test Planner):** 400–600 tokens
+- **Framework Specialists (e.g., React/Vue/Next.js, Tailwind):** 200–300 tokens
+- **SecOps/Infra/DevOps (Cyber Sentinel, Infra Specialist, DevOps Engineer):** 200–300 tokens
+- **Implementers (Backend, Frontend, QA Engineer, Scripted automation):** 100–200 tokens
+- **Orchestrator:** ≤300 tokens
+
+Guardrails (enforced by orchestrator):
+- Trigger thinking only for complex tradeoffs/uncertainty. Stop at budget.
+- Output concise rationale sections only (bullets). No raw chain-of-thought.
+- After two passes, if uncertainty remains → request clarification or delegate to the appropriate role.
 
 ## 🤝 Contributing
 
