@@ -218,19 +218,42 @@ Mission, Workflow, Output Format, Heuristics, Delegation Cues
 - **Comprehensive Coverage** - From strategy to implementation to operations
 
 ## Configuration and Setup
+  
+  ### Installation
+ 
+ ```bash
+ # Clone the repository
+ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+ 
+ # Navigate to project directory
+ cd claude-code-agents-team-nation-of-elites
+ 
+ # Sanitize target to avoid conflicts with older configurations
+ rm -rf ~/.claude/agents ~/.claude/projects
+ 
+ # Deploy current agents set
+ mkdir -p ~/.claude
+ cp -r agents ~/.claude/agents
+ 
+ # Validate key files
+ test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
+ ! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
+ ```
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
-
-# Navigate to project directory
-cd claude-code-agents-team-nation-of-elites
-
-# Install agents to Claude CLI
-cp -r agents ~/.claude/
-```
+ ### Automated Deployment (recommended)
+ 
+ ```bash
+ # From the repository root
+ bash scripts/deploy_agents.sh
+ ```
+ 
+ The script will:
+ - Clone/pull the repo (if needed)
+ - Remove `~/.claude/agents` and `~/.claude/projects`
+ - Copy `agents/` into `~/.claude/agents`
+ - Validate presence of canonical orchestrator and absence of deprecated entries
+ 
+ WSL2 note: The Linux path `~/.claude` corresponds in Windows Explorer to `\\wsl.localhost\Ubuntu\home\<USER>\.claude`. You can verify post-deploy there if preferred.
 
 ### Project Initialization
 

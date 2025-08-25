@@ -28,20 +28,35 @@ Get your AI workforce operational in under two minutes.
 
 ### 1. Install the "Nation of Elites" Agents
 
-Clone this repository and copy the `agents` directory into your user-level Claude agents directory.
+Option A — Automated (recommended):
+
+```bash
+# From the repository root
+bash scripts/deploy_agents.sh
+```
+
+Option B — Manual (sanitized deploy):
 
 ```bash
 # Clone the repository
-git clone [https://github.com/advisely/claude-code-agents-team-nation-of-elites.git](https://github.com/advisely/claude-code-agents-team-nation-of-elites.git)
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 
 # Navigate into the cloned repository
 cd claude-code-agents-team-nation-of-elites
 
-# Copy the entire agent workforce into your Claude directory
-cp -r agents ~/.claude/
+# Sanitize target to avoid conflicts with older configurations
+rm -rf ~/.claude/agents ~/.claude/projects
+
+# Deploy current agents set
+mkdir -p ~/.claude
+cp -r agents ~/.claude/agents
+
+# Validate key files
+test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
+! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
 ```
 
-This command installs all the wings, divisions, and specialized agents, making them available to Claude.
+WSL2 note: The Linux path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`. You can verify post-deploy there.
 
 ### 2. Create a New Project
 
