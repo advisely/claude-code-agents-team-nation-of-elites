@@ -16,7 +16,7 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **33 specialized agents** organized across **6 strategic divisions**:
+The Nation of Elites consists of **36 specialized agents** organized across **6 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -42,13 +42,16 @@ The Nation of Elites consists of **33 specialized agents** organized across **6 
 - `backend-developer` - Server-side development and database design
 - `frontend-developer` - Client-side development and user interface implementation
 
-#### Framework Specialists (6 agents)
+#### Framework Specialists (9 agents)
 - `django-expert` - Python Django framework specialization
 - `laravel-expert` - PHP Laravel framework specialization
 - `rails-expert` - Ruby on Rails framework specialization
 - `react-expert` - React.js framework specialization
 - `vue-expert` - Vue.js framework specialization
+- `nextjs-expert` - Next.js framework specialization
 - `tailwind-css-expert` - Utility-first CSS framework specialization
+- `go-expert` - Go programming language and high-performance systems
+- `financial-systems-expert` - Trading algorithms and fintech applications
 
 #### Code Excellence Guild (3 agents)
 - `code-reviewer` - Code quality assurance and best practices enforcement
@@ -65,12 +68,13 @@ The Nation of Elites consists of **33 specialized agents** organized across **6 
 - `qa-test-planner` - Test strategy and quality assurance planning
 - `visual-regression-specialist` - UI/UX testing and visual consistency
 
-### 05_SecOps_and_Infrastructure_Division (4 agents)
+### 05_SecOps_and_Infrastructure_Division (5 agents)
 **Security, Operations, and Infrastructure**
 - `cloud-architect` - Cloud platform design and multi-cloud strategies
 - `cyber-sentinel` - Security analysis and threat protection
 - `devops-engineer` - CI/CD pipelines and deployment automation
 - `infrastructure-specialist` - Infrastructure management and system operations
+- `message-queue-specialist` - Event-driven architecture and message queuing systems
 
 ### 06_AI_and_Machine_Learning_Division (5 agents)
 **AI, ML, and Data Engineering**
@@ -212,7 +216,7 @@ Mission, Workflow, Output Format, Heuristics, Delegation Cues
 
 ### Quality Metrics
 
-- **32 Total Agents** - Complete coverage across all organizational functions
+- **36 Total Agents** - Complete coverage across all organizational functions
 - **6 Strategic Divisions** - Logical grouping of related capabilities
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations

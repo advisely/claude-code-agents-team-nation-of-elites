@@ -48,9 +48,12 @@ Documentation Specialist (Final Documentation)
 - **Framework Specialists**: Technology-specific implementation
   - **React Expert**: React.js applications and components
   - **Vue Expert**: Vue.js applications and components
+  - **Next.js Expert**: Next.js framework with SSR/SSG
   - **Django Expert**: Django framework backend development
   - **Laravel Expert**: Laravel framework backend development
   - **Rails Expert**: Ruby on Rails framework development
+  - **Go Expert**: High-performance systems and concurrent programming
+  - **Financial Systems Expert**: Trading algorithms and fintech applications
   - **Tailwind CSS Expert**: Utility-first CSS styling
   - **CATIA Design Expert**: 3D CAD modeling and EKL scripting
   - **Autodesk Cloud Construction Expert**: Construction management and BIM coordination
@@ -61,6 +64,7 @@ Documentation Specialist (Final Documentation)
 - **Performance Optimizer**: Performance analysis and optimization
 - **Cyber Sentinel**: Security analysis and hardening
 - **Documentation Specialist**: Technical documentation
+- **Message Queue Specialist**: Event-driven architecture and messaging systems
 
 ## Delegation Rules
 

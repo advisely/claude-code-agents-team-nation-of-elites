@@ -80,7 +80,7 @@ This single, powerful command kicks off the entire organizational workflow. The 
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **36 specialized agents** across **6 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, and financial applications.
 
 ```
 /agents
