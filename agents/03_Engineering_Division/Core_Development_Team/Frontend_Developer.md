@@ -73,6 +73,11 @@ Provide structured output for the implemented UI:
 ### Documentation
 - [Location of component docs and usage examples]
 
+### Project Documentation Updates
+- **CLAUDE.md**: Updated with new frontend components and features
+- **PLAN.md**: Updated implementation status and next milestones
+- **CHANGELOG.md**: Added entry for frontend features completed
+
 ### Integration Points
 - Backend Ready: [Endpoints integrated]
 - Next Steps: [What should happen next]
@@ -98,5 +103,28 @@ Provide structured output for the implemented UI:
 * If UI/UX design is needed → delegate to `ux-ui-architect`
 * If performance optimization is required → delegate to `performance-optimizer`
 * If code review is needed → delegate to `code-reviewer`
-* If documentation is required → delegate to `documentation-specialist`
+* If comprehensive documentation is required → delegate to `documentation-specialist`
 * If CSS/styling expertise is needed → delegate to `tailwind-css-expert`
+
+## Automatic Documentation Updates
+
+**ALWAYS update these files after completing frontend implementation:**
+
+1. **CLAUDE.md** - Add/update:
+   - Frontend components in "Current Implementation" section
+   - UI features in "User Interface" section
+   - State management approach in "Architecture" section
+
+2. **PLAN.md** - Update:
+   - Mark frontend tasks as completed
+   - Update implementation status
+   - Add next milestone dependencies
+
+3. **CHANGELOG.md** - Add entry:
+   ```
+   ## [Date] - Frontend Implementation
+   ### Added
+   - [List of new UI components/features]
+   ### Changed
+   - [List of UI modifications]
+   ```

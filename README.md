@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/9g2s1Yy.jpg" alt="Nation of Elites Banner" width="600"/>
+  <img src="banner.png" alt="Nation of Elites Banner" width="600"/>
 </p>
 
 <p align="center">
@@ -113,19 +113,57 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 
 ## 🧠 Thinking Policies & Budgets
 
-The orchestrator enforces explicit, budgeted internal reasoning across roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
+The orchestrator enforces explicit, budgeted internal reasoning across roles based on task complexity. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
-- **Architects (Solution, UX/UI, API, Cloud):** 600–800 tokens
-- **Analysts (e.g., Business/Functional Analyst, QA Test Planner):** 400–600 tokens
-- **Framework Specialists (e.g., React/Vue/Next.js, Tailwind):** 200–300 tokens
-- **SecOps/Infra/DevOps (Cyber Sentinel, Infra Specialist, DevOps Engineer):** 200–300 tokens
-- **Implementers (Backend, Frontend, QA Engineer, Scripted automation):** 100–200 tokens
-- **Orchestrator:** ≤300 tokens
+### Reasoning Complexity Levels
+
+#### **🔴 High Complexity (600–800 tokens)**
+- **Solution/UX/UI/API/Cloud Architects**: System design, architectural patterns, scalability planning
+
+#### **🟡 Medium Complexity (400–600 tokens)**
+- **Business/Functional Analysts**: Requirements analysis, process modeling, stakeholder alignment
+- **QA Test Planner**: Test strategy, coverage planning, risk-based testing
+- **AI Strategist**: AI implementation planning, model selection, ethical considerations
+
+#### **🟠 Medium-Low Complexity (200–300 tokens)**
+- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems experts
+- **DevOps/Security/Infrastructure**: Pipeline design, security analysis, infrastructure tuning
+- **Message Queue Specialist**: Event-driven architecture, messaging patterns
+
+#### **🟢 Low Complexity (100–200 tokens)**
+- **Backend/Frontend Developers**: Implementation details, component composition, data patterns
+- **QA Engineer**: Test case design, automation strategy
+- **Performance Optimizer**: Optimization techniques, bottleneck analysis
+
+#### **⚙️ Orchestration (≤300 tokens)**
+- **Tech Lead Orchestrator**: Multi-agent planning, delegation decisions
+- **Team Configurator**: Stack detection, agent selection
 
 Guardrails (enforced by orchestrator):
 - Trigger thinking only for complex tradeoffs/uncertainty. Stop at budget.
 - Output concise rationale sections only (bullets). No raw chain-of-thought.
 - After two passes, if uncertainty remains → request clarification or delegate to the appropriate role.
+
+## 📋 Automatic Documentation
+
+The Nation of Elites features **automatic project documentation updates**. Key agents maintain project documentation without manual intervention:
+
+### Self-Documenting Agents
+- **🔧 Backend/Frontend Developers**: Auto-update implementation status, API endpoints, UI components
+- **✅ Code Reviewer**: Auto-update quality metrics, security findings, review completion status
+- **🚀 DevOps Engineer**: Auto-update CI/CD configuration, infrastructure status, deployment milestones
+- **🎯 Tech Lead Orchestrator**: Auto-update team assignments, architectural decisions, orchestration phases
+
+### Maintained Documentation Files
+- **📖 CLAUDE.md**: Project configuration, team assignments, implementation status, architecture decisions
+- **📋 PLAN.md**: Current plan-of-record, milestones, task status, dependencies, risk mitigation
+- **📝 CHANGELOG.md**: Chronological record of features, changes, fixes, and major decisions
+
+### Benefits
+- ✅ **No Manual Reminders**: Agents automatically document their completed work
+- ✅ **Consistent Format**: Standardized changelog entries across all agents
+- ✅ **Complete Traceability**: Every major work completion is documented
+- ✅ **Always Current**: Project documentation stays up-to-date automatically
 
 ## 🤝 Contributing
 

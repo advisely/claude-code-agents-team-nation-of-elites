@@ -107,12 +107,37 @@ Documentation Specialist (Final Documentation)
 
 The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across all roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
-- **Architects (Solution, UX/UI, API, Cloud):** 600–800 tokens
-- **Analysts (Business/Functional Analyst, QA Test Planner):** 400–600 tokens
-- **Framework Specialists (React/Vue/Next.js, Tailwind, etc.):** 200–300 tokens
-- **SecOps/Infra/DevOps (Cyber Sentinel, Infra Specialist, DevOps Engineer):** 200–300 tokens
-- **Implementers (Backend, Frontend, QA Engineer, automation):** 100–200 tokens
-- **Orchestrator:** ≤300 tokens
+### Reasoning Complexity Levels
+
+#### **High Complexity (600–800 tokens)**
+- **Solution Architect**: System design, technology stack decisions, architectural patterns
+- **UX/UI Architect**: User experience flows, interface design systems, accessibility compliance
+- **API Architect**: API design patterns, integration strategies, versioning approaches
+- **Cloud Architect**: Multi-cloud strategies, scalability planning, disaster recovery
+
+#### **Medium Complexity (400–600 tokens)**
+- **Business Analyst**: Requirements analysis, stakeholder alignment, process optimization
+- **Functional Analyst**: Process modeling, functional specifications, system behavior analysis
+- **QA Test Planner**: Test strategy, coverage planning, risk-based testing approaches
+- **AI Strategist**: AI implementation planning, model selection, ethical considerations
+
+#### **Medium-Low Complexity (200–300 tokens)**
+- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel experts, technology-specific decisions
+- **DevOps Engineer**: Pipeline design, deployment strategies, tool selection tradeoffs
+- **Cyber Sentinel**: Security analysis, threat modeling, compliance requirements
+- **Infrastructure Specialist**: Infrastructure design, monitoring setup, performance tuning
+- **Message Queue Specialist**: Event-driven architecture, messaging patterns, queue optimization
+- **Financial Systems Expert**: Trading algorithms, compliance requirements, risk management
+
+#### **Low Complexity (100–200 tokens)**
+- **Backend Developer**: Data access patterns, edge case handling, implementation details
+- **Frontend Developer**: Component composition, state strategy, performance vs UX tradeoffs
+- **QA Engineer**: Test case design, automation strategy, validation approaches
+- **Performance Optimizer**: Optimization techniques, profiling analysis, bottleneck identification
+
+#### **Orchestration (≤300 tokens)**
+- **Tech Lead Orchestrator**: Multi-agent planning, priority conflicts, delegation decisions
+- **Team Configurator**: Stack detection, agent selection, configuration setup
 
 Guardrails (enforced):
 - Trigger thinking only for complex tradeoffs/uncertainty. Stop at role budget.
@@ -176,4 +201,32 @@ If a specialized agent is not available:
 2. **Missing Agent** → **General Purpose** (with notification)
 3. **Circular Loop Detected** → **Tech Lead Orchestrator** takes control
 
-This workflow ensures efficient, non-overlapping agent coordination with clear delegation chains and no infinite loops.
+## Automatic Documentation Updates
+
+Key agents automatically update project documentation after completing their work:
+
+### Documentation-Updating Agents
+- **Backend Developer**: Updates CLAUDE.md (backend components, APIs, database), PLAN.md (task status), CHANGELOG.md (backend features)
+- **Frontend Developer**: Updates CLAUDE.md (UI components, features, state), PLAN.md (frontend tasks), CHANGELOG.md (UI changes)
+- **Code Reviewer**: Updates CLAUDE.md (quality status, security findings), PLAN.md (review results), CHANGELOG.md (review completion)
+- **DevOps Engineer**: Updates CLAUDE.md (CI/CD config, infrastructure), PLAN.md (deployment milestones), CHANGELOG.md (pipeline implementation)
+- **Tech Lead Orchestrator**: Updates CLAUDE.md (team assignments, decisions), PLAN.md (plan-of-record), CHANGELOG.md (orchestration phases)
+
+### Documentation Files Maintained
+- **CLAUDE.md**: Project configuration, team assignments, implementation status, architecture decisions
+- **PLAN.md**: Current plan-of-record, milestones, task status, dependencies, risk mitigation
+- **CHANGELOG.md**: Chronological record of features, changes, fixes, and major decisions
+
+### Standardized Entry Formats
+Each agent follows consistent changelog entry formats:
+```markdown
+## [Date] - [Agent Type] [Phase]
+### Added
+- [New features/components]
+### Changed
+- [Modifications/updates]
+### [Category-specific sections]
+- [Agent-specific details]
+```
+
+This workflow ensures efficient, non-overlapping agent coordination with clear delegation chains, automatic documentation, and no infinite loops.

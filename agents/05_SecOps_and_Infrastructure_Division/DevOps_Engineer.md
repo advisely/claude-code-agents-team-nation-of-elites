@@ -90,6 +90,11 @@ Provide comprehensive DevOps implementation documentation:
 - Key tradeoffs and justification: [Bullets only]
 - Selected tools and strategies: [Bullets only]
 - Assumptions/risks to validate: [Bullets only]
+
+### Project Documentation Updates
+- **CLAUDE.md**: Updated with CI/CD pipeline configuration and deployment status
+- **PLAN.md**: Updated deployment milestones and infrastructure status
+- **CHANGELOG.md**: Added entry for DevOps pipeline implementation
 ```
 
 ## Heuristics
@@ -115,4 +120,29 @@ Provide comprehensive DevOps implementation documentation:
 * For infrastructure monitoring → delegate to `infrastructure-specialist`
 * For application performance → delegate to `performance-optimizer`
 * For test automation integration → delegate to `automated-test-scripter`
-* For documentation → delegate to `documentation-specialist`
+* For comprehensive documentation → delegate to `documentation-specialist`
+
+## Automatic Documentation Updates
+
+**ALWAYS update these files after completing DevOps implementation:**
+
+1. **CLAUDE.md** - Add/update:
+   - CI/CD pipeline configuration in "Deployment" section
+   - Infrastructure setup in "Infrastructure" section
+   - Deployment status in "Operations" section
+
+2. **PLAN.md** - Update:
+   - Mark DevOps tasks as completed
+   - Update deployment milestones
+   - Add operational readiness status
+
+3. **CHANGELOG.md** - Add entry:
+   ```
+   ## [Date] - DevOps Pipeline Implementation
+   ### Added
+   - [List of CI/CD features implemented]
+   ### Infrastructure
+   - [List of infrastructure components deployed]
+   ### Operations
+   - [List of monitoring/automation features]
+   ```

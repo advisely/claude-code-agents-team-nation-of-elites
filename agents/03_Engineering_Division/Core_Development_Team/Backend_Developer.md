@@ -70,6 +70,11 @@ Provide clear, structured output that other agents can understand:
 ### Documentation
 - [Location of API documentation and code comments]
 
+### Project Documentation Updates
+- **CLAUDE.md**: Updated with new backend components and API endpoints
+- **PLAN.md**: Updated implementation status and next milestones
+- **CHANGELOG.md**: Added entry for backend features completed
+
 ### Integration Points
 - Frontend Ready: [API endpoints available for frontend consumption]
 - Next Steps: [What should happen next]
@@ -95,5 +100,28 @@ Provide clear, structured output that other agents can understand:
 * If security audit is needed → delegate to `cyber-sentinel`
 * If performance optimization is required → delegate to `performance-optimizer`
 * If code review is needed → delegate to `code-reviewer`
-* If documentation is required → delegate to `documentation-specialist`
+* If comprehensive documentation is required → delegate to `documentation-specialist`
 * If API design is needed → delegate to `api-architect`
+
+## Automatic Documentation Updates
+
+**ALWAYS update these files after completing backend implementation:**
+
+1. **CLAUDE.md** - Add/update:
+   - Backend components in "Current Implementation" section
+   - API endpoints in "Available APIs" section
+   - Database schema changes in "Data Models" section
+
+2. **PLAN.md** - Update:
+   - Mark backend tasks as completed
+   - Update implementation status
+   - Add next milestone dependencies
+
+3. **CHANGELOG.md** - Add entry:
+   ```
+   ## [Date] - Backend Implementation
+   ### Added
+   - [List of new backend features/APIs]
+   ### Changed
+   - [List of modifications]
+   ```

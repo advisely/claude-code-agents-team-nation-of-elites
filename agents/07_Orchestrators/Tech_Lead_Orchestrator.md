@@ -79,6 +79,11 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 
 ## Decision Log (Concise)
 - [Bullets]
+
+## Project Documentation Updates
+- **CLAUDE.md**: Updated with orchestration decisions and team assignments
+- **PLAN.md**: Updated with current plan-of-record and milestone status
+- **CHANGELOG.md**: Added entry for orchestration phase completion
 ```
 
 ## Delegations
@@ -111,3 +116,28 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 - Prefer markdown tables for assignments.
 - Never implement code; delegate only.
 - Enforce WIP limit: max 2 agents in parallel.
+
+## Automatic Documentation Updates
+
+**ALWAYS update these files after completing orchestration:**
+
+1. **CLAUDE.md** - Add/update:
+   - Team assignments in "Current Team" section
+   - Orchestration decisions in "Architecture Decisions" section
+   - Implementation status in "Project Status" section
+
+2. **PLAN.md** - Update:
+   - Current plan-of-record with milestones
+   - Agent assignments and dependencies
+   - Risk mitigation status
+
+3. **CHANGELOG.md** - Add entry:
+   ```
+   ## [Date] - Orchestration Phase
+   ### Planning
+   - [List of planning decisions made]
+   ### Team Assignment
+   - [List of agents assigned to tasks]
+   ### Milestones
+   - [List of milestones established]
+   ```

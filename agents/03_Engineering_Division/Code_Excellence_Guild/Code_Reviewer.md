@@ -73,7 +73,35 @@ Guarantee that all code merged to the mainline is **secure, maintainable, perfor
 - [ ] Replace plain‑text keys with env vars.
 - [ ] Add unit tests for edge cases in `DateUtils`.
 - [ ] Run `npm run lint --fix` for style issues.
+
+## Project Documentation Updates
+- **CLAUDE.md**: Updated code quality status and review findings
+- **PLAN.md**: Updated task completion status based on review results
+- **CHANGELOG.md**: Added entry for code review completion and fixes applied
 ```
+
+**ALWAYS update project documentation after completing code review:**
+
+1. **CLAUDE.md** - Add/update:
+   - Code quality metrics in "Quality Status" section
+   - Security findings in "Security Status" section
+   - Review completion status in "Implementation Status" section
+
+2. **PLAN.md** - Update:
+   - Mark reviewed tasks as completed or blocked
+   - Update quality gate status
+   - Add follow-up tasks from review findings
+
+3. **CHANGELOG.md** - Add entry:
+   ```
+   ## [Date] - Code Review Completed
+   ### Security
+   - [List of security issues found/fixed]
+   ### Quality
+   - [List of quality improvements]
+   ### Actions Required
+   - [List of follow-up tasks]
+   ```
 
 ---
 
