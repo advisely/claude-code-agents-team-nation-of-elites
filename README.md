@@ -80,36 +80,43 @@ This single, powerful command kicks off the entire organizational workflow. The 
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **36 specialized agents** across **6 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, and financial applications.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **36 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, and financial applications.
 
 ```
 /agents
-├── 00_Executive_Wing/
+├── 00_Executive_Wing/ (2 agents)
 │   └── (Project Sponsor, Program Manager)
-├── 01_Strategy_and_Planning_Wing/
-│   └── (Product Manager, Solution Architect, etc.)
-├── 02_Project_Management_Office/
+├── 01_Strategy_and_Planning_Wing/ (5 agents)
+│   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
+├── 02_Project_Management_Office/ (1 agent)
 │   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/
-│   └── (Tech Lead, Developers, Specialists)
-├── 04_Quality_Assurance_Battalion/
-│   └── (QA Engineer, QA Planners, Testers)
-├── 05_SecOps_and_Infrastructure_Division/
-│   └── (DevOps, Security, Cloud Architects)
-└── 06_AI_and_Machine_Learning_Division/
-    └── (Data Scientists, ML Engineers)
+├── 03_Engineering_Division/ (16 agents)
+│   ├── Core_Development_Team/ (3 agents)
+│   ├── Framework_Specialists/ (9 agents)
+│   └── Code_Excellence_Guild/ (4 agents)
+├── 04_Quality_Assurance_Battalion/ (4 agents)
+│   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
+├── 05_SecOps_and_Infrastructure_Division/ (5 agents)
+│   └── (DevOps, Security, Cloud Architects, Infrastructure Specialist, Message Queue Specialist)
+├── 06_AI_and_Machine_Learning_Division/ (5 agents)
+│   └── (Data Scientists, ML Engineers, AI Strategist, Data Engineer, AIOps Specialist)
+└── 07_Orchestrators/ (2 agents)
+    └── (Tech Lead Orchestrator, Team Configurator)
 ```
 
--   **`00_Executive_Wing`**: Sets the high-level business vision and provides resources. The project starts here.
--   **`01_Strategy_and_Planning_Wing`**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
--   **`02_Project_Management_Office`**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division`**: The core builders. The Tech Lead orchestrates the various developers and specialists to write the code.
--   **`04_Quality_Assurance_Battalion`**: Systematically tests the software to ensure it's bug-free and meets requirements.
--   **`05_SecOps_and_Infrastructure_Division`**: Deploys the application to a secure, scalable production environment.
--   **`06_AI_and_Machine_Learning_Division`**: Integrates data-driven intelligence and machine learning capabilities into the product.
--   **`07_Orchestrators`**: Coordinates multi-agent execution and team setup.
-    - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates).
-    - `team-configurator`: Team setup orchestrator (stack detection, subagent selection, CLAUDE.md config).
+-   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
+-   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
+-   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
+-   **`03_Engineering_Division` (16 agents)**: The core builders with specialized teams:
+    - **Core Development Team** (3 agents): API Architect, Backend Developer, Frontend Developer
+    - **Framework Specialists** (9 agents): React, Vue, Next.js, Django, Laravel, Rails, Go, Financial Systems, Tailwind CSS experts
+    - **Code Excellence Guild** (4 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist
+-   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
+-   **`05_SecOps_and_Infrastructure_Division` (5 agents)**: Deploys the application to a secure, scalable production environment with specialized infrastructure and messaging expertise.
+-   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
+-   **`07_Orchestrators` (2 agents)**: Coordinates multi-agent execution and team setup.
+    - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates)
+    - `team-configurator`: Team setup orchestrator (stack detection, subagent selection, CLAUDE.md config)
 
 ## 🧠 Thinking Policies & Budgets
 
