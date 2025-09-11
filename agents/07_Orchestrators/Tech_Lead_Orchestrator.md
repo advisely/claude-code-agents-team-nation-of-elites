@@ -33,6 +33,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 4. Decompose & Assign
    - Break work into tasks, map to agents, and set checkpoints. Prefer framework-specific specialists.
    - For TypeScript React projects: use `react-typescript-expert` instead of `react-expert`
+   - For Java/Spring projects: use `java-expert` for enterprise Java development
    - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
    - For general programming tasks: use `general-purpose` when specialized expertise isn't required
    - For terminal/CLI setup: use `statusline-setup` or `output-style-setup` as appropriate
@@ -102,6 +103,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 | Architecture decisions | relevant `architect` | Decision and ADR |
 | TypeScript React development | `react-typescript-expert` | Type-safe React implementation |
 | JavaScript React development | `react-expert` | React implementation without TypeScript |
+| Java/Spring development | `java-expert` | Enterprise Java and Spring Framework implementation |
 | Construction/BIM projects | `autodesk-cloud-construction-expert` | ACC/BIM coordination and workflows |
 | CATIA design integration | `catia-design-expert` | CATIA design system integration |
 | General programming tasks | `general-purpose` | Multi-language/framework support |
