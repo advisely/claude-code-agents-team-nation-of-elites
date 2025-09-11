@@ -16,16 +16,17 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **36 specialized agents** organized across **6 strategic divisions**:
+The Nation of Elites consists of **40 specialized agents** organized across **7 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
 - `program-manager` - Program-level coordination and portfolio management
 - `project-sponsor` - Business vision, funding, and strategic oversight
 
-### 01_Strategy_and_Planning_Wing (4 agents)
+### 01_Strategy_and_Planning_Wing (5 agents)
 **Strategic Planning and Architecture**
 - `business-analyst` - Requirements analysis and business process optimization
+- `functional-analyst` - Process modeling, functional specifications, and system behavior analysis
 - `product-manager` - Product vision, roadmap, and feature prioritization
 - `solution-architect` - High-level technical architecture and technology stack decisions
 - `ux-ui-architect` - User experience design and interface architecture
@@ -34,7 +35,7 @@ The Nation of Elites consists of **36 specialized agents** organized across **6 
 **Project Execution and Process Management**
 - `project-manager-scrum-master` - Agile delivery, sprint management, and impediment removal
 
-### 03_Engineering_Division (13 agents)
+### 03_Engineering_Division (17 agents)
 **Development and Technical Implementation**
 
 #### Core Development Team (3 agents)
@@ -42,24 +43,28 @@ The Nation of Elites consists of **36 specialized agents** organized across **6 
 - `backend-developer` - Server-side development and database design
 - `frontend-developer` - Client-side development and user interface implementation
 
-#### Framework Specialists (9 agents)
+#### Framework Specialists (10 agents)
 - `django-expert` - Python Django framework specialization
 - `laravel-expert` - PHP Laravel framework specialization
 - `rails-expert` - Ruby on Rails framework specialization
 - `react-expert` - React.js framework specialization
+- `react-typescript-expert` - React with TypeScript specialization and type-safe development
 - `vue-expert` - Vue.js framework specialization
 - `nextjs-expert` - Next.js framework specialization
 - `tailwind-css-expert` - Utility-first CSS framework specialization
 - `go-expert` - Go programming language and high-performance systems
 - `financial-systems-expert` - Trading algorithms and fintech applications
+- `autodesk-cloud-construction-expert` - Autodesk Construction Cloud and BIM coordination
+- `catia-design-expert` - CATIA design system integration and CAD workflows
 
-#### Code Excellence Guild (3 agents)
+#### Code Excellence Guild (6 agents)
 - `code-reviewer` - Code quality assurance and best practices enforcement
 - `documentation-specialist` - Technical documentation and knowledge management
 - `performance-optimizer` - Performance analysis and optimization
-
-#### Tech Leadership (1 agent)
-- `tech-lead-orchestrator` - Technical leadership and development team coordination
+- `code-archaeologist` - Legacy code analysis and modernization
+- `general-purpose` - Versatile programming assistance across multiple languages and frameworks
+- `statusline-setup` - Terminal statusline configuration and shell prompt customization
+- `output-style-setup` - CLI output formatting, terminal colors, and text styling
 
 ### 04_Quality_Assurance_Battalion (4 agents)
 **Quality Assurance and Testing**
@@ -270,12 +275,13 @@ Key agents automatically maintain project documentation:
 
 ### Quality Metrics
 
-- **36 Total Agents** - Complete coverage across all organizational functions
-- **6 Strategic Divisions** - Logical grouping of related capabilities
+- **40 Total Agents** - Complete coverage across all organizational functions
+- **7 Strategic Divisions** - Logical grouping of related capabilities
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
 - **Complexity-Based Reasoning** - Tailored thinking budgets based on task complexity
+- **Enhanced Specialization** - TypeScript React, construction/BIM, and development tooling expertise
 
 ## Configuration and Setup
   

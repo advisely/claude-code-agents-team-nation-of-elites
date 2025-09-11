@@ -80,7 +80,7 @@ This single, powerful command kicks off the entire organizational workflow. The 
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **36 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, and financial applications.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **40 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, and comprehensive development tooling.
 
 ```
 /agents
@@ -90,10 +90,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 │   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
 ├── 02_Project_Management_Office/ (1 agent)
 │   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/ (16 agents)
+├── 03_Engineering_Division/ (20 agents)
 │   ├── Core_Development_Team/ (3 agents)
-│   ├── Framework_Specialists/ (9 agents)
-│   └── Code_Excellence_Guild/ (4 agents)
+│   ├── Framework_Specialists/ (10 agents)
+│   └── Code_Excellence_Guild/ (7 agents)
 ├── 04_Quality_Assurance_Battalion/ (4 agents)
 │   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
 ├── 05_SecOps_and_Infrastructure_Division/ (5 agents)
@@ -107,10 +107,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 -   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
 -   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
 -   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division` (16 agents)**: The core builders with specialized teams:
+-   **`03_Engineering_Division` (20 agents)**: The core builders with specialized teams:
     - **Core Development Team** (3 agents): API Architect, Backend Developer, Frontend Developer
-    - **Framework Specialists** (9 agents): React, Vue, Next.js, Django, Laravel, Rails, Go, Financial Systems, Tailwind CSS experts
-    - **Code Excellence Guild** (4 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist
+    - **Framework Specialists** (10 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Go, Financial Systems, Tailwind CSS experts
+    - **Code Excellence Guild** (7 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, General Purpose, Statusline Setup, Output Style Setup
 -   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
 -   **`05_SecOps_and_Infrastructure_Division` (5 agents)**: Deploys the application to a secure, scalable production environment with specialized infrastructure and messaging expertise.
 -   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.

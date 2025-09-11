@@ -32,6 +32,10 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 
 4. Decompose & Assign
    - Break work into tasks, map to agents, and set checkpoints. Prefer framework-specific specialists.
+   - For TypeScript React projects: use `react-typescript-expert` instead of `react-expert`
+   - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
+   - For general programming tasks: use `general-purpose` when specialized expertise isn't required
+   - For terminal/CLI setup: use `statusline-setup` or `output-style-setup` as appropriate
    - Ensure `functional-analyst` produces/updates FSD, acceptance criteria, glossary, and traceability.
 
 5. Enforce Budgets & Guardrails
@@ -96,6 +100,13 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 | CI/CD or infra updates | `devops-engineer` / `infrastructure-specialist` | Build/deploy/ops alignment |
 | Analysis and knowledge capture | `functional-analyst` | FSD, ACs, glossary, traceability, change impact |
 | Architecture decisions | relevant `architect` | Decision and ADR |
+| TypeScript React development | `react-typescript-expert` | Type-safe React implementation |
+| JavaScript React development | `react-expert` | React implementation without TypeScript |
+| Construction/BIM projects | `autodesk-cloud-construction-expert` | ACC/BIM coordination and workflows |
+| CATIA design integration | `catia-design-expert` | CATIA design system integration |
+| General programming tasks | `general-purpose` | Multi-language/framework support |
+| Terminal statusline setup | `statusline-setup` | Shell prompt and statusline configuration |
+| CLI output formatting | `output-style-setup` | Terminal colors and text styling |
 
 ## Quality Gates
 - Before merge to main → `code-reviewer`
