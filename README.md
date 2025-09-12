@@ -80,7 +80,7 @@ This single, powerful command kicks off the entire organizational workflow. The 
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **41 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, and comprehensive development tooling.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **42 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, and comprehensive development tooling.
 
 ```
 /agents
@@ -90,9 +90,9 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 │   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
 ├── 02_Project_Management_Office/ (1 agent)
 │   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/ (21 agents)
+├── 03_Engineering_Division/ (19 agents)
 │   ├── Core_Development_Team/ (3 agents)
-│   ├── Framework_Specialists/ (11 agents)
+│   ├── Framework_Specialists/ (12 agents)
 │   └── Code_Excellence_Guild/ (7 agents)
 ├── 04_Quality_Assurance_Battalion/ (4 agents)
 │   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
