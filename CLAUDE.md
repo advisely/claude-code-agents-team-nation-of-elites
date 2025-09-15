@@ -16,7 +16,7 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **42 specialized agents** organized across **7 strategic divisions**:
+The Nation of Elites consists of **43 specialized agents** organized across **7 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -35,7 +35,7 @@ The Nation of Elites consists of **42 specialized agents** organized across **7 
 **Project Execution and Process Management**
 - `project-manager-scrum-master` - Agile delivery, sprint management, and impediment removal
 
-### 03_Engineering_Division (19 agents)
+### 03_Engineering_Division (20 agents)
 **Development and Technical Implementation**
 
 #### Core Development Team (3 agents)
@@ -43,7 +43,7 @@ The Nation of Elites consists of **42 specialized agents** organized across **7 
 - `backend-developer` - Server-side development and database design
 - `frontend-developer` - Client-side development and user interface implementation
 
-#### Framework Specialists (12 agents)
+#### Framework Specialists (13 agents)
 - `django-expert` - Python Django framework specialization
 - `laravel-expert` - PHP Laravel framework specialization
 - `rails-expert` - Ruby on Rails framework specialization
@@ -56,6 +56,7 @@ The Nation of Elites consists of **42 specialized agents** organized across **7 
 - `tailwind-css-expert` - Utility-first CSS framework specialization
 - `go-expert` - Go programming language and high-performance systems
 - `financial-systems-expert` - Trading algorithms and fintech applications
+- `crypto-api-developer` - Cryptocurrency, blockchain, and DeFi protocol development
 - `autodesk-cloud-construction-expert` - Autodesk Construction Cloud and BIM coordination
 - `catia-design-expert` - CATIA design system integration and CAD workflows
 
@@ -161,7 +162,7 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles. Ag
 - **AI Strategist**: AI implementation planning, model selection, ethical considerations
 
 #### **Medium-Low Complexity (200–300 tokens)**
-- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems experts
+- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems/Crypto API experts
 - **DevOps Engineer**: Pipeline design, deployment strategies, tool selection tradeoffs
 - **Cyber Sentinel**: Security analysis, threat modeling, compliance requirements
 - **Infrastructure Specialist**: Infrastructure design, monitoring setup, performance tuning
@@ -277,7 +278,7 @@ Key agents automatically maintain project documentation:
 
 ### Quality Metrics
 
-- **42 Total Agents** - Complete coverage across all organizational functions
+- **43 Total Agents** - Complete coverage across all organizational functions
 - **7 Strategic Divisions** - Logical grouping of related capabilities
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations

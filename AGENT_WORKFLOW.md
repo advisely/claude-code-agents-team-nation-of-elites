@@ -54,6 +54,7 @@ Documentation Specialist (Final Documentation)
   - **Rails Expert**: Ruby on Rails framework development
   - **Go Expert**: High-performance systems and concurrent programming
   - **Financial Systems Expert**: Trading algorithms and fintech applications
+  - **Crypto API Developer**: Cryptocurrency, blockchain, and DeFi protocol development
   - **Tailwind CSS Expert**: Utility-first CSS styling
   - **CATIA Design Expert**: 3D CAD modeling and EKL scripting
   - **Autodesk Cloud Construction Expert**: Construction management and BIM coordination
@@ -128,6 +129,7 @@ The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across
 - **Infrastructure Specialist**: Infrastructure design, monitoring setup, performance tuning
 - **Message Queue Specialist**: Event-driven architecture, messaging patterns, queue optimization
 - **Financial Systems Expert**: Trading algorithms, compliance requirements, risk management
+- **Crypto API Developer**: DeFi protocol integrations, smart contract interactions, blockchain security
 
 #### **Low Complexity (100–200 tokens)**
 - **Backend Developer**: Data access patterns, edge case handling, implementation details

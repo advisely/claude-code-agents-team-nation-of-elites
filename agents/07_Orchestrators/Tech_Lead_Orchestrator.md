@@ -36,6 +36,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - For Java/Spring projects: use `java-expert` for enterprise Java development
    - For database projects: use `database-expert` for schema design, optimization, and data architecture
    - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
+   - For cryptocurrency/blockchain projects: use `crypto-api-developer` for DeFi, smart contracts, and crypto trading systems
    - For general programming tasks: use `general-purpose` when specialized expertise isn't required
    - For terminal/CLI setup: use `statusline-setup` or `output-style-setup` as appropriate
    - Ensure `functional-analyst` produces/updates FSD, acceptance criteria, glossary, and traceability.
@@ -108,6 +109,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 | Database projects | `database-expert` | Schema design, optimization, and data architecture |
 | Construction/BIM projects | `autodesk-cloud-construction-expert` | ACC/BIM coordination and workflows |
 | CATIA design integration | `catia-design-expert` | CATIA design system integration |
+| Cryptocurrency/blockchain development | `crypto-api-developer` | DeFi protocols, smart contracts, and crypto trading systems |
 | General programming tasks | `general-purpose` | Multi-language/framework support |
 | Terminal statusline setup | `statusline-setup` | Shell prompt and statusline configuration |
 | CLI output formatting | `output-style-setup` | Terminal colors and text styling |
