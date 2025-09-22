@@ -66,6 +66,7 @@ Documentation Specialist (Final Documentation)
 - **Cyber Sentinel**: Security analysis and hardening
 - **Documentation Specialist**: Technical documentation
 - **Message Queue Specialist**: Event-driven architecture and messaging systems
+- **Storage Security Specialist**: Data protection, encryption, access controls for storage systems
 
 ## Delegation Rules
 
@@ -130,6 +131,7 @@ The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across
 - **Message Queue Specialist**: Event-driven architecture, messaging patterns, queue optimization
 - **Financial Systems Expert**: Trading algorithms, compliance requirements, risk management
 - **Crypto API Developer**: DeFi protocol integrations, smart contract interactions, blockchain security
+- **Storage Security Specialist**: Storage risk assessment, encryption planning, compliance mapping
 
 #### **Low Complexity (100–200 tokens)**
 - **Backend Developer**: Data access patterns, edge case handling, implementation details

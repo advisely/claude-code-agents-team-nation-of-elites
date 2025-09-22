@@ -80,7 +80,7 @@ This single, powerful command kicks off the entire organizational workflow. The 
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **43 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, cryptocurrency/blockchain development, and comprehensive development tooling.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **44 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, cryptocurrency/blockchain development, storage security, and comprehensive development tooling.
 
 ```
 /agents
@@ -96,8 +96,8 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 │   └── Code_Excellence_Guild/ (7 agents)
 ├── 04_Quality_Assurance_Battalion/ (4 agents)
 │   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
-├── 05_SecOps_and_Infrastructure_Division/ (5 agents)
-│   └── (DevOps, Security, Cloud Architects, Infrastructure Specialist, Message Queue Specialist)
+├── 05_SecOps_and_Infrastructure_Division/ (6 agents)
+│   └── (DevOps, Security, Cloud Architects, Infrastructure Specialist, Message Queue Specialist, Storage Security Specialist)
 ├── 06_AI_and_Machine_Learning_Division/ (5 agents)
 │   └── (Data Scientists, ML Engineers, AI Strategist, Data Engineer, AIOps Specialist)
 └── 07_Orchestrators/ (2 agents)
@@ -112,7 +112,7 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
     - **Framework Specialists** (13 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Financial Systems, Crypto API, Tailwind CSS experts
     - **Code Excellence Guild** (7 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, General Purpose, Statusline Setup, Output Style Setup
 -   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
--   **`05_SecOps_and_Infrastructure_Division` (5 agents)**: Deploys the application to a secure, scalable production environment with specialized infrastructure and messaging expertise.
+-   **`05_SecOps_and_Infrastructure_Division` (6 agents)**: Deploys the application to a secure, scalable production environment with specialized infrastructure, messaging, and storage security expertise.
 -   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
 -   **`07_Orchestrators` (2 agents)**: Coordinates multi-agent execution and team setup.
     - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates)
@@ -136,6 +136,7 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles bas
 - **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems/Crypto API experts
 - **DevOps/Security/Infrastructure**: Pipeline design, security analysis, infrastructure tuning
 - **Message Queue Specialist**: Event-driven architecture, messaging patterns
+- **Storage Security Specialist**: Data protection, encryption strategies, compliance auditing
 
 #### **🟢 Low Complexity (100–200 tokens)**
 - **Backend/Frontend Developers**: Implementation details, component composition, data patterns

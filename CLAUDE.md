@@ -16,7 +16,7 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **43 specialized agents** organized across **7 strategic divisions**:
+The Nation of Elites consists of **44 specialized agents** organized across **7 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -76,13 +76,14 @@ The Nation of Elites consists of **43 specialized agents** organized across **7 
 - `qa-test-planner` - Test strategy and quality assurance planning
 - `visual-regression-specialist` - UI/UX testing and visual consistency
 
-### 05_SecOps_and_Infrastructure_Division (5 agents)
+### 05_SecOps_and_Infrastructure_Division (6 agents)
 **Security, Operations, and Infrastructure**
 - `cloud-architect` - Cloud platform design and multi-cloud strategies
 - `cyber-sentinel` - Security analysis and threat protection
 - `devops-engineer` - CI/CD pipelines and deployment automation
 - `infrastructure-specialist` - Infrastructure management and system operations
 - `message-queue-specialist` - Event-driven architecture and message queuing systems
+- `storage-security-specialist` - Storage security, data encryption, access controls, and compliance
 
 ### 06_AI_and_Machine_Learning_Division (5 agents)
 **AI, ML, and Data Engineering**

@@ -38,8 +38,9 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
    - For cryptocurrency/blockchain projects: use `crypto-api-developer` for DeFi, smart contracts, and crypto trading systems
    - For general programming tasks: use `general-purpose` when specialized expertise isn't required
-   - For terminal/CLI setup: use `statusline-setup` or `output-style-setup` as appropriate
-   - Ensure `functional-analyst` produces/updates FSD, acceptance criteria, glossary, and traceability.
+- For terminal/CLI setup: use `statusline-setup` or `output-style-setup` as appropriate
+- For storage security tasks: use `storage-security-specialist` for data protection, encryption, and compliance
+- Ensure `functional-analyst` produces/updates FSD, acceptance criteria, glossary, and traceability.
 
 5. Enforce Budgets & Guardrails
    - Ensure each role triggers thinking only when needed, stops at budget, and surfaces concise rationale sections (bullets only, no chain-of-thought).
@@ -113,6 +114,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 | General programming tasks | `general-purpose` | Multi-language/framework support |
 | Terminal statusline setup | `statusline-setup` | Shell prompt and statusline configuration |
 | CLI output formatting | `output-style-setup` | Terminal colors and text styling |
+| Storage security and data protection | `storage-security-specialist` | Data encryption, access controls, and compliance for storage systems |
 
 ## Quality Gates
 - Before merge to main → `code-reviewer`
