@@ -16,7 +16,7 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **44 specialized agents** organized across **7 strategic divisions**:
+The Nation of Elites consists of **45 specialized agents** organized across **7 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -35,7 +35,7 @@ The Nation of Elites consists of **44 specialized agents** organized across **7 
 **Project Execution and Process Management**
 - `project-manager-scrum-master` - Agile delivery, sprint management, and impediment removal
 
-### 03_Engineering_Division (20 agents)
+### 03_Engineering_Division (21 agents)
 **Development and Technical Implementation**
 
 #### Core Development Team (3 agents)
@@ -43,7 +43,7 @@ The Nation of Elites consists of **44 specialized agents** organized across **7 
 - `backend-developer` - Server-side development and database design
 - `frontend-developer` - Client-side development and user interface implementation
 
-#### Framework Specialists (13 agents)
+#### Framework Specialists (14 agents)
 - `django-expert` - Python Django framework specialization
 - `laravel-expert` - PHP Laravel framework specialization
 - `rails-expert` - Ruby on Rails framework specialization
@@ -59,6 +59,7 @@ The Nation of Elites consists of **44 specialized agents** organized across **7 
 - `crypto-api-developer` - Cryptocurrency, blockchain, and DeFi protocol development
 - `autodesk-cloud-construction-expert` - Autodesk Construction Cloud and BIM coordination
 - `catia-design-expert` - CATIA design system integration and CAD workflows
+- `antd-ui-developer` - Ant Design React UI framework specialization and enterprise component development
 
 #### Code Excellence Guild (6 agents)
 - `code-reviewer` - Code quality assurance and best practices enforcement
@@ -279,13 +280,13 @@ Key agents automatically maintain project documentation:
 
 ### Quality Metrics
 
-- **43 Total Agents** - Complete coverage across all organizational functions
+- **45 Total Agents** - Complete coverage across all organizational functions
 - **7 Strategic Divisions** - Logical grouping of related capabilities
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
 - **Complexity-Based Reasoning** - Tailored thinking budgets based on task complexity
-- **Enhanced Specialization** - TypeScript React, Java/Spring, database architecture, construction/BIM, and development tooling expertise
+- **Enhanced Specialization** - TypeScript React, Java/Spring, database architecture, construction/BIM, Ant Design UI, and development tooling expertise
 
 ## Configuration and Setup
   
