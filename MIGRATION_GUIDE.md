@@ -61,11 +61,16 @@ rm -rf ~/.claude/agents/07_Orchestrators
 
 ### Step 3: Install v2.0
 
-#### For Claude Code v2.0+
+#### For Claude Code v2.0+ (Plugin Installation)
+
+**Note**: Plugin installation requires the repository to be published and indexed. If you get "Marketplace not found", use the manual installation below.
 
 ```bash
-# Install as plugin
+# Method 1: Install from GitHub (once published)
 /plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Method 2: Install from local clone
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
 
 # Verify installation
 /plugin list

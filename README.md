@@ -33,13 +33,18 @@ Get your AI workforce operational in under one minute.
 **One-command installation** via the built-in plugin system:
 
 ```bash
-# Install from GitHub
+# Method 1: Install from GitHub marketplace (requires published release)
 /plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Method 2: Install from local clone (works immediately)
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
 
 # Verify installation
 /plugin list
 # You should see "nation-of-elites v2.0.0"
 ```
+
+**If you see "Marketplace not found"**: The repository needs to be published and indexed by Claude Code. Use the legacy installation method below or wait for plugin indexing.
 
 **Benefits of plugin installation:**
 - ✅ Instant one-command setup
