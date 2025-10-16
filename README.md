@@ -22,61 +22,102 @@ A single, generalist AI, no matter how powerful, lacks the specialized expertise
 
 **The "Nation of Elites" is the solution.** It's not just a collection of agents; it's a fully-realized, virtual IT organization. Each agent has a specific role, a clear mission, and defined responsibilities, mirroring the structure of a high-performing tech company. This allows for unparalleled coordination, deep expertise, and a systematic approach to building software.
 
-## 🚀 Quick Start (3-Step Deployment)
+## 🚀 Quick Start
 
-Get your AI workforce operational in under two minutes.
+Get your AI workforce operational in under one minute.
 
-### 1. Install the "Nation of Elites" Agents
+### Installation
 
-Option A — Automated (recommended):
+#### 🎯 Claude Code v2 (Recommended)
+
+**One-command installation** via the built-in plugin system:
 
 ```bash
-# From the repository root
+# Install from GitHub
+/plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Verify installation
+/plugin list
+# You should see "nation-of-elites v2.0.0"
+```
+
+**Benefits of plugin installation:**
+- ✅ Instant one-command setup
+- ✅ Automatic updates
+- ✅ Easy enable/disable per project
+- ✅ Reduced context overhead
+- ✅ Full Claude Code CLI integration
+
+#### 🔧 Claude Code v1.x (Legacy)
+
+**Option A — Automated (recommended):**
+
+```bash
+# Clone and run deployment script
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-Option B — Manual (sanitized deploy):
+**Option B — Manual:**
 
 ```bash
 # Clone the repository
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
-
-# Navigate into the cloned repository
 cd claude-code-agents-team-nation-of-elites
 
-# Sanitize target to avoid conflicts with older configurations
+# Sanitize target to avoid conflicts
 rm -rf ~/.claude/agents ~/.claude/projects
 
-# Deploy current agents set
+# Deploy agents
 mkdir -p ~/.claude
 cp -r agents ~/.claude/agents
 
-# Validate key files
-test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
-! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
+# Validate installation
+test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "✓ Tech Lead Orchestrator present"
+! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "✓ No deprecated orchestrator found"
 ```
 
-WSL2 note: The Linux path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`. You can verify post-deploy there.
+**WSL2 note:** The Linux path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
 
-### 2. Create a New Project
+### Using the Agents
 
-Navigate to your project's root directory or create a new one.
+Navigate to your project directory and start using the agents:
 
 ```bash
 mkdir my-new-app
 cd my-new-app
 ```
 
-### 3. Initialize Your Project with the AI Workforce
+#### Natural Language Commands (Claude Code v2)
 
-Run a single command to have your AI team analyze your project, understand its goals, and prepare for execution. This is the equivalent of a company-wide kickoff meeting.
+Simply describe what you need and Claude will automatically select and spawn the appropriate agents:
 
-**Tell Claude to initialize the project:**
+```bash
+# Strategic planning - automatically spawns project-sponsor, program-manager, product-manager
+claude "Initialize a new e-commerce project for selling custom t-shirts. Define business goals, create roadmap, and propose technology stack."
+
+# Development - spawns tech-lead-orchestrator and appropriate specialists
+claude "Build user authentication with React frontend and Django REST API backend"
+
+# Code review - spawns code-reviewer
+claude "Review the payment integration code for security and best practices"
+
+# Deployment - spawns devops-engineer and cloud-architect
+claude "Setup production infrastructure with CI/CD pipeline on AWS"
 ```
-claude "Use the 'project-sponsor' to define the high-level business goal for this project: 'Build a secure, scalable e-commerce platform for selling custom t-shirts'. Then, have the 'program-manager' and 'product-manager' create an initial high-level roadmap and feature backlog. Finally, instruct the 'solution-architect' to propose a technology stack. Save all artifacts in a new '/docs' directory."
+
+#### Explicit Agent Mentions (Legacy)
+
+For backward compatibility with Claude Code v1.x:
+
+```bash
+claude "Use the project-sponsor to define business objectives, program-manager to create roadmap, and solution-architect to propose tech stack"
 ```
 
-This single, powerful command kicks off the entire organizational workflow. The `project-sponsor` sets the vision, the managers create the plan, and the architect defines the technology, setting the stage for the entire project lifecycle. You are now ready to start building features with your complete AI workforce.
+**The difference:**
+- **v2**: Natural language → Claude picks agents automatically
+- **v1**: Explicit mentions → You specify which agents to use
 
 ## 🏛️ Team Structure and Workflow
 
@@ -210,21 +251,76 @@ The Nation of Elites features **automatic project documentation updates**. Key a
 - ✅ **Complete Traceability**: Every major work completion is documented
 - ✅ **Always Current**: Project documentation stays up-to-date automatically
 
+## 📚 Documentation
+
+### Core Documentation
+- **[README.md](README.md)** - This file - Quick start and overview
+- **[CLAUDE.md](CLAUDE.md)** - Detailed configuration and usage guide
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+
+### v2.0 Plugin System
+- **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** - Upgrading from v1.x to v2.0
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Community contribution guidelines
+- **[.claude-plugin/manifest.json](.claude-plugin/manifest.json)** - Plugin metadata
+- **[.claude-plugin/marketplace.json](.claude-plugin/marketplace.json)** - Marketplace configuration
+
+### Advanced Guides
+- **[docs/SDK_COMPLIANCE_REPORT.md](docs/SDK_COMPLIANCE_REPORT.md)** - 10/10 SDK compliance certification
+- **[docs/CONTEXT_ENGINEERING.md](docs/CONTEXT_ENGINEERING.md)** - Context management best practices
+
 ## 🤝 Contributing
 
-The "Nation of Elites" is an ambitious project, and contributions are welcome! Whether you want to refine an existing agent's prompt, add a new specialist role, or improve the orchestration workflow, please feel free to fork the repository and submit a pull request.
+The "Nation of Elites" is an ambitious project, and contributions are welcome! Whether you want to refine an existing agent's prompt, add a new specialist role, or improve the orchestration workflow, please see our **[Contributing Guide](CONTRIBUTING.md)**.
+
+**Quick Start for Contributors:**
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingNewAgent`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingNewAgent'`)
-4.  Push to the Branch (`git push origin feature/AmazingNewAgent`)
-5.  Open a Pull Request
+3.  Follow the [Agent Development Guidelines](CONTRIBUTING.md#agent-development-guidelines)
+4.  Test your changes locally
+5.  Commit with [conventional commits](CONTRIBUTING.md#commit-messages)
+6.  Push to your fork and open a Pull Request
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for detailed guidelines on:
+- Agent structure and naming conventions
+- Testing procedures
+- Documentation requirements
+- PR submission process
+
+## 🔄 Upgrading from v1.x?
+
+See the **[Migration Guide](MIGRATION_GUIDE.md)** for step-by-step instructions on upgrading to the v2.0 plugin system.
+
+**TL;DR for v2.0 users:**
+```bash
+# Uninstall old v1.x (optional)
+rm -rf ~/.claude/agents
+
+# Install as plugin
+/plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Verify
+/plugin list
+```
 
 ## 📚 Credits and References
 
--   **Author's Main Repository:** [https://github.com/advisely/](https://github.com/advisely/)
--   **Inspiration & Best Practices:** [Building Effective Agents - Anthropic Engineering](https://www.anthropic.com/engineering/building-effective-agents), [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
+-   **Author**: Yassine Boumiza - [GitHub Profile](https://github.com/advisely/)
+-   **Repository**: [claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites)
+-   **Inspiration & Best Practices**: [Building Effective Agents - Anthropic Engineering](https://www.anthropic.com/engineering/building-effective-agents), [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
+-   **Claude Agent SDK**: [Anthropic Documentation](https://docs.anthropic.com/)
+-   **Claude Code Plugins**: [Plugin System Announcement](https://www.anthropic.com/news/claude-code-plugins)
 
 ## 📄 License
 
-Distributed under the MIT License with a friendly request for attribution. See the `LICENSE` file for more information.
+Distributed under the MIT License with a friendly request for attribution. See **[LICENSE.md](LICENSE.md)** for more information.
+
+**If you find this project useful**, please:
+- ⭐ Star the repository
+- 🔗 Share with your team
+- 💬 Provide feedback via [GitHub Discussions](https://github.com/advisely/claude-code-agents-team-nation-of-elites/discussions)
+- 🐛 Report issues via [GitHub Issues](https://github.com/advisely/claude-code-agents-team-nation-of-elites/issues)
+
+---
+
+**The Nation of Elites v2.0** - Powered by Claude Code Plugin System | 45 Specialized Agents | 10/10 SDK Compliance

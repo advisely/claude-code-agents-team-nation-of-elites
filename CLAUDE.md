@@ -123,7 +123,8 @@ Each agent includes specific delegation cues for seamless handoffs:
 
 ### Communication Protocols
 
-- **@agent-[name]** - Standard agent invocation pattern
+- **Task Tool (v2)** - Claude automatically spawns agents via the Task tool based on user intent
+- **Legacy Pattern (v1)** - `@agent-[name]` explicit invocation (backward compatible)
 - **Context Handoffs** - Structured information transfer between agents
 - **Status Reporting** - Regular progress updates through the hierarchy
 - **Documentation Trails** - Comprehensive documentation of decisions and implementations
@@ -222,12 +223,25 @@ Guardrails (enforced by orchestrator):
 ### Best Practices
 
 #### Agent Invocation
+
+**Claude Code v2 (Recommended)**
 ```
-# Correct Pattern
-"I'll use @agent-solution-architect to design the system architecture"
+# Natural language - Claude selects the right agent
+"Design the system architecture for a microservices e-commerce platform"
+# Claude spawns solution-architect via Task tool
+
+# With specific requirements
+"Implement the payment API backend using the specifications from the architecture doc"
+# Claude spawns backend-developer via Task tool
+```
+
+**Claude Code v1 (Legacy)**
+```
+# Explicit agent mention (still supported)
+"Use @agent-solution-architect to design the system architecture"
 
 # With Context
-"Let me hand this off to @agent-backend-developer with the API specifications from the solution architect"
+"Let me hand this off to @agent-backend-developer with the API specifications"
 ```
 
 #### Project Workflow
@@ -338,42 +352,78 @@ The Nation of Elites achieves **complete alignment** with Anthropic's Claude Age
 **Certification**: Perfect 10/10 SDK compliance score - [See SDK_COMPLIANCE_REPORT.md](SDK_COMPLIANCE_REPORT.md)
 
 ## Configuration and Setup
-  
-  ### Installation
- 
- ```bash
- # Clone the repository
- git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
- 
- # Navigate to project directory
- cd claude-code-agents-team-nation-of-elites
- 
- # Sanitize target to avoid conflicts with older configurations
- rm -rf ~/.claude/agents ~/.claude/projects
- 
- # Deploy current agents set
- mkdir -p ~/.claude
- cp -r agents ~/.claude/agents
- 
- # Validate key files
- test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
- ! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
- ```
 
- ### Automated Deployment (recommended)
- 
- ```bash
- # From the repository root
- bash scripts/deploy_agents.sh
- ```
- 
- The script will:
- - Clone/pull the repo (if needed)
- - Remove `~/.claude/agents` and `~/.claude/projects`
- - Copy `agents/` into `~/.claude/agents`
- - Validate presence of canonical orchestrator and absence of deprecated entries
- 
- WSL2 note: The Linux path `~/.claude` corresponds in Windows Explorer to `\\wsl.localhost\Ubuntu\home\<USER>\.claude`. You can verify post-deploy there if preferred.
+### Installation
+
+#### 🎯 Recommended: Claude Code v2 Plugin Installation
+
+**For Claude Code v2.0+**, install as a plugin using the built-in plugin system:
+
+```bash
+# Method 1: Install from GitHub (recommended)
+/plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Method 2: Add marketplace and browse plugins
+/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites
+# Then use the /plugin menu to browse and install
+```
+
+The plugin system provides:
+- ✅ One-command installation
+- ✅ Automatic updates
+- ✅ Easy enable/disable
+- ✅ Reduced context overhead
+- ✅ Integrated with Claude Code CLI
+
+#### 🔧 Alternative: Manual Installation (Legacy)
+
+**For Claude Code v1.x or manual setup**:
+
+```bash
+# Clone the repository
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+
+# Navigate to project directory
+cd claude-code-agents-team-nation-of-elites
+
+# Sanitize target to avoid conflicts with older configurations
+rm -rf ~/.claude/agents ~/.claude/projects
+
+# Deploy current agents set
+mkdir -p ~/.claude
+cp -r agents ~/.claude/agents
+
+# Validate key files
+test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
+! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
+```
+
+#### 🤖 Automated Deployment Script
+
+```bash
+# From the repository root
+bash scripts/deploy_agents.sh
+```
+
+The script will:
+- Clone/pull the repo (if needed)
+- Remove `~/.claude/agents` and `~/.claude/projects`
+- Copy `agents/` into `~/.claude/agents`
+- Validate presence of canonical orchestrator and absence of deprecated entries
+
+**WSL2 note**: The Linux path `~/.claude` corresponds in Windows Explorer to `\\wsl.localhost\Ubuntu\home\<USER>\.claude`. You can verify post-deploy there if preferred.
+
+### Verification
+
+After installation, verify the plugin is loaded:
+
+```bash
+# List installed plugins
+/plugin list
+
+# Check for Nation of Elites
+# You should see "nation-of-elites v2.0.0" in the list
+```
 
 ### Project Initialization
 
@@ -382,24 +432,54 @@ The Nation of Elites achieves **complete alignment** with Anthropic's Claude Age
 mkdir my-new-project
 cd my-new-project
 
-# Initialize with Nation of Elites
-claude "Use @agent-project-sponsor to define business objectives for this project"
+# Initialize with Nation of Elites - Claude will automatically invoke the appropriate agent
+claude "I need to define business objectives for this e-commerce project"
+# Claude will spawn the project-sponsor agent via the Task tool
+```
+
+### Agent Invocation Patterns
+
+#### Claude Code v2 (Automatic Agent Selection)
+
+In Claude Code v2, you describe your need and Claude automatically selects and spawns the appropriate agent using the Task tool:
+
+```bash
+# Strategic planning - spawns project-sponsor and program-manager
+claude "Define objectives and create roadmap for a mobile payment app"
+
+# Development coordination - spawns tech-lead-orchestrator
+claude "Coordinate development of user authentication feature with React frontend and Django backend"
+
+# Quality assurance - spawns qa-test-planner and automated-test-scripter
+claude "Create comprehensive test strategy and implement automated tests"
+
+# Deployment - spawns devops-engineer and cloud-architect
+claude "Setup CI/CD pipeline and design cloud infrastructure for production deployment"
+```
+
+#### Legacy Pattern (Claude Code v1.x)
+
+For backward compatibility, explicit agent mentions still work:
+
+```bash
+# Explicit agent invocation (legacy)
+claude "Use the project-sponsor agent to define business objectives"
 ```
 
 ### Quick Start Commands
 
 ```bash
-# Complete project setup
-claude "Use @agent-project-sponsor to define objectives, @agent-program-manager to create roadmap, and @agent-solution-architect to propose technology stack"
+# Complete project setup - Claude spawns multiple agents in sequence
+claude "Initialize a new SaaS project: define business vision, create product roadmap, and propose technology stack"
 
-# Development workflow
-claude "Use @agent-project-manager-scrum-master to plan sprint, then @agent-tech-lead-orchestrator to coordinate development"
+# Development workflow - spawns project-manager and tech-lead-orchestrator
+claude "Plan sprint and coordinate development team for the next iteration"
 
-# Quality assurance
-claude "Use @agent-qa-test-planner to create test strategy, then @agent-automated-test-scripter to implement tests"
+# Code review and quality - spawns code-reviewer
+claude "Review the authentication module code for security and best practices"
 
-# Deployment preparation
-claude "Use @agent-devops-engineer to setup CI/CD pipeline and @agent-cloud-architect to design infrastructure"
+# Infrastructure setup - spawns devops-engineer and cloud-architect
+claude "Design and implement production infrastructure with auto-scaling and monitoring"
 ```
 
 ## Advanced Usage
@@ -409,19 +489,26 @@ claude "Use @agent-devops-engineer to setup CI/CD pipeline and @agent-cloud-arch
 For enterprise-level coordination across multiple projects:
 
 ```bash
-claude "Use @agent-program-manager to coordinate our portfolio of 3 related projects and optimize resource allocation"
+# Spawns program-manager for portfolio coordination
+claude "Coordinate our portfolio of 3 microservices projects and optimize resource allocation across teams"
 ```
 
 ### Specialized Technology Implementation
 
-For specific technology stacks:
+Claude automatically selects framework-specific experts:
 
 ```bash
-# React + Django stack
-claude "Use @agent-react-expert for frontend and @agent-django-expert for backend implementation"
+# React + Django stack - spawns react-expert and django-expert
+claude "Build a real-time dashboard with React frontend and Django REST API backend"
 
-# Laravel + Vue.js stack  
-claude "Use @agent-laravel-expert for API development and @agent-vue-expert for frontend"
+# Laravel + Vue.js stack - spawns laravel-expert and vue-expert
+claude "Develop an admin panel using Laravel for API and Vue.js for the interface"
+
+# TypeScript React - spawns react-typescript-expert
+claude "Create a type-safe React application with TypeScript for enterprise use"
+
+# Java Spring - spawns java-expert
+claude "Design a microservices architecture using Java Spring Boot"
 ```
 
 ### AI-Enhanced Projects
@@ -429,7 +516,27 @@ claude "Use @agent-laravel-expert for API development and @agent-vue-expert for 
 For projects requiring AI/ML capabilities:
 
 ```bash
-claude "Use @agent-ai-strategist to define AI roadmap, @agent-data-engineer for data pipeline, and @agent-ml-engineer for model deployment"
+# Spawns ai-strategist, data-engineer, and ml-engineer
+claude "Build a recommendation engine: define AI strategy, create data pipeline, and deploy ML models"
+
+# Spawns data-scientist and ml-engineer
+claude "Develop and deploy a customer churn prediction model with real-time scoring"
+```
+
+### Specialized Domains
+
+```bash
+# Cryptocurrency/Blockchain - spawns crypto-api-developer
+claude "Integrate Ethereum wallet functionality and implement DeFi token swapping"
+
+# Financial Systems - spawns financial-systems-expert
+claude "Build an algorithmic trading system with risk management"
+
+# Construction/BIM - spawns autodesk-cloud-construction-expert
+claude "Setup Autodesk Construction Cloud integration for project coordination"
+
+# Storage Security - spawns storage-security-specialist
+claude "Implement encryption at rest and access controls for S3 buckets with compliance auditing"
 ```
 
 ## Troubleshooting

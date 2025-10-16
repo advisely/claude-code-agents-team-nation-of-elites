@@ -1,0 +1,136 @@
+{
+  "marketplace": {
+    "name": "Nation of Elites Plugin Marketplace",
+    "description": "Official plugin marketplace for the Nation of Elites - Enterprise AI Workforce",
+    "version": "1.0.0",
+    "author": "Yassine Boumiza",
+    "homepage": "https://github.com/advisely/claude-code-agents-team-nation-of-elites"
+  },
+  "plugins": [
+    {
+      "id": "nation-of-elites",
+      "name": "Nation of Elites - Full Suite",
+      "version": "2.0.0",
+      "description": "Complete 45-agent AI workforce with all divisions (Executive, Strategy, Engineering, QA, SecOps, AI/ML, Orchestrators)",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "installUrl": "https://github.com/advisely/claude-code-agents-team-nation-of-elites.git",
+      "category": "multi-agent-systems",
+      "tags": ["enterprise", "orchestration", "full-stack", "devops", "security", "ai-ml"],
+      "featured": true,
+      "agentCount": 45,
+      "divisions": 7
+    },
+    {
+      "id": "nation-of-elites-core",
+      "name": "Nation of Elites - Core Team",
+      "version": "2.0.0",
+      "description": "Essential agents: Tech Lead Orchestrator, Backend/Frontend Developers, Code Reviewer, DevOps",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "category": "development",
+      "tags": ["core", "essential", "lightweight"],
+      "agentCount": 8,
+      "note": "Subset configuration - see documentation for setup"
+    },
+    {
+      "id": "nation-of-elites-frontend",
+      "name": "Nation of Elites - Frontend Specialists",
+      "version": "2.0.0",
+      "description": "Frontend-focused agents: React, Vue, Next.js experts, UX/UI Architect, Visual Regression Specialist",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "category": "frontend",
+      "tags": ["react", "vue", "nextjs", "ui-ux", "frontend"],
+      "agentCount": 10,
+      "note": "Subset configuration - see documentation for setup"
+    },
+    {
+      "id": "nation-of-elites-backend",
+      "name": "Nation of Elites - Backend Specialists",
+      "version": "2.0.0",
+      "description": "Backend-focused agents: Django, Laravel, Rails, Java, Go experts, Database Expert, API Architect",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "category": "backend",
+      "tags": ["api", "database", "django", "laravel", "java", "go"],
+      "agentCount": 12,
+      "note": "Subset configuration - see documentation for setup"
+    },
+    {
+      "id": "nation-of-elites-devops",
+      "name": "Nation of Elites - DevOps & Security",
+      "version": "2.0.0",
+      "description": "DevOps and security agents: Cloud Architect, Cyber Sentinel, Infrastructure, Storage Security, Message Queue Specialists",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "category": "devops",
+      "tags": ["devops", "security", "cloud", "infrastructure", "cicd"],
+      "agentCount": 6,
+      "note": "Subset configuration - see documentation for setup"
+    },
+    {
+      "id": "nation-of-elites-ai-ml",
+      "name": "Nation of Elites - AI & ML Division",
+      "version": "2.0.0",
+      "description": "AI/ML specialists: Data Scientists, ML Engineers, AI Strategist, Data Engineer, AIOps Specialist",
+      "author": "Yassine Boumiza",
+      "license": "MIT",
+      "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+      "category": "ai-ml",
+      "tags": ["machine-learning", "data-science", "ai", "ml-ops"],
+      "agentCount": 5,
+      "note": "Subset configuration - see documentation for setup"
+    }
+  ],
+  "categories": [
+    {
+      "id": "multi-agent-systems",
+      "name": "Multi-Agent Systems",
+      "description": "Complete orchestrated AI workforce solutions"
+    },
+    {
+      "id": "development",
+      "name": "Development",
+      "description": "Core development teams and tools"
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend Development",
+      "description": "UI/UX and frontend framework specialists"
+    },
+    {
+      "id": "backend",
+      "name": "Backend Development",
+      "description": "API, database, and backend framework specialists"
+    },
+    {
+      "id": "devops",
+      "name": "DevOps & Security",
+      "description": "Infrastructure, deployment, and security specialists"
+    },
+    {
+      "id": "ai-ml",
+      "name": "AI & Machine Learning",
+      "description": "Data science and machine learning specialists"
+    }
+  ],
+  "installation": {
+    "method": "git",
+    "command": "/plugin install advisely/claude-code-agents-team-nation-of-elites",
+    "alternativeCommands": [
+      "/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites",
+      "git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites"
+    ]
+  },
+  "support": {
+    "documentation": "https://github.com/advisely/claude-code-agents-team-nation-of-elites/blob/main/README.md",
+    "issues": "https://github.com/advisely/claude-code-agents-team-nation-of-elites/issues",
+    "discussions": "https://github.com/advisely/claude-code-agents-team-nation-of-elites/discussions"
+  }
+}

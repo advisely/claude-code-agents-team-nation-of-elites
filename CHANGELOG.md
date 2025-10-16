@@ -5,7 +5,142 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2025-09-29] - Claude Agent SDK Full Alignment (v2.0.0)
+## [2025-10-15] - Claude Code v2 Plugin System Migration (v2.0.0)
+
+### 🎯 Major Release - Plugin System Integration
+
+This release transforms Nation of Elites into a **Claude Code v2 plugin**, providing one-command installation, automatic updates, and seamless integration with the new Claude Code plugin ecosystem.
+
+### Added - Plugin Infrastructure 🔌
+
+- **Plugin Manifest** (`.claude-plugin/manifest.json`)
+  - Complete metadata for 45 agents across 7 divisions
+  - Version tracking (v2.0.0)
+  - Feature flags for SDK compliance
+  - Division structure documentation
+  - Agent path mappings for automatic loading
+
+- **Marketplace Configuration** (`.claude-plugin/marketplace.json`)
+  - Official marketplace entry for public distribution
+  - Multiple preset configurations (Full Suite, Core, Frontend, Backend, DevOps, AI/ML)
+  - Category classification for easy discovery
+  - Installation command variants
+  - Support documentation links
+
+- **Migration Guide** (`MIGRATION_GUIDE.md`)
+  - Comprehensive v1.x → v2.0 upgrade path
+  - Feature comparison table
+  - Breaking changes documentation (none - fully backward compatible)
+  - Common migration issues and solutions
+  - Command translation reference
+
+- **Contributing Guide** (`CONTRIBUTING.md`)
+  - Community contribution guidelines
+  - Agent development standards
+  - Testing procedures
+  - PR submission process
+  - Style guide and best practices
+
+### Changed - Installation & Invocation Patterns 🚀
+
+**Installation Methods:**
+- **NEW (v2.0)**: One-command plugin install: `/plugin install advisely/claude-code-agents-team-nation-of-elites`
+- **Legacy (v1.x)**: Manual deployment via `deploy_agents.sh` script (still supported)
+
+**Agent Invocation:**
+- **NEW (Recommended)**: Natural language - Claude automatically selects agents via Task tool
+  ```bash
+  claude "Design the system architecture for this microservices platform"
+  # Automatically spawns solution-architect
+  ```
+- **Legacy**: Explicit agent mentions still supported for backward compatibility
+  ```bash
+  claude "Use @agent-solution-architect to design the system architecture"
+  ```
+
+### Documentation Updates 📚
+
+**README.md:**
+- Updated Quick Start with plugin installation as primary method
+- Added v2 vs v1 installation comparison
+- New "Using the Agents" section with natural language examples
+- Plugin verification instructions
+
+**CLAUDE.md:**
+- Added plugin installation section with `/plugin` commands
+- Updated agent invocation patterns (v2 vs v1)
+- Added verification steps for plugin loading
+- Updated communication protocols (Task tool vs @agent mentions)
+- Comprehensive usage examples for both invocation patterns
+
+**New Documentation:**
+- `MIGRATION_GUIDE.md` - v1 to v2 upgrade guide
+- `CONTRIBUTING.md` - Community contribution guidelines
+- `.claude-plugin/manifest.json` - Plugin metadata
+- `.claude-plugin/marketplace.json` - Marketplace configuration
+
+### Technical - Plugin System Integration ⚙️
+
+**Backward Compatibility:**
+- ✅ All 45 agents unchanged
+- ✅ Agent names unchanged
+- ✅ Directory structure unchanged
+- ✅ Explicit `@agent-name` invocation still works
+- ✅ Manual installation still supported
+
+**New Capabilities:**
+- **Plugin Management**: Enable/disable per project with `/plugin enable|disable`
+- **Automatic Updates**: Plugin system handles version updates
+- **Reduced Context**: Plugin toggling reduces context overhead
+- **Marketplace Discovery**: Listed in Claude Code plugin marketplace
+- **Installation Verification**: `/plugin list` shows active plugins
+
+**Installation Paths:**
+- **Plugin (v2)**: `~/.claude/plugins/nation-of-elites/`
+- **Manual (v1)**: `~/.claude/agents/` (legacy, still supported)
+
+### Benefits - Why Upgrade to v2 Plugin System 🎁
+
+1. **Faster Setup**: `/plugin install` vs multi-step manual deployment
+2. **Auto Updates**: Plugin system handles updates automatically
+3. **Better UX**: Natural language invocation vs explicit agent mentions
+4. **Context Control**: Toggle plugins on/off to reduce overhead
+5. **Discovery**: Browse in plugin marketplace
+6. **Community**: Easier for others to find and install
+
+### Migration Path for Existing Users 🛤️
+
+**For Claude Code v2.0+ Users:**
+```bash
+# Uninstall old manual installation (optional)
+rm -rf ~/.claude/agents
+
+# Install as plugin
+/plugin install advisely/claude-code-agents-team-nation-of-elites
+
+# Verify
+/plugin list
+```
+
+**For Claude Code v1.x Users:**
+- No action required - continue using manual installation
+- Or upgrade Claude Code to v2.0+ and switch to plugin
+
+See `MIGRATION_GUIDE.md` for detailed instructions.
+
+### Breaking Changes ❌
+
+**None** - This release maintains full backward compatibility with v1.x:
+- Manual installation still works
+- Explicit agent mentions still work
+- All agents unchanged
+- No configuration changes required
+
+Users can choose to adopt plugin installation at their convenience.
+
+---
+
+## [2025-09-29] - Claude Agent SDK Full Alignment (v1.x)
 
 ### Added - SDK Alignment Features ⭐
 - **Subagent Coordination**: Tech Lead Orchestrator can now spawn 3-5 temporary, task-specific subagents for parallel information gathering

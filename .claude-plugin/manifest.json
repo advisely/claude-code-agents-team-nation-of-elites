@@ -1,0 +1,141 @@
+{
+  "name": "nation-of-elites",
+  "version": "2.0.0",
+  "title": "Nation of Elites - Enterprise AI Workforce",
+  "description": "A complete 45-agent AI workforce organized like a real IT company. Includes executive leadership, strategic planning, project management, engineering teams, QA, security, infrastructure, and AI/ML specialists. Aligned with Claude Agent SDK v2.0 best practices.",
+  "author": "Yassine Boumiza",
+  "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+  "license": "MIT",
+  "homepage": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+  "tags": [
+    "multi-agent",
+    "orchestration",
+    "enterprise",
+    "architecture",
+    "devops",
+    "security",
+    "testing",
+    "ai-ml",
+    "project-management",
+    "framework-specialists"
+  ],
+  "agentPaths": [
+    "agents/00_Executive_Wing/*.md",
+    "agents/01_Strategy_and_Planning_Wing/*.md",
+    "agents/02_Project_Management_Office/*.md",
+    "agents/03_Engineering_Division/Core_Development_Team/*.md",
+    "agents/03_Engineering_Division/Framework_Specialists/*.md",
+    "agents/03_Engineering_Division/Code_Excellence_Guild/*.md",
+    "agents/04_Quality_Assurance_Battalion/*.md",
+    "agents/05_SecOps_and_Infrastructure_Division/*.md",
+    "agents/06_AI_and_Machine_Learning_Division/*.md",
+    "agents/07_Orchestrators/*.md"
+  ],
+  "features": {
+    "subagentCoordination": true,
+    "contextCompaction": true,
+    "mcpIntegration": true,
+    "visualFeedback": true,
+    "automaticDocumentation": true,
+    "thinkingBudgets": true
+  },
+  "requirements": {
+    "claudeCodeVersion": ">=2.0.0"
+  },
+  "documentation": {
+    "readme": "README.md",
+    "configuration": "CLAUDE.md",
+    "changelog": "CHANGELOG.md",
+    "sdkCompliance": "docs/SDK_COMPLIANCE_REPORT.md",
+    "contextEngineering": "docs/CONTEXT_ENGINEERING.md"
+  },
+  "divisions": {
+    "00_Executive_Wing": {
+      "name": "Executive Leadership",
+      "description": "Business vision and strategic oversight",
+      "agentCount": 2,
+      "agents": ["program-manager", "project-sponsor"]
+    },
+    "01_Strategy_and_Planning_Wing": {
+      "name": "Strategy & Planning",
+      "description": "Strategic planning and architecture",
+      "agentCount": 5,
+      "agents": ["business-analyst", "functional-analyst", "product-manager", "solution-architect", "ux-ui-architect"]
+    },
+    "02_Project_Management_Office": {
+      "name": "Project Management",
+      "description": "Agile delivery and process management",
+      "agentCount": 1,
+      "agents": ["project-manager-scrum-master"]
+    },
+    "03_Engineering_Division": {
+      "name": "Engineering",
+      "description": "Development and technical implementation",
+      "agentCount": 21,
+      "teams": {
+        "Core_Development_Team": {
+          "agentCount": 3,
+          "agents": ["api-architect", "backend-developer", "frontend-developer"]
+        },
+        "Framework_Specialists": {
+          "agentCount": 14,
+          "agents": [
+            "django-expert", "laravel-expert", "rails-expert",
+            "react-expert", "react-typescript-expert", "vue-expert", "nextjs-expert",
+            "java-expert", "go-expert", "database-expert",
+            "financial-systems-expert", "crypto-api-developer",
+            "autodesk-cloud-construction-expert", "catia-design-expert",
+            "antd-ui-developer", "tailwind-css-expert"
+          ]
+        },
+        "Code_Excellence_Guild": {
+          "agentCount": 7,
+          "agents": [
+            "code-reviewer", "documentation-specialist", "performance-optimizer",
+            "code-archaeologist", "general-purpose", "statusline-setup", "output-style-setup"
+          ]
+        }
+      }
+    },
+    "04_Quality_Assurance_Battalion": {
+      "name": "Quality Assurance",
+      "description": "Testing and quality validation",
+      "agentCount": 4,
+      "agents": ["automated-test-scripter", "qa-engineer", "qa-test-planner", "visual-regression-specialist"]
+    },
+    "05_SecOps_and_Infrastructure_Division": {
+      "name": "SecOps & Infrastructure",
+      "description": "Security, operations, and infrastructure",
+      "agentCount": 6,
+      "agents": [
+        "cloud-architect", "cyber-sentinel", "devops-engineer",
+        "infrastructure-specialist", "message-queue-specialist", "storage-security-specialist"
+      ]
+    },
+    "06_AI_and_Machine_Learning_Division": {
+      "name": "AI & Machine Learning",
+      "description": "AI, ML, and data engineering",
+      "agentCount": 5,
+      "agents": ["aiops-specialist", "ai-strategist", "data-engineer", "data-scientist", "ml-engineer"]
+    },
+    "07_Orchestrators": {
+      "name": "Orchestrators",
+      "description": "System coordination and integration",
+      "agentCount": 3,
+      "agents": ["tech-lead-orchestrator", "team-configurator", "integration-specialist"]
+    }
+  },
+  "totalAgents": 45,
+  "sdkCompliance": {
+    "version": "2.0.0",
+    "score": "10/10",
+    "features": [
+      "Subagent Coordination",
+      "Context Compaction",
+      "File System Context Engineering",
+      "MCP Integration",
+      "Visual Feedback Loops",
+      "Code Generation Priority"
+    ]
+  }
+}
