@@ -28,62 +28,68 @@ Get your AI workforce operational in under one minute.
 
 ### Installation
 
-#### 🎯 Claude Code v2 (Recommended)
+#### 🚀 Quick Install (Recommended - Works Immediately)
 
-**One-command installation** via the built-in plugin system:
-
-```bash
-# Method 1: Install from GitHub marketplace (requires published release)
-/plugin install advisely/claude-code-agents-team-nation-of-elites
-
-# Method 2: Install from local clone (works immediately)
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
-
-# Verify installation
-/plugin list
-# You should see "nation-of-elites v2.0.0"
-```
-
-**If you see "Marketplace not found"**: The repository needs to be published and indexed by Claude Code. Use the legacy installation method below or wait for plugin indexing.
-
-**Benefits of plugin installation:**
-- ✅ Instant one-command setup
-- ✅ Automatic updates
-- ✅ Easy enable/disable per project
-- ✅ Reduced context overhead
-- ✅ Full Claude Code CLI integration
-
-#### 🔧 Claude Code v1.x (Legacy)
-
-**Option A — Automated (recommended):**
+**The fastest and most reliable way** - automated deployment script:
 
 ```bash
-# Clone and run deployment script
+# Clone and deploy
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**Option B — Manual:**
+**Done!** All 45 agents are now in `~/.claude/agents/` and ready to use.
+
+#### 🔌 Plugin Installation (Alternative)
+
+**For Claude Code v2 plugin system**:
 
 ```bash
-# Clone the repository
+# Step 1: Add the GitHub marketplace source
+/marketplace add advisely/claude-code-agents-team-nation-of-elites
+
+# Step 2: Install the plugin from marketplace
+/plugin install nation-of-elites
+
+# Step 3: Verify installation
+/plugin list
+# Should show: "nation-of-elites v2.0.0"
+```
+
+**Alternative**: Clone directly to plugins directory (bypasses marketplace):
+
+```bash
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
+/plugin list  # Verify it appears
+```
+
+**Important**: You **must** add the marketplace source first (Step 1) before installing. If you skip this step, `/plugin install` will fail with "Marketplace not found".
+
+**Plugin Benefits:**
+- ✅ Integrated with Claude Code plugin system
+- ✅ Easy enable/disable per project
+- ✅ Automatic updates (when marketplace is live)
+- ✅ Reduced context overhead with toggling
+
+#### 🔧 Manual Installation (Alternative)
+
+**Step-by-step manual deployment:**
+
+```bash
+# Clone repository
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
-
-# Sanitize target to avoid conflicts
-rm -rf ~/.claude/agents ~/.claude/projects
 
 # Deploy agents
 mkdir -p ~/.claude
 cp -r agents ~/.claude/agents
 
-# Validate installation
-test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "✓ Tech Lead Orchestrator present"
-! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "✓ No deprecated orchestrator found"
+# Validate
+test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "✓ Installation successful"
 ```
 
-**WSL2 note:** The Linux path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
+**WSL2 note:** The path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
 
 ### Using the Agents
 
@@ -294,19 +300,23 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for detailed guidelines on:
 
 ## 🔄 Upgrading from v1.x?
 
-See the **[Migration Guide](MIGRATION_GUIDE.md)** for step-by-step instructions on upgrading to the v2.0 plugin system.
+See the **[Migration Guide](MIGRATION_GUIDE.md)** for detailed instructions.
 
-**TL;DR for v2.0 users:**
+**Quick Upgrade (Recommended):**
 ```bash
-# Uninstall old v1.x (optional)
-rm -rf ~/.claude/agents
+# Clone the latest version
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
 
-# Install as plugin
-/plugin install advisely/claude-code-agents-team-nation-of-elites
-
-# Verify
-/plugin list
+# Deploy (overwrites old agents with v2.0)
+bash scripts/deploy_agents.sh
 ```
+
+**All 45 agents are now v2.0 compatible** with both:
+- Natural language invocation (new)
+- Explicit agent mentions (legacy - still works)
+
+No breaking changes - your existing workflows continue to work!
 
 ## 📚 Credits and References
 

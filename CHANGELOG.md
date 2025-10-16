@@ -44,8 +44,9 @@ This release transforms Nation of Elites into a **Claude Code v2 plugin**, provi
 ### Changed - Installation & Invocation Patterns 🚀
 
 **Installation Methods:**
-- **NEW (v2.0)**: One-command plugin install: `/plugin install advisely/claude-code-agents-team-nation-of-elites`
-- **Legacy (v1.x)**: Manual deployment via `deploy_agents.sh` script (still supported)
+- **Recommended**: Automated deployment script: `bash scripts/deploy_agents.sh` (works immediately for all users)
+- **Plugin System**: Clone to `~/.claude/plugins/nation-of-elites/` or `/plugin install` when marketplace is indexed
+- **Manual**: Direct copy to `~/.claude/agents/` (still fully supported)
 
 **Agent Invocation:**
 - **NEW (Recommended)**: Natural language - Claude automatically selects agents via Task tool
@@ -110,23 +111,26 @@ This release transforms Nation of Elites into a **Claude Code v2 plugin**, provi
 
 ### Migration Path for Existing Users 🛤️
 
-**For Claude Code v2.0+ Users:**
+**Recommended for All Users:**
 ```bash
-# Uninstall old manual installation (optional)
-rm -rf ~/.claude/agents
+# Clone the latest version
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
 
-# Install as plugin
-/plugin install advisely/claude-code-agents-team-nation-of-elites
-
-# Verify
-/plugin list
+# Deploy (overwrites v1.x with v2.0)
+bash scripts/deploy_agents.sh
 ```
 
-**For Claude Code v1.x Users:**
-- No action required - continue using manual installation
-- Or upgrade Claude Code to v2.0+ and switch to plugin
+**Alternative - Plugin Installation (when marketplace is live):**
+```bash
+# Clone to plugins directory
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
 
-See `MIGRATION_GUIDE.md` for detailed instructions.
+# Or from marketplace (when indexed)
+/plugin install advisely/claude-code-agents-team-nation-of-elites
+```
+
+See `MIGRATION_GUIDE.md` for detailed instructions and options.
 
 ### Breaking Changes ❌
 

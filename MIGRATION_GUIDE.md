@@ -40,52 +40,66 @@ claude --version
 - **v2.0+**: Follow the Plugin Installation path
 - **v1.x**: Continue with Legacy Installation or upgrade Claude Code
 
-### Step 2: Uninstall v1.x (if applicable)
+### Step 2: Choose Your Installation Method
 
-If you manually installed v1.x agents:
+You have two options for v2.0:
 
-```bash
-# Backup your existing configuration (optional)
-cp -r ~/.claude/agents ~/.claude/agents.backup
+#### Option A: Standard Installation (Recommended - Works Now)
 
-# Remove old installation
-rm -rf ~/.claude/agents/00_Executive_Wing
-rm -rf ~/.claude/agents/01_Strategy_and_Planning_Wing
-rm -rf ~/.claude/agents/02_Project_Management_Office
-rm -rf ~/.claude/agents/03_Engineering_Division
-rm -rf ~/.claude/agents/04_Quality_Assurance_Battalion
-rm -rf ~/.claude/agents/05_SecOps_and_Infrastructure_Division
-rm -rf ~/.claude/agents/06_AI_and_Machine_Learning_Division
-rm -rf ~/.claude/agents/07_Orchestrators
-```
-
-### Step 3: Install v2.0
-
-#### For Claude Code v2.0+ (Plugin Installation)
-
-**Note**: Plugin installation requires the repository to be published and indexed. If you get "Marketplace not found", use the manual installation below.
-
-```bash
-# Method 1: Install from GitHub (once published)
-/plugin install advisely/claude-code-agents-team-nation-of-elites
-
-# Method 2: Install from local clone
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
-
-# Verify installation
-/plugin list
-# Should show: "nation-of-elites v2.0.0"
-```
-
-#### For Claude Code v1.x (Legacy)
+**Install agents directly** - this is the most reliable method:
 
 ```bash
 # Clone repository
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 
-# Run deployment script
+# Deploy agents
 bash scripts/deploy_agents.sh
+```
+
+This copies agents to `~/.claude/agents/` and you're done!
+
+#### Option B: Plugin System Installation (Future-Proof)
+
+**For Claude Code v2.0+ with plugin system**:
+
+```bash
+# Step 1: Add the GitHub marketplace source
+/marketplace add advisely/claude-code-agents-team-nation-of-elites
+
+# Step 2: Install the plugin from marketplace
+/plugin install nation-of-elites
+
+# Step 3: Remove old agents directory if migrating from v1.x
+rm -rf ~/.claude/agents
+
+# Step 4: Verify plugin is recognized
+/plugin list
+# Should show: "nation-of-elites v2.0.0"
+```
+
+**Alternative Plugin Method** (bypasses marketplace):
+```bash
+# Clone directly to plugins directory
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
+
+# Verify
+/plugin list
+```
+
+**Important**: You **must** add the marketplace source first (`/marketplace add`) before running `/plugin install`, otherwise you'll get "Marketplace not found".
+
+### Step 3: Verify Installation
+
+```bash
+# Check that agents are accessible
+ls ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md
+# OR (if using plugin system)
+ls ~/.claude/plugins/nation-of-elites/agents/07_Orchestrators/Tech_Lead_Orchestrator.md
+
+# Test agent invocation
+claude "I need help with project planning"
+# Should trigger appropriate agent response
 ```
 
 ### Step 4: Update Your Workflows

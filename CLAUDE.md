@@ -355,29 +355,60 @@ The Nation of Elites achieves **complete alignment** with Anthropic's Claude Age
 
 ### Installation
 
-#### 🎯 Recommended: Claude Code v2 Plugin Installation
+#### 🚀 Recommended: Automated Deployment (Works Immediately)
 
-**For Claude Code v2.0+**, install as a plugin using the built-in plugin system:
+**The most reliable installation method** - works for all Claude Code versions:
 
 ```bash
-# Method 1: Install from GitHub (recommended)
-/plugin install advisely/claude-code-agents-team-nation-of-elites
+# Clone repository
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 
-# Method 2: Add marketplace and browse plugins
-/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites
-# Then use the /plugin menu to browse and install
+# Navigate to directory
+cd claude-code-agents-team-nation-of-elites
+
+# Run automated deployment
+bash scripts/deploy_agents.sh
 ```
 
-The plugin system provides:
-- ✅ One-command installation
-- ✅ Automatic updates
-- ✅ Easy enable/disable
+This script:
+- Copies agents to `~/.claude/agents/`
+- Validates installation
+- Ensures all 45 agents are ready to use
+
+#### 🔌 Alternative: Plugin Installation
+
+**For Claude Code v2.0+ with plugin system**:
+
+```bash
+# Step 1: Add the GitHub marketplace source
+/marketplace add advisely/claude-code-agents-team-nation-of-elites
+
+# Step 2: Install the plugin from marketplace
+/plugin install nation-of-elites
+
+# Step 3: Verify installation
+/plugin list
+# Should show: "nation-of-elites v2.0.0"
+```
+
+**Alternative**: Clone directly to plugins directory (bypasses marketplace):
+
+```bash
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
+/plugin list  # Verify it appears
+```
+
+**Note**: The marketplace must be added **before** installing the plugin, otherwise `/plugin install` will fail with "Marketplace not found".
+
+Plugin benefits:
+- ✅ Integrated with plugin system
+- ✅ Easy enable/disable per project
+- ✅ Automatic updates (when marketplace is live)
 - ✅ Reduced context overhead
-- ✅ Integrated with Claude Code CLI
 
-#### 🔧 Alternative: Manual Installation (Legacy)
+#### 🔧 Manual Installation
 
-**For Claude Code v1.x or manual setup**:
+**Step-by-step manual setup**:
 
 ```bash
 # Clone the repository
