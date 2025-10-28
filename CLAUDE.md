@@ -351,6 +351,130 @@ The Nation of Elites achieves **complete alignment** with Anthropic's Claude Age
 
 **Certification**: Perfect 10/10 SDK compliance score - [See SDK_COMPLIANCE_REPORT.md](SDK_COMPLIANCE_REPORT.md)
 
+### Agent Skills Integration (v3.0)
+
+The Nation of Elites v3.0 introduces **Agent Skills** - procedural knowledge packages that extend agent capabilities through progressive disclosure, executable code, and modular expertise.
+
+#### Skills vs Agents: Complementary Systems
+
+| Aspect | Agents | Skills |
+|--------|--------|--------|
+| **Role** | Team members (orchestrators & specialists) | Training manuals & toolkits |
+| **Location** | `~/.claude/agents/` | `~/.claude/skills/` |
+| **Purpose** | Who performs work | What knowledge they access |
+| **Loading** | Task-based spawning | Progressive disclosure (3 levels) |
+| **Format** | Markdown with YAML frontmatter | `SKILL.md` with bundled resources |
+| **Execution** | Coordinate & delegate | Provide procedures & executable code |
+
+**Key Principle**: Agents USE skills. A Backend Developer (agent) might invoke the `django-patterns` skill (knowledge) or `xlsx` skill (tool).
+
+#### Progressive Disclosure Architecture
+
+Skills minimize context usage through three-level loading:
+
+1. **Level 1: Metadata** (Always loaded)
+   - Skill name and description in system prompt
+   - Claude decides relevance without loading full content
+
+2. **Level 2: Core Instructions** (Loaded when relevant)
+   - Full `SKILL.md` with procedures and guidance
+   - Loaded only when Claude identifies task match
+
+3. **Level 3: Additional Resources** (On-demand)
+   - Referenced files, scripts, templates
+   - Loaded only when specific sub-context needed
+
+**Example**: PDF skill loads metadata always, full instructions when user mentions PDFs, form-filling procedures only when filling forms.
+
+#### Available Skills
+
+**Official Anthropic Skills:**
+- **pdf** - PDF manipulation, form filling, extraction, merging
+- **docx** - Word document creation, editing, formatting
+- **pptx** - PowerPoint presentation generation and styling
+- **xlsx** - Excel operations with formulas, charts, data validation
+- **mcp-builder** - MCP server development guidance and templates
+- **webapp-testing** - Playwright-based UI testing automation
+- **skill-creator** - Interactive skill development assistant
+- **artifacts-builder** - Complex HTML artifacts with React/Tailwind
+- **canvas-design** - Visual art creation in PNG/PDF formats
+
+**Custom Nation of Elites Skills:**
+- **django-patterns** - Django best practices, ORM optimization, REST API patterns
+- **react-patterns** - React architecture, hooks patterns, performance optimization
+- **security-audit** - OWASP Top 10 checklist, security hardening procedures
+- **github-actions** - CI/CD pipeline templates and deployment workflows
+
+#### Skills and Code Execution
+
+Skills can include executable Python/JavaScript code for deterministic operations:
+
+- **Why**: Token generation for sorting/calculations is expensive vs. running code
+- **How**: Skills bundle scripts that Claude executes via Code Execution Tool
+- **Benefits**: Deterministic reliability, efficiency, repeatability
+
+**Example**: PDF skill includes Python script to extract form fields without loading PDF or script into context.
+
+#### Which Agents Use Which Skills
+
+**Engineering Division:**
+- `backend-developer`, `django-expert`, `laravel-expert` → Framework pattern skills
+- `frontend-developer`, `react-expert`, `vue-expert` → UI framework skills
+- `documentation-specialist` → pdf, docx, pptx skills
+
+**Quality Assurance Battalion:**
+- `qa-engineer`, `automated-test-scripter` → webapp-testing skill
+- `visual-regression-specialist` → canvas-design, artifacts-builder skills
+
+**SecOps & Infrastructure:**
+- `devops-engineer` → github-actions, kubernetes-deployment skills
+- `cyber-sentinel` → security-audit, owasp-checklist skills
+
+**Orchestrators:**
+- `integration-specialist` → mcp-builder skill for external integrations
+- `tech-lead-orchestrator` → skill-creator for new capability development
+
+#### Security Considerations
+
+Skills provide executable code and procedural guidance:
+
+- **Risk**: Malicious skills could introduce vulnerabilities or exfiltrate data
+- **Mitigation**: Only install skills from trusted sources
+- **Best Practice**: Audit skill contents before installation
+  - Read `SKILL.md` for instructions
+  - Review bundled scripts for dependencies and network calls
+  - Verify no untrusted external connections
+
+**Trusted Sources:**
+- Official Anthropic skills repository: `github.com/anthropics/skills`
+- Nation of Elites custom skills: Included in this repository
+- Community skills: Audit thoroughly before use
+
+#### Installation
+
+Skills are automatically installed by the deployment script:
+
+```bash
+bash scripts/deploy_agents.sh
+# Installs agents (~/.claude/agents) + skills (~/.claude/skills)
+```
+
+Manual installation:
+
+```bash
+# Clone Anthropic's official skills
+git clone https://github.com/anthropics/skills.git /tmp/skills
+
+# Install specific skills
+cp -r /tmp/skills/document-skills/pdf ~/.claude/skills/
+cp -r /tmp/skills/mcp-builder ~/.claude/skills/
+
+# Install Nation of Elites custom skills (included in repo)
+cp -r skills/* ~/.claude/skills/
+```
+
+For detailed skills documentation, see [SKILLS.md](SKILLS.md).
+
 ## Configuration and Setup
 
 ### Installation

@@ -1,6 +1,52 @@
-# Migration Guide: v1.x to v2.0
+# Migration Guide: Nation of Elites
 
-This guide helps you migrate from Nation of Elites v1.x (Claude Code v1) to v2.0 (Claude Code v2 plugin system).
+This guide helps you migrate between versions of Nation of Elites:
+- **v1.x → v2.0**: Plugin system architecture
+- **v2.0 → v3.0**: Agent Skills integration (latest)
+
+## What's New in v3.0 (Latest)
+
+### Agent Skills Integration 🎓
+
+Nation of Elites v3.0 introduces **Agent Skills** - procedural knowledge packages that extend agent capabilities without bloating context:
+
+**Key Features:**
+- **Progressive Disclosure**: Skills load in 3 levels (metadata → instructions → resources)
+- **Executable Code**: Skills can bundle Python/JavaScript for deterministic operations
+- **Modular Expertise**: Framework patterns, security checklists, document processing
+- **Zero Breaking Changes**: All v2.0 agents work exactly the same
+
+**What's Added:**
+- `~/.claude/skills/` directory with skill library
+- Official Anthropic skills (pdf, docx, xlsx, mcp-builder, webapp-testing)
+- Custom skills (django-patterns, react-patterns, security-audit, github-actions)
+- Enhanced deployment script installs both agents + skills
+
+**Migration Path v2.0 → v3.0:**
+
+```bash
+# Upgrade is automatic - just redeploy
+git pull origin main
+bash scripts/deploy_agents.sh
+# Now installs agents + skills
+```
+
+**What Changed:**
+- ✅ All 45 agents unchanged - fully backward compatible
+- ✅ Deployment script now installs skills automatically
+- ✅ Agents can invoke skills for enhanced capabilities
+- ✅ Documentation updated with skills guidance
+
+**New Capabilities:**
+- Documentation Specialist can create/edit PDF, Word, PowerPoint, Excel
+- QA Engineer can use Playwright for automated UI testing
+- Integration Specialist can scaffold MCP servers
+- Django/React experts access framework-specific best practices
+- DevOps Engineer uses CI/CD templates
+
+See **[SKILLS.md](SKILLS.md)** for comprehensive skills documentation.
+
+---
 
 ## What's New in v2.0
 

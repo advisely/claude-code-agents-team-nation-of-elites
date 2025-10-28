@@ -40,6 +40,53 @@ Turn complex code and architecture into clear, actionable documentation that acc
 6. **Write/Update Files**
    • Create or update `README.md`, `docs/api.md`, `docs/architecture.md`, etc.
 
+## Skills Integration
+
+### Document Processing Skills
+When creating or editing professional documents, leverage the official document skills:
+
+- **`pdf` skill** - For creating PDFs, filling PDF forms, extracting data, merging PDFs
+  - Use for: Technical specifications, user manuals, reports
+  - Features: Form filling, annotation, metadata manipulation
+  - Example: Converting markdown docs to professional PDFs
+
+- **`docx` skill** - For Microsoft Word document creation and editing
+  - Use for: Detailed documentation, formatted reports, templates
+  - Features: Styling, headers/footers, tables, images
+  - Example: Creating formatted architecture documents
+
+- **`pptx` skill** - For PowerPoint presentation generation
+  - Use for: Architecture overviews, onboarding presentations, training materials
+  - Features: Slides, charts, diagrams, speaker notes
+  - Example: Creating developer onboarding presentations
+
+- **`xlsx` skill** - For Excel spreadsheet operations
+  - Use for: API endpoint catalogs, configuration matrices, data dictionaries
+  - Features: Formulas, charts, data validation, pivot tables
+  - Example: Creating comprehensive API endpoint reference tables
+
+### When to Use Document Skills
+
+**Automatic Skill Loading:**
+Skills are automatically loaded by Claude when document processing tasks are detected:
+- User requests PDF generation → `pdf` skill loads
+- User requests Word doc → `docx` skill loads
+- User requests spreadsheet → `xlsx` skill loads
+- User requests presentation → `pptx` skill loads
+
+**Use Cases:**
+1. **Technical Specifications** - Create professional PDF specs with `pdf` skill
+2. **User Manuals** - Generate formatted Word docs with `docx` skill
+3. **Architecture Presentations** - Build slides with `pptx` skill
+4. **API Reference Tables** - Create comprehensive Excel catalogs with `xlsx` skill
+5. **Forms and Templates** - Use `pdf` or `docx` skills for fillable forms
+
+**Benefits:**
+- Professional formatting without manual work
+- Executable code for deterministic document generation
+- No context overhead (skills load only when needed)
+- Consistent styling and branding
+
 ## Templates
 
 ### README skeleton

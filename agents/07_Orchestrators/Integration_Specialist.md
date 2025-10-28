@@ -38,6 +38,29 @@ Enable seamless integration with external services through MCP servers, handling
 - Archive completed integration logs
 - Maintain error patterns and resolutions
 
+## Skills Integration
+
+### MCP Builder Skill
+When setting up MCP servers or OAuth flows, leverage the `mcp-builder` skill for:
+
+- **MCP Server Scaffolding**: Templates and best practices for creating custom MCP servers
+- **OAuth Flow Implementation**: Standard patterns for OAuth 2.0 authentication
+- **Server Configuration**: Best practices for configuring MCP server connections
+- **Error Handling**: Robust error handling patterns for external API calls
+- **Testing Strategies**: How to test MCP server integrations effectively
+
+The `mcp-builder` skill provides:
+- MCP server directory structure templates
+- Authentication flow examples (OAuth, API keys, JWT)
+- Common integration patterns (REST APIs, GraphQL, WebSockets)
+- Security best practices for handling credentials
+- Debugging and troubleshooting guides
+
+**Usage Pattern**:
+- Skill is automatically loaded when MCP or external API integration tasks are detected
+- Provides procedural knowledge without adding context overhead
+- Contains executable code templates that can be adapted to specific integrations
+
 ## Workflow
 1. **Integration Assessment** - Analyze required external services and available MCP servers
 2. **MCP Server Selection** - Choose appropriate MCP servers from the ecosystem

@@ -262,11 +262,101 @@ The Nation of Elites features **automatic project documentation updates**. Key a
 - ✅ **Complete Traceability**: Every major work completion is documented
 - ✅ **Always Current**: Project documentation stays up-to-date automatically
 
+## 🎓 Agent Skills System (v3.0)
+
+**What are Skills?** Think of skills as training manuals and toolkits that agents can access when needed. While agents are the *team members* who do the work, skills are the *procedural knowledge* they use to do it better.
+
+### Skills vs Agents
+
+| Aspect | **Agents** | **Skills** |
+|--------|------------|------------|
+| **What** | Team members (45 specialists) | Training manuals & toolkits |
+| **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
+| **How** | Orchestrate & execute | Provide procedures & code |
+| **Loading** | Task-based spawning | Progressive disclosure (efficient) |
+
+**Example**: The `backend-developer` agent might use the `django-patterns` skill to access Django best practices, or the `pdf` skill to generate documentation.
+
+### Progressive Disclosure
+
+Skills load in three levels to minimize context usage:
+
+1. **Metadata** (always loaded) - Name and description
+2. **Core instructions** (when relevant) - Full `SKILL.md` file
+3. **Additional resources** (on-demand) - Scripts, templates, references
+
+This means Claude only loads what it needs, when it needs it. A skill library of unlimited size can exist without bloating the context window.
+
+### Available Skills
+
+**Official Anthropic Skills** (automatically installed):
+- 📄 **pdf** - PDF manipulation, forms, extraction
+- 📝 **docx** - Word document creation/editing
+- 📊 **pptx** - PowerPoint presentations
+- 📈 **xlsx** - Excel with formulas and charts
+- 🔌 **mcp-builder** - MCP server development
+- 🧪 **webapp-testing** - Playwright UI testing
+- 🎨 **artifacts-builder** - React/Tailwind components
+- 🖼️ **canvas-design** - Visual art creation
+
+**Custom Nation of Elites Skills** (17 included):
+
+**Framework Patterns (8 skills):**
+- 🐍 **django-patterns** - Django ORM, DRF, authentication, testing
+- ⚛️ **react-patterns** - React hooks, performance optimization, component architecture
+- 💚 **vue-patterns** - Vue 3 Composition API, Pinia state management
+- ⚡ **nextjs-patterns** - Next.js 14 App Router, Server Components, Server Actions
+- 💎 **rails-patterns** - Ruby on Rails, ActiveRecord, RESTful APIs
+- ☕ **java-patterns** - Java Spring Boot, JPA/Hibernate, microservices
+- 🔵 **go-patterns** - Go concurrency, interfaces, idiomatic patterns
+- 🔶 **laravel-patterns** - Laravel Eloquent, API resources, authentication
+
+**UI/Styling Patterns (2 skills):**
+- 🎨 **tailwind-patterns** - Tailwind utility-first CSS, responsive design
+- 🐜 **antd-patterns** - Ant Design React components, enterprise UI
+
+**Security & DevOps (4 skills):**
+- 🔒 **security-audit** - OWASP Top 10 security checklist
+- 🚀 **github-actions** - CI/CD pipeline templates
+- ☸️ **kubernetes-deployment** - K8s deployments, autoscaling, services
+- 🏗️ **terraform-patterns** - Infrastructure as Code, modules
+
+**Specialized Domains (2 skills):**
+- 💹 **financial-trading-patterns** - Algorithmic trading, risk management
+- 🪙 **crypto-defi-patterns** - Cryptocurrency, DeFi, blockchain integration
+
+**Testing (1 skill):**
+- 🧪 **pytest-patterns** - Python testing with pytest
+
+### Skills + Agents = Power
+
+**Which Agents Use Which Skills:**
+
+- **Documentation Specialist** → pdf, docx, pptx (creates professional docs)
+- **Django Expert** → django-patterns (framework best practices)
+- **React Expert** → react-patterns (component architecture)
+- **QA Engineer** → webapp-testing (automated UI tests)
+- **DevOps Engineer** → github-actions (deployment pipelines)
+- **Cyber Sentinel** → security-audit (vulnerability scanning)
+- **Integration Specialist** → mcp-builder (external integrations)
+
+### Installation
+
+Skills are automatically installed by the deployment script:
+
+```bash
+bash scripts/deploy_agents.sh
+# Installs both agents AND skills
+```
+
+For detailed skills documentation, see **[SKILLS.md](SKILLS.md)**.
+
 ## 📚 Documentation
 
 ### Core Documentation
 - **[README.md](README.md)** - This file - Quick start and overview
 - **[CLAUDE.md](CLAUDE.md)** - Detailed configuration and usage guide
+- **[SKILLS.md](SKILLS.md)** - Agent Skills system documentation
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 
 ### v2.0 Plugin System
@@ -338,4 +428,4 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v2.0** - Powered by Claude Code Plugin System | 45 Specialized Agents | 10/10 SDK Compliance
+**The Nation of Elites v3.0** - Agent Skills Integration | 45 Specialized Agents | 10/10 SDK Compliance

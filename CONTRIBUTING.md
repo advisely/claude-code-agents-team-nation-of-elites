@@ -9,6 +9,7 @@ Thank you for your interest in contributing to the Nation of Elites! This docume
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
 - [Agent Development Guidelines](#agent-development-guidelines)
+- [Skills Development Guidelines](#skills-development-guidelines)
 - [Testing Your Changes](#testing-your-changes)
 - [Submitting Changes](#submitting-changes)
 - [Style Guide](#style-guide)
@@ -49,10 +50,12 @@ Enhancement suggestions are welcome! Please include:
 Types of code contributions:
 
 1. **New Agents** - Add specialized agents for new domains
-2. **Agent Improvements** - Enhance existing agent capabilities
-3. **Bug Fixes** - Fix issues in agent logic or documentation
-4. **Documentation** - Improve guides, examples, or clarity
-5. **Testing** - Add validation scripts or test scenarios
+2. **New Skills** - Create procedural knowledge packages
+3. **Agent Improvements** - Enhance existing agent capabilities
+4. **Skill Improvements** - Enhance existing skills with new patterns
+5. **Bug Fixes** - Fix issues in agent/skill logic or documentation
+6. **Documentation** - Improve guides, examples, or clarity
+7. **Testing** - Add validation scripts or test scenarios
 
 ## Getting Started
 
@@ -256,6 +259,199 @@ Example:
 | Database design needed | `database-expert` | Schema design and optimization |
 | TypeScript React project | `react-typescript-expert` | Type-safe implementation |
 ```
+
+## Skills Development Guidelines
+
+### What are Skills?
+
+Skills are procedural knowledge packages that extend agent capabilities through progressive disclosure. Unlike agents (who perform work), skills provide the knowledge and tools agents use to do their work better.
+
+### When to Create a Skill vs Agent
+
+**Create a Skill when:**
+- Providing procedural knowledge (how-to guides, checklists, patterns)
+- Bundling executable code for deterministic operations
+- Offering framework-specific best practices
+- Creating reusable templates or workflows
+- Need context efficiency (progressive disclosure)
+
+**Create an Agent when:**
+- Defining a specialized role or responsibility
+- Need orchestration and delegation capabilities
+- Representing a team member in the organization
+- Coordinating multiple tasks or skills
+
+**Example:**
+- **Agent**: `django-expert` (who does Django development)
+- **Skill**: `django-patterns` (Django best practices the expert uses)
+
+### Skill Structure
+
+All skills must follow this structure:
+
+```markdown
+---
+name: skill-name
+description: Clear, concise description of what the skill provides
+---
+
+# Skill Title
+
+## When to Use This Skill
+- Scenario 1
+- Scenario 2
+- ...
+
+## Core Instructions
+Main procedural knowledge, patterns, and guidance
+
+## Additional Resources (Optional)
+References to bundled files:
+- See [advanced-patterns.md](advanced-patterns.md) for advanced use cases
+- See [templates/](templates/) for code templates
+```
+
+### Progressive Disclosure Levels
+
+Structure your skill for efficient loading:
+
+**Level 1: Metadata (Always Loaded)**
+```yaml
+---
+name: django-patterns
+description: Django best practices, ORM optimization, and REST API patterns
+---
+```
+
+**Level 2: Core Instructions (Loaded When Relevant)**
+```markdown
+# Django Development Patterns
+
+## When to Use This Skill
+- Building Django REST API backends
+- Implementing authentication
+- Database optimization with Django ORM
+
+## Core Patterns
+### API View Architecture
+Use Django REST Framework's class-based views...
+
+### Authentication Strategy
+Recommended stack: djangorestframework-simplejwt...
+```
+
+**Level 3: Additional Resources (On-Demand)**
+```markdown
+## Additional Resources
+See [security.md](security.md) for Django security hardening checklist.
+See [templates/](templates/) for project scaffolding templates.
+```
+
+### Skill Naming Conventions
+
+- **Skill name**: `skill-name` (lowercase, hyphenated)
+- **Directory**: `skills/skill-name/`
+- **Main file**: `skills/skill-name/SKILL.md`
+- **Resources**: `skills/skill-name/additional-files.md`
+
+Example:
+```
+skills/
+└── django-patterns/
+    ├── SKILL.md              # Main skill file
+    ├── security.md           # Additional resource
+    ├── templates/            # Code templates
+    │   ├── api_view.py
+    │   └── serializer.py
+    └── scripts/              # Executable scripts
+        └── scaffold.py
+```
+
+### Bundling Executable Code
+
+Skills can include Python/JavaScript code for deterministic operations:
+
+**Why Use Executable Code:**
+- More efficient than token generation for sorting, calculations, parsing
+- Deterministic and repeatable
+- Can leverage standard libraries
+- Doesn't load into context until executed
+
+**Example Structure:**
+```
+skills/pdf-processor/
+├── SKILL.md                  # Instructions
+├── scripts/
+│   ├── extract_forms.py      # Extract PDF form fields
+│   ├── merge_pdfs.py         # Merge multiple PDFs
+│   └── requirements.txt      # Python dependencies
+```
+
+**In SKILL.md:**
+```markdown
+## Extracting Form Fields
+
+To extract form fields from a PDF:
+
+```bash
+python scripts/extract_forms.py input.pdf
+```
+
+This script uses PyPDF2 to extract all form fields without loading
+the PDF content into context.
+```
+
+### Skill Categories
+
+Place skills in appropriate categories:
+
+- **Framework Patterns**: `react-patterns`, `django-patterns`, `laravel-patterns`
+- **Security**: `security-audit`, `owasp-checklist`, `penetration-testing`
+- **DevOps**: `github-actions`, `kubernetes-deployment`, `terraform-templates`
+- **Document Processing**: `pdf-tools`, `excel-automation`, `word-templates`
+- **Testing**: `playwright-patterns`, `pytest-patterns`, `test-strategies`
+- **Architecture**: `microservices-patterns`, `event-driven-design`, `api-design`
+
+### Which Agents Should Use Which Skills?
+
+When creating a skill, document which agents will benefit:
+
+```markdown
+## Target Agents
+- `django-expert` - Primary user for Django patterns
+- `backend-developer` - General backend development guidance
+- `api-architect` - REST API design patterns
+```
+
+### Testing Skills
+
+```bash
+# Add skill to local installation
+mkdir -p ~/.claude/skills/your-skill-name
+cp -r skills/your-skill-name/* ~/.claude/skills/your-skill-name/
+
+# Test with relevant agent
+claude "Build a Django REST API with authentication"
+# Should trigger django-expert which uses your django-patterns skill
+
+# Verify skill loading in Claude's response
+# Look for references to your skill's patterns and guidance
+```
+
+### Skill Validation Checklist
+
+Before submitting:
+
+- [ ] Skill follows the standard structure (YAML frontmatter + sections)
+- [ ] Name and description are clear and concise
+- [ ] Progressive disclosure is properly structured (3 levels)
+- [ ] Executable code (if any) is in `scripts/` subdirectory
+- [ ] Documentation specifies when to use the skill
+- [ ] Target agents are identified
+- [ ] Additional resources are clearly referenced
+- [ ] No security vulnerabilities in bundled code
+- [ ] Tested locally with relevant agents
+- [ ] README updated if adding new skill category
 
 ## Testing Your Changes
 

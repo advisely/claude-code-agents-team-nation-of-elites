@@ -102,6 +102,70 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 - **Preserve**: Critical technical details, API contracts, security findings
 - **Discard**: Verbose explanations, duplicate information, resolved issues
 
+## Skills Integration
+
+### Understanding Skills vs Agents
+- **Agents**: Team members who orchestrate and execute work (who performs)
+- **Skills**: Procedural knowledge packages agents use (what knowledge they access)
+- **Relationship**: Agents USE skills to enhance their capabilities
+
+### Available Skill Library
+
+**Official Anthropic Skills** (automatically available):
+- `pdf` - PDF manipulation, form filling, extraction
+- `docx` - Word document creation and editing
+- `pptx` - PowerPoint presentation generation
+- `xlsx` - Excel operations with formulas and charts
+- `mcp-builder` - MCP server development guidance
+- `webapp-testing` - Playwright-based UI testing
+- `skill-creator` - Interactive skill development assistant
+
+**Nation of Elites Custom Skills**:
+- `django-patterns` - Django best practices and ORM optimization
+- `react-patterns` - React architecture and performance optimization
+- `security-audit` - OWASP Top 10 checklist and security hardening
+- `github-actions` - CI/CD pipeline templates and deployment workflows
+
+### When to Leverage Skills
+
+Skills are invoked automatically by Claude when relevant to the current task:
+
+1. **Document Processing Tasks**
+   - PDF generation/editing → `pdf` skill
+   - Word docs → `docx` skill
+   - Excel reports → `xlsx` skill
+   - PowerPoint slides → `pptx` skill
+
+2. **Framework Development**
+   - Django projects → `django-patterns` skill
+   - React development → `react-patterns` skill
+   - Both skills provide best practices without context bloat
+
+3. **Security Audits**
+   - Code reviews → `security-audit` skill for OWASP checklist
+   - Delegate to `cyber-sentinel` who uses the security-audit skill
+
+4. **CI/CD Setup**
+   - Pipeline creation → `github-actions` skill for templates
+   - Delegate to `devops-engineer` who uses github-actions skill
+
+5. **MCP Integration**
+   - External service setup → `mcp-builder` skill
+   - Delegate to `integration-specialist` who uses mcp-builder skill
+
+6. **Creating New Skills**
+   - New procedural knowledge needed → `skill-creator` skill
+   - Use when you identify reusable patterns worth codifying
+
+### Skills Best Practices
+
+- **Progressive Disclosure**: Skills load only when needed (no context overhead)
+- **Agents Own Skills**: Delegate to the agent who would use the skill
+  - Example: For Django security audit → delegate to `cyber-sentinel` with context about Django project
+  - The agent will automatically access both `django-patterns` and `security-audit` skills
+- **Don't Mention Skills Explicitly**: Skills are triggered automatically based on task context
+- **Skills Enhance, Don't Replace**: Agents remain the primary orchestrators
+
 ## Output Format
 ```
 # Orchestration Plan

@@ -46,6 +46,8 @@ CLAUDE_DIR="$HOME/.claude"
 AGENTS_SRC="${REPO_DIR}/agents"
 AGENTS_DST="$CLAUDE_DIR/agents"
 PROJECTS_DST="$CLAUDE_DIR/projects"
+SKILLS_SRC="${REPO_DIR}/skills"
+SKILLS_DST="$CLAUDE_DIR/skills"
 
 # Fancy colors (fallback to plain if not a TTY)
 if [[ -t 1 ]]; then
@@ -105,6 +107,46 @@ deploy_agents() {
   success "Plated beautifully at $AGENTS_DST"
 }
 
+deploy_skills() {
+  banner "🎓 Loading Skills Library — Knowledge Transfer"
+
+  # Deploy custom Nation of Elites skills if present
+  if [[ -d "$SKILLS_SRC" ]]; then
+    info "Installing custom Nation of Elites skills → $SKILLS_DST"
+    mkdir -p "$SKILLS_DST"
+    rsync -a "$SKILLS_SRC/" "$SKILLS_DST/"
+    success "Custom skills installed"
+  else
+    info "No custom skills found (optional)"
+  fi
+
+  # Install Anthropic's official skills
+  if [[ ! -d "$SKILLS_DST/pdf" ]] && [[ ! -d "$SKILLS_DST/docx" ]]; then
+    info "Installing Anthropic's official skills..."
+    local temp_skills="/tmp/anthropic-skills-$$"
+
+    if git clone --depth 1 https://github.com/anthropics/skills.git "$temp_skills" 2>/dev/null; then
+      mkdir -p "$SKILLS_DST"
+
+      # Install document skills
+      [[ -d "$temp_skills/document-skills" ]] && cp -r "$temp_skills/document-skills"/* "$SKILLS_DST/" 2>/dev/null || true
+
+      # Install other useful skills
+      for skill in mcp-builder webapp-testing skill-creator artifacts-builder canvas-design; do
+        [[ -d "$temp_skills/$skill" ]] && cp -r "$temp_skills/$skill" "$SKILLS_DST/" 2>/dev/null || true
+      done
+
+      rm -rf "$temp_skills"
+      success "Anthropic skills installed"
+    else
+      warn "Failed to clone Anthropic skills (network issue?). Skipping official skills installation."
+      info "You can manually install later: git clone https://github.com/anthropics/skills.git ~/.claude/skills"
+    fi
+  else
+    success "Anthropic skills already installed (skipping)"
+  fi
+}
+
 validate_install() {
   local missing=0
   banner "🧪 Taste Test — Freshness & Sanity Checks"
@@ -134,7 +176,20 @@ validate_install() {
     warn "Sparse menu detected: $count (verify deployment)"
   fi
 
-  # 4) Print WSL2 path hint
+  # 4) Check skills installation
+  if [[ -d "$SKILLS_DST" ]]; then
+    local skills_count
+    skills_count=$(find "$SKILLS_DST" -name "SKILL.md" | wc -l | tr -d ' ')
+    if [[ "$skills_count" -ge 3 ]]; then
+      success "Skills library detected: $skills_count skills available"
+    else
+      warn "Few skills detected: $skills_count (installation may be incomplete)"
+    fi
+  else
+    info "No skills directory found (optional feature)"
+  fi
+
+  # 5) Print WSL2 path hint
   if grep -qi microsoft /proc/version 2>/dev/null; then
     info "WSL2 detected. Peek into the dining room via Windows Explorer: \\wsl.localhost\\Ubuntu\\home\\$USER\\.claude"
   fi
@@ -150,6 +205,7 @@ main() {
   clone_or_update_repo
   sanitize_target
   deploy_agents
+  deploy_skills
   validate_install
   banner "🍽️ Dinner Is Served — Installation Complete"
 }
