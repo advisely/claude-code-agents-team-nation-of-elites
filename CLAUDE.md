@@ -3,7 +3,7 @@
 ## Project Overview
 
 **Project Name:** Claude Code Agents - Team Nation of Elites  
-**Author:** Yassine Boumiza  
+**Author:** Yassine Boumiza ([boumiza.com](https://boumiza.com))
 **Repository:** [claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites)
 
 ### Mission Statement
@@ -16,7 +16,7 @@ A single generalist AI lacks the specialized expertise and structured workflow o
 
 ## Organizational Structure
 
-The Nation of Elites consists of **45 specialized agents** organized across **7 strategic divisions**:
+The Nation of Elites consists of **61 specialized agents** organized across **9 strategic divisions**:
 
 ### 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -35,13 +35,14 @@ The Nation of Elites consists of **45 specialized agents** organized across **7 
 **Project Execution and Process Management**
 - `project-manager-scrum-master` - Agile delivery, sprint management, and impediment removal
 
-### 03_Engineering_Division (21 agents)
+### 03_Engineering_Division (23 agents)
 **Development and Technical Implementation**
 
-#### Core Development Team (3 agents)
+#### Core Development Team (4 agents)
 - `api-architect` - API design, documentation, and integration patterns
 - `backend-developer` - Server-side development and database design
 - `frontend-developer` - Client-side development and user interface implementation
+- `graphql-architect` - GraphQL API design, Apollo Federation, and schema management
 
 #### Framework Specialists (14 agents)
 - `django-expert` - Python Django framework specialization
@@ -61,11 +62,12 @@ The Nation of Elites consists of **45 specialized agents** organized across **7 
 - `catia-design-expert` - CATIA design system integration and CAD workflows
 - `antd-ui-developer` - Ant Design React UI framework specialization and enterprise component development
 
-#### Code Excellence Guild (6 agents)
+#### Code Excellence Guild (8 agents)
 - `code-reviewer` - Code quality assurance and best practices enforcement
 - `documentation-specialist` - Technical documentation and knowledge management
 - `performance-optimizer` - Performance analysis and optimization
 - `code-archaeologist` - Legacy code analysis and modernization
+- `accessibility-specialist` - WCAG 2.1 AA/AAA compliance, screen reader testing, and inclusive design
 - `general-purpose` - Versatile programming assistance across multiple languages and frameworks
 - `statusline-setup` - Terminal statusline configuration and shell prompt customization
 - `output-style-setup` - CLI output formatting, terminal colors, and text styling
@@ -77,7 +79,7 @@ The Nation of Elites consists of **45 specialized agents** organized across **7 
 - `qa-test-planner` - Test strategy and quality assurance planning
 - `visual-regression-specialist` - UI/UX testing and visual consistency
 
-### 05_SecOps_and_Infrastructure_Division (6 agents)
+### 05_SecOps_and_Infrastructure_Division (9 agents)
 **Security, Operations, and Infrastructure**
 - `cloud-architect` - Cloud platform design and multi-cloud strategies
 - `cyber-sentinel` - Security analysis and threat protection
@@ -85,6 +87,9 @@ The Nation of Elites consists of **45 specialized agents** organized across **7 
 - `infrastructure-specialist` - Infrastructure management and system operations
 - `message-queue-specialist` - Event-driven architecture and message queuing systems
 - `storage-security-specialist` - Storage security, data encryption, access controls, and compliance
+- `sre-specialist` - Site reliability engineering, SLO/SLI definition, incident management, and error budgets
+- `observability-engineer` - Metrics, logs, traces with Prometheus, Grafana, ELK, and OpenTelemetry
+- `platform-engineer` - Internal developer platforms, Backstage, golden paths, and DevEx optimization
 
 ### 06_AI_and_Machine_Learning_Division (5 agents)
 **AI, ML, and Data Engineering**
@@ -99,6 +104,16 @@ The Nation of Elites consists of **45 specialized agents** organized across **7 
 - `tech-lead-orchestrator` - Central execution coordinator with subagent spawning and context compaction
 - `team-configurator` - Tech stack detection and agent team configuration
 - `integration-specialist` - MCP server setup, external API connections, OAuth flows (cross-cutting coordination)
+
+### 08_Mobile_Development_Wing (3 agents)
+**Native and Cross-Platform Mobile Development**
+- `mobile-architect` - Mobile platform strategy, native vs cross-platform decisions, offline-first architecture
+- `ios-developer` - Native iOS development with Swift, SwiftUI, and Apple SDK integration
+- `android-developer` - Native Android development with Kotlin, Jetpack Compose, and Google SDK integration
+
+### 09_Construction_Industry_Division (1 agent)
+**Construction Industry AI Orchestration**
+- `construction-ai-orchestrator` - IMPARARIA Progressive Deployment Methodology, multi-agent construction AI coordination
 
 ## Agent Interaction Patterns
 
@@ -300,8 +315,8 @@ Key agents automatically maintain project documentation:
 
 ### Quality Metrics
 
-- **45 Total Agents** - Complete coverage across all organizational functions
-- **7 Strategic Divisions** - Logical grouping of related capabilities
+- **61 Total Agents** - Complete coverage across all organizational functions
+- **9 Strategic Divisions** - Logical grouping of related capabilities
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
@@ -497,7 +512,7 @@ bash scripts/deploy_agents.sh
 This script:
 - Copies agents to `~/.claude/agents/`
 - Validates installation
-- Ensures all 45 agents are ready to use
+- Ensures all 61 agents are ready to use
 
 #### 🔌 Alternative: Plugin Installation
 
@@ -706,7 +721,7 @@ claude "Implement encryption at rest and access controls for S3 buckets with com
 ### Support and Contribution
 
 - **GitHub Repository**: [claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites)
-- **Author**: Yassine Boumiza - [GitHub Profile](https://github.com/advisely/)
+- **Author**: Yassine Boumiza - [boumiza.com](https://boumiza.com) | [GitHub Profile](https://github.com/advisely/)
 - **License**: MIT License with attribution request
 
 ### Contribution Guidelines

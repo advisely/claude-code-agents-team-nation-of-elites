@@ -39,7 +39,7 @@ cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**Done!** All 45 agents are now in `~/.claude/agents/` and ready to use.
+**Done!** All 61 agents are now in `~/.claude/agents/` and ready to use.
 
 #### 🔌 Plugin Installation (Alternative)
 
@@ -132,15 +132,18 @@ claude "Use the project-sponsor to define business objectives, program-manager t
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **45 specialized agents** across **7 strategic divisions**, the team now includes enhanced coverage for high-performance systems, event-driven architectures, financial applications, cryptocurrency/blockchain development, storage security, MCP integrations, and comprehensive development tooling.
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **61 specialized agents** across **9 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
 
-### 🚀 Claude Agent SDK Aligned Features
+### 🚀 Claude Agent SDK Aligned Features (2025 Updates)
 - **Subagent Coordination**: Parallel information gathering with isolated context windows
 - **Context Compaction**: Automatic summarization when context exceeds 80%
 - **File System Context Engineering**: Efficient large file handling with grep/head/tail
 - **MCP Integration**: Seamless external service connections (Slack, GitHub, Google Drive)
 - **Visual Feedback Loops**: Real-time UI validation during development
 - **Code Generation First**: Prioritizes code over configuration for precision
+- **Background Agents** (Dec 2025): Agents run in background while you work
+- **Skills API** (2025): `/v1/skills` endpoints for programmatic skill management
+- **Claude Opus 4.5 & Sonnet 4.5**: Latest models with enhanced agent capabilities
 
 ```
 /agents
@@ -150,34 +153,44 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 │   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
 ├── 02_Project_Management_Office/ (1 agent)
 │   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/ (20 agents)
-│   ├── Core_Development_Team/ (3 agents)
-│   ├── Framework_Specialists/ (13 agents)
-│   └── Code_Excellence_Guild/ (7 agents)
+├── 03_Engineering_Division/ (23 agents)
+│   ├── Core_Development_Team/ (4 agents): API Architect, Backend, Frontend, GraphQL Architect
+│   ├── Framework_Specialists/ (16 agents): React, Vue, Next.js, Django, Laravel, Rails, Java, Go, Database, etc.
+│   └── Code_Excellence_Guild/ (8 agents): Code Reviewer, Documentation, Performance, Accessibility, etc.
 ├── 04_Quality_Assurance_Battalion/ (4 agents)
 │   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
-├── 05_SecOps_and_Infrastructure_Division/ (6 agents)
-│   └── (DevOps, Security, Cloud Architects, Infrastructure, Message Queue, Storage Security Specialists)
+├── 05_SecOps_and_Infrastructure_Division/ (9 agents)
+│   └── (DevOps, Security, Cloud, Infrastructure, Message Queue, Storage Security, SRE, Observability, Platform Engineer)
 ├── 06_AI_and_Machine_Learning_Division/ (5 agents)
 │   └── (Data Scientists, ML Engineers, AI Strategist, Data Engineer, AIOps Specialist)
-└── 07_Orchestrators/ (3 agents)
-    └── (Tech Lead Orchestrator, Team Configurator, Integration Specialist)
+├── 07_Orchestrators/ (3 agents)
+│   └── (Tech Lead Orchestrator, Team Configurator, Integration Specialist)
+├── 08_Mobile_Development_Wing/ (3 agents) ✨ NEW
+│   └── (Mobile Architect, iOS Developer, Android Developer)
+└── 09_Construction_Industry_Division/ (1 agent) ✨ NEW
+    └── (Construction AI Orchestrator - IMPARARIA Progressive Deployment)
 ```
 
 -   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
 -   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
 -   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division` (20 agents)**: The core builders with specialized teams:
-    - **Core Development Team** (3 agents): API Architect, Backend Developer, Frontend Developer
-    - **Framework Specialists** (13 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Financial Systems, Crypto API, Tailwind CSS experts
-    - **Code Excellence Guild** (7 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, General Purpose, Statusline Setup, Output Style Setup
+-   **`03_Engineering_Division` (23 agents)**: The core builders with specialized teams:
+    - **Core Development Team** (4 agents): API Architect, Backend Developer, Frontend Developer, GraphQL Architect
+    - **Framework Specialists** (16 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk/CATIA experts
+    - **Code Excellence Guild** (8 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
 -   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
--   **`05_SecOps_and_Infrastructure_Division` (6 agents)**: Deploys the application to a secure, scalable production environment with specialized infrastructure, messaging, and storage security expertise.
+-   **`05_SecOps_and_Infrastructure_Division` (9 agents)**: Deploys the application to a secure, scalable production environment with SRE practices, comprehensive observability, platform engineering for developer experience, and specialized infrastructure/messaging/storage security expertise.
 -   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
 -   **`07_Orchestrators` (3 agents)**: Coordinates multi-agent execution, team setup, and external integrations.
     - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates, subagent spawning, context compaction)
     - `team-configurator`: Team setup orchestrator (stack detection, subagent selection, CLAUDE.md config)
     - `integration-specialist`: MCP server configuration and external service connections (cross-cutting coordinator)
+-   **`08_Mobile_Development_Wing` (3 agents)** ✨ NEW: Native and cross-platform mobile development for iOS and Android.
+    - `mobile-architect`: Platform strategy, offline-first architecture, app store deployment
+    - `ios-developer`: Swift, SwiftUI, iOS SDK integration, App Store submission
+    - `android-developer`: Kotlin, Jetpack Compose, Android SDK, Google Play Store
+-   **`09_Construction_Industry_Division` (1 agent)** ✨ NEW: Construction industry AI orchestration with IMPARARIA's Progressive Deployment Methodology.
+    - `construction-ai-orchestrator`: Multi-agent systems for cost estimation (AI-Stimate), quantity takeoff (AI-Takeoff), and BIM coordination (AI-Coordinate)
 
 ## 🧠 Advanced Agent Capabilities
 
@@ -410,11 +423,12 @@ No breaking changes - your existing workflows continue to work!
 
 ## 📚 Credits and References
 
--   **Author**: Yassine Boumiza - [GitHub Profile](https://github.com/advisely/)
+-   **Author**: Yassine Boumiza - [Website](https://boumiza.com) | [GitHub Profile](https://github.com/advisely/)
 -   **Repository**: [claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites)
 -   **Inspiration & Best Practices**: [Building Effective Agents - Anthropic Engineering](https://www.anthropic.com/engineering/building-effective-agents), [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
--   **Claude Agent SDK**: [Anthropic Documentation](https://docs.anthropic.com/)
+-   **Claude Agent SDK** (2025): [Anthropic Documentation](https://docs.anthropic.com/), [Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
 -   **Claude Code Plugins**: [Plugin System Announcement](https://www.anthropic.com/news/claude-code-plugins)
+-   **Construction Industry AI**: [IMPARARIA](https://impararia.com) - Progressive Deployment Methodology for Construction AI Products
 
 ## 📄 License
 
@@ -428,4 +442,6 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v3.0** - Agent Skills Integration | 45 Specialized Agents | 10/10 SDK Compliance
+**The Nation of Elites v3.1** - 61 Specialized Agents | Mobile + SRE + Construction AI | Agent Skills Integration | 10/10 SDK Compliance
+
+**Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)
