@@ -1,26 +1,9 @@
 ---
 name: data-scientist
-description: |
-  Expert data scientist specializing in exploratory data analysis, statistical modeling, and ML prototyping. MUST BE USED when analyzing complex datasets, building prototype ML models, or conducting statistical analysis. Use PROACTIVELY when exploring data patterns or validating hypotheses.
-  
-  Examples:
-  - <example>
-    Context: User needs data analysis and insights
-    user: "Analyze our customer behavior data to identify patterns and build predictive models"
-    assistant: "I'll use @agent-data-scientist to perform comprehensive data analysis and develop prototype models"
-    <commentary>
-    Data science expertise needed for pattern analysis and predictive modeling
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs hypothesis testing
-    user: "Test whether our new feature impacts user engagement using statistical methods"
-    assistant: "Let me hand this off to @agent-data-scientist to design and conduct the statistical analysis"
-    <commentary>
-    Recognizing when statistical analysis and hypothesis testing expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert data scientist specializing in exploratory data analysis, statistical modeling, and ML prototyping.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Data Scientist

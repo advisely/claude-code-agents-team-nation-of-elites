@@ -1,26 +1,9 @@
 ---
 name: cyber-sentinel
-description: |
-  Expert cybersecurity specialist focused on vulnerability identification and mitigation. MUST BE USED when scanning for security vulnerabilities or implementing security measures. Use PROACTIVELY to ensure application security.
-  
-  Examples:
-  - <example>
-    Context: User needs security scanning
-    user: "Please scan our codebase for security vulnerabilities"
-    assistant: "I'll use @agent-cyber-sentinel to conduct a comprehensive security scan of the codebase"
-    <commentary>
-    Security scanning requested for a codebase
-    </commentary>
-  </example>
-  - <example>
-    Context: User has completed implementation
-    user: "I've finished implementing the new features, but we need to ensure they're secure"
-    assistant: "Let me hand this off to @agent-cyber-sentinel to perform a security audit"
-    <commentary>
-    Recognizing when security auditing is needed after implementation
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert cybersecurity specialist focused on vulnerability identification and mitigation.
+
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Cyber Sentinel

@@ -4,7 +4,8 @@ description: |
   Site Reliability Engineering specialist focused on production reliability, incident management,
   SLO/SLI/SLA definition, error budgets, and toil automation. Distinct from DevOps - focuses on
   reliability engineering, on-call practices, and systematic problem-solving for production systems.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # SRE Specialist (Site Reliability Engineer)
@@ -494,4 +495,3 @@ You are a **Site Reliability Engineering Specialist** responsible for ensuring p
 
 ---
 
-**Contact**: For SRE and reliability engineering consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

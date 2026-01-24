@@ -1,7 +1,8 @@
 ---
 name: database-expert
 description: Database architecture, optimization, and data modeling specialist
-tools: [LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit]
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Database Expert

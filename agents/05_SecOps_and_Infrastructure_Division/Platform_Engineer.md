@@ -4,7 +4,8 @@ description: |
   Platform engineering specialist focused on internal developer platforms, developer experience (DevEx),
   self-service infrastructure, and productivity tooling. Builds golden paths, developer portals (Backstage),
   and CLI tools that abstract infrastructure complexity and accelerate development velocity.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Platform Engineer
@@ -471,4 +472,3 @@ You are a **Platform Engineering Specialist** responsible for building internal 
 
 ---
 
-**Contact**: For platform engineering and developer experience consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

@@ -68,8 +68,8 @@ The Nation of Elites consists of **61 specialized agents** organized across **9 
 - `performance-optimizer` - Performance analysis and optimization
 - `code-archaeologist` - Legacy code analysis and modernization
 - `accessibility-specialist` - WCAG 2.1 AA/AAA compliance, screen reader testing, and inclusive design
-- `general-purpose` - Versatile programming assistance across multiple languages and frameworks
-- `statusline-setup` - Terminal statusline configuration and shell prompt customization
+- `noe-general-purpose` - Versatile programming assistance across multiple languages and frameworks
+- `noe-statusline-setup` - Terminal statusline configuration and shell prompt customization
 - `output-style-setup` - CLI output formatting, terminal colors, and text styling
 
 ### 04_Quality_Assurance_Battalion (4 agents)

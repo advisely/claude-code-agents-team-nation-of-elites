@@ -1,26 +1,9 @@
 ---
 name: project-manager-scrum-master
-description: |
-  Expert project manager and scrum master specializing in agile delivery. MUST BE USED when managing project execution, facilitating development processes, or removing impediments. Use PROACTIVELY to ensure efficient and predictable value delivery.
-  
-  Examples:
-  - <example>
-    Context: User needs project management
-    user: "We need someone to manage our sprint planning and track progress"
-    assistant: "I'll use @agent-project-manager-scrum-master to facilitate the agile process and track progress"
-    <commentary>
-    Project management and scrum facilitation requested
-    </commentary>
-  </example>
-  - <example>
-    Context: User has project issues
-    user: "Our team is blocked on several issues and we're behind schedule"
-    assistant: "Let me hand this off to @agent-project-manager-scrum-master to remove impediments and get the project back on track"
-    <commentary>
-    Recognizing when project management intervention is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert project manager and scrum master specializing in agile delivery.
+
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Project Manager / Scrum Master

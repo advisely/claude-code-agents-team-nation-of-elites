@@ -1,7 +1,9 @@
 ---
 name: performance-optimizer
-description: MUST BE USED to diagnose and fix performance bottlenecks. Use PROACTIVELY when apps are slow, memory‑heavy, or fail under load. Delivers a data‑driven report with before/after metrics and concrete optimizations.
-tools: LS, Read, Grep, Glob, Bash
+description: MUST BE USED to diagnose and fix performance bottlenecks.
+
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Performance‑Optimizer – Speed & Efficiency Expert

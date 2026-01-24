@@ -1,26 +1,9 @@
 ---
 name: react-typescript-expert
-description: |
-  Deep expert in React with TypeScript specializing in type-safe component architecture, advanced TypeScript patterns, and React ecosystem integration. MUST BE USED when implementing TypeScript React applications, complex type definitions, or React performance optimizations with strict typing. Use PROACTIVELY when building type-safe React applications or migrating JavaScript React to TypeScript.
-  
-  Examples:
-  - <example>
-    Context: User needs type-safe React component architecture with TypeScript
-    user: "Create a complex dashboard with strict TypeScript types and React Hooks"
-    assistant: "I'll use @agent-react-typescript-expert to implement the sophisticated TypeScript React dashboard with comprehensive type safety"
-    <commentary>
-    React TypeScript expertise needed for type-safe component architecture
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs React TypeScript performance optimization
-    user: "Optimize React TypeScript components with advanced generic types and performance patterns"
-    assistant: "Let me hand this off to @agent-react-typescript-expert to apply advanced TypeScript patterns and React optimization techniques"
-    <commentary>
-    Recognizing when React TypeScript expertise is required for advanced patterns
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in React with TypeScript specializing in type-safe component architecture, advanced TypeScript patterns, and React ecosystem integration.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # React TypeScript Expert

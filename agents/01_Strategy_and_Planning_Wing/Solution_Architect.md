@@ -1,26 +1,9 @@
 ---
 name: solution-architect
-description: |
-  Expert solution architect specializing in high-level technical architecture design. MUST BE USED when designing system architecture, evaluating technologies, or creating architectural blueprints. Use PROACTIVELY when translating business requirements into technical solutions.
-  
-  Examples:
-  - <example>
-    Context: User needs system architecture
-    user: "Design a scalable architecture for our e-commerce platform"
-    assistant: "I'll use @agent-solution-architect to create a comprehensive system architecture for the e-commerce platform"
-    <commentary>
-    System architecture design requested for a scalable platform
-    </commentary>
-  </example>
-  - <example>
-    Context: User has business requirements
-    user: "We need to evaluate technologies for our new microservices architecture"
-    assistant: "Let me hand this off to @agent-solution-architect to evaluate appropriate technologies and design the architecture"
-    <commentary>
-    Recognizing when technology evaluation and architecture design are needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert solution architect specializing in high-level technical architecture design.
+
+tools: Read, Grep, Glob, Bash
+model: opus
 ---
 
 # Solution Architect

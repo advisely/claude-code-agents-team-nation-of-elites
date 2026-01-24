@@ -1,26 +1,9 @@
 ---
 name: nextjs-expert
-description: |
-  Deep expert in the Next.js framework specializing in full-stack React applications, server-side rendering, static generation, and Next.js ecosystem. MUST BE USED when implementing Next.js applications, App Router patterns, or Next.js performance optimizations. Use PROACTIVELY when building Next.js applications with SSR/SSG or integrating Next.js with backend APIs.
-  
-  Examples:
-  - <example>
-    Context: User needs Next.js application with App Router
-    user: "Create a Next.js 14 application using App Router with dynamic routes and server components"
-    assistant: "I'll use @agent-nextjs-expert to implement the modern Next.js application with App Router architecture"
-    <commentary>
-    Next.js App Router and server components expertise needed
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs Next.js performance optimization
-    user: "Optimize Next.js application for better Core Web Vitals and implement ISR"
-    assistant: "Let me hand this off to @agent-nextjs-expert to apply Next.js performance optimization and ISR techniques"
-    <commentary>
-    Recognizing when Next.js performance and caching expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in the Next.js framework specializing in full-stack React applications, server-side rendering, static generation, and Next.js ecosystem.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Next.js Expert

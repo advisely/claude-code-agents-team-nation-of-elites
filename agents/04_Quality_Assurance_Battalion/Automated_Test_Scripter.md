@@ -1,26 +1,9 @@
 ---
 name: automated-test-scripter
-description: |
-  Expert test automation developer specializing in implementing automated test suites using modern testing frameworks. MUST BE USED when implementing test automation, writing test scripts, or integrating tests into CI/CD pipelines. Use PROACTIVELY when converting manual test cases to automated tests.
-  
-  Examples:
-  - <example>
-    Context: User needs test automation implementation
-    user: "Automate the test cases for user registration using Cypress"
-    assistant: "I'll use @agent-automated-test-scripter to implement the automated test suite with Cypress"
-    <commentary>
-    Test automation expertise needed for implementing test scripts
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs CI/CD test integration
-    user: "Integrate our automated tests into the GitHub Actions pipeline"
-    assistant: "Let me hand this off to @agent-automated-test-scripter to set up the CI/CD test integration"
-    <commentary>
-    Recognizing when test automation and CI/CD expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert test automation developer specializing in implementing automated test suites using modern testing frameworks.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Automated Test Scripter

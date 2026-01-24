@@ -1,26 +1,9 @@
 ---
 name: message-queue-specialist
-description: |
-  Deep expert in message queue systems and event-driven architecture specializing in Apache Kafka, RabbitMQ, and distributed messaging patterns. MUST BE USED when implementing event streaming, message queuing, or asynchronous communication systems. Use PROACTIVELY when building microservices communication, real-time data pipelines, or event-driven architectures.
-  
-  Examples:
-  - <example>
-    Context: User needs event-driven microservices communication
-    user: "Design a message queue system for handling order processing events across multiple microservices"
-    assistant: "I'll use @agent-message-queue-specialist to design the event-driven messaging architecture"
-    <commentary>
-    Message queue expertise needed for microservices event communication
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs real-time data streaming
-    user: "Set up Kafka for real-time market data streaming with high throughput and low latency"
-    assistant: "Let me hand this off to @agent-message-queue-specialist to configure the high-performance Kafka streaming setup"
-    <commentary>
-    Recognizing when message queue and streaming expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in message queue systems and event-driven architecture specializing in Apache Kafka, RabbitMQ, and distributed messaging patterns.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Message Queue Specialist

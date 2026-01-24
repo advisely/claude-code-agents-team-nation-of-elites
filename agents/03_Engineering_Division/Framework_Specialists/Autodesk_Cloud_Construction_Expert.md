@@ -1,26 +1,9 @@
 ---
 name: autodesk-cloud-construction-expert
-description: |
-  Deep expert in Autodesk Construction Cloud (ACC) platform specializing in BIM coordination, project management, and construction workflow automation. MUST BE USED when implementing ACC solutions, automating construction processes, or integrating BIM data with project management workflows. Use PROACTIVELY when building construction management systems or optimizing ACC workflows.
+description: Deep expert in Autodesk Construction Cloud (ACC) platform specializing in BIM coordination, project management, and construction workflow automation.
 
-  Examples:
-  - <example>
-    Context: User needs ACC project setup and BIM coordination
-    user: "Set up an Autodesk Construction Cloud project with model coordination and clash detection workflows"
-    assistant: "I'll use @agent-autodesk-cloud-construction-expert to implement the comprehensive ACC project with automated BIM coordination"
-    <commentary>
-    Autodesk Construction Cloud and BIM coordination expertise needed
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs construction workflow automation
-    user: "Automate RFI and submittal processes using ACC APIs and custom integrations"
-    assistant: "Let me hand this off to @agent-autodesk-cloud-construction-expert to create the automated construction workflow system"
-    <commentary>
-    Recognizing when ACC API and workflow automation expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Autodesk Cloud Construction Expert

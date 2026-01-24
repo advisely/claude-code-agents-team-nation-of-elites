@@ -4,7 +4,8 @@ description: |
   Native Android development specialist using Kotlin and Jetpack Compose. Implements
   Android applications following Material Design guidelines, integrates Android SDK features,
   and handles Google Play Store submission. Expert in Jetpack, Room, WorkManager, and Android patterns.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Android Developer
@@ -495,4 +496,3 @@ fun ExpensiveComposable(items: List<Item>) {
 
 ---
 
-**Contact**: For Android development consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

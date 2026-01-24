@@ -232,22 +232,44 @@ grep "07_Orchestrators/ (3 agents)" README.md ✅
 
 ---
 
-## Conclusion
+---
 
-The "Nation of Elites" framework is now **fully compliant** with Claude Agent SDK best practices, achieving a **perfect 10/10 score**. All architectural decisions align with Anthropic's guidance while preserving the unique hierarchical structure and specialized expertise model.
+## v3.2.0 Update - Claude Code v2.1.x Compliance (January 2026)
 
-### Key Achievements:
-- ✅ 45 specialized agents across 7 strategic divisions
-- ✅ Complete SDK feature implementation
-- ✅ Comprehensive documentation (4 core docs + 6 agent updates)
-- ✅ Real-world examples and practical guidance
-- ✅ Clear organizational structure with proper role placement
-- ✅ Production-ready with deployment scripts
+### Plugin System Compliance ✅
+- **Plugin manifest**: Renamed to `plugin.json` (official format)
+- **Schema compliance**: Only official fields in plugin.json
+- **Agent paths**: Automatic discovery via agents/ directory
 
-**Recommendation**: Ready to push to GitHub and deploy to production.
+### Agent Format Compliance ✅
+- **Name conflicts resolved**: Renamed `general-purpose` → `noe-general-purpose`, `statusline-setup` → `noe-statusline-setup`
+- **Valid tools only**: Removed `LS` and `MultiEdit`, using only `Read`, `Grep`, `Glob`, `Bash`, `Write`, `Edit`
+- **Model specifications**: All 61 agents have `model` field (opus/sonnet)
+- **Description format**: Simplified to match official code-simplifier format
+
+### Skills System ✅
+- **27 total skills** (17 framework + 7 new core + 3 workflow)
+- **Workflow skills**: feature-workflow, quick-fix, pr-ready
+- **New framework skills**: nodejs, python, fastapi, express, typescript, vite, zustand
 
 ---
 
-*Report generated: September 29, 2025*
-*Framework version: 2.0.0 (SDK Aligned)*
+## Conclusion
+
+The "Nation of Elites" framework is now **fully compliant** with both Claude Agent SDK best practices AND Claude Code v2.1.x plugin/skills systems, achieving a **perfect 10/10 score**.
+
+### Key Achievements:
+- ✅ 61 specialized agents across 9 strategic divisions
+- ✅ 27 skills (framework patterns + workflow automation)
+- ✅ Complete Claude Code v2.1.x plugin compliance
+- ✅ All agents with model specifications and valid tools
+- ✅ No name conflicts with built-in agents
+- ✅ Production-ready with deployment scripts
+
+**Recommendation**: Ready for marketplace publication and production deployment.
+
+---
+
+*Report updated: January 24, 2026*
+*Framework version: 3.2.0 (Claude Code v2.1.x Aligned)*
 *Compliance assessment: Complete*

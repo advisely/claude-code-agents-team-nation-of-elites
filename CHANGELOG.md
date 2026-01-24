@@ -5,6 +5,76 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-24] - Claude Code v2.1.x Alignment (v3.2.0)
+
+### 🔧 Major Update - Full Claude Code v2.1.x Compliance
+
+This release ensures complete compatibility with Claude Code v2.1.x plugin and skills systems, following official Anthropic documentation and format requirements.
+
+### Fixed - Plugin Structure Compliance
+
+- **Plugin manifest renamed**: `.claude-plugin/manifest.json` → `.claude-plugin/plugin.json` (official format)
+- **Removed non-standard files**: `marketplace.json` moved out of plugin directory
+- **Simplified plugin.json**: Now contains only official schema fields
+
+### Fixed - Agent Name Conflicts
+
+- **Renamed conflicting agents** to avoid collision with Claude Code built-ins:
+  - `general-purpose` → `noe-general-purpose`
+  - `statusline-setup` → `noe-statusline-setup`
+
+### Fixed - Tool Validation (61 agents updated)
+
+- **Removed invalid tools**: `LS` (use `Glob` instead), `MultiEdit` (use `Edit`)
+- **All agents now use only valid Claude Code tools**: `Read`, `Grep`, `Glob`, `Bash`, `Write`, `Edit`
+
+### Added - Model Specifications (61 agents)
+
+- **Added `model` field to all agents** based on complexity:
+  - `opus`: Orchestrators, architects, executives, strategists (10 agents)
+  - `sonnet`: All other specialists and developers (51 agents)
+
+### Changed - Description Format
+
+- **Simplified descriptions**: Removed verbose "MUST BE USED when" and "Use PROACTIVELY when" patterns
+- **Removed legacy syntax**: Eliminated all `@agent-` references (Claude Code v2 auto-selects agents)
+- **Removed Examples sections**: Descriptions now follow official code-simplifier format
+- **Removed contact/promotion sections** from agent files
+
+### Added - New Workflow Skills (3)
+
+- **feature-workflow**: Complete 7-phase development workflow (plan → implement → test → validate → simplify → review → document)
+- **quick-fix**: Rapid 4-step bug fix workflow
+- **pr-ready**: Enhanced PR workflow with git commit, push, PR creation, and optional release
+
+### Added - New Framework Skills (7)
+
+- **nodejs-patterns**: Async patterns, streams, worker threads, error handling
+- **python-patterns**: Type hints, async/await, dataclasses, modern Python 3.12+
+- **fastapi-patterns**: FastAPI best practices, dependency injection, async database
+- **express-patterns**: Express.js middleware, error handling, authentication
+- **typescript-patterns**: Advanced types, generics, utility types, type guards
+- **vite-patterns**: Build configuration, plugins, optimization, testing
+- **zustand-patterns**: State management, slices pattern, middleware, persistence
+
+### Removed - Redundant Files
+
+- `CHANGELOG_v3.1.0.md` - Content merged into main CHANGELOG.md
+- `docs/SDK_ALIGNMENT_TODO.md` - All items completed
+- `docs/SDK_ALIGNMENT_SUMMARY.md` - Redundant with SDK_COMPLIANCE_REPORT.md
+- `marketplace.json` (root) - No longer needed with proper plugin.json
+
+### Stats 📈
+
+- **Total Agents**: 61 (unchanged)
+- **Total Skills**: 20 → 27 (+7 skills)
+- **Workflow Skills**: 0 → 3 (new)
+- **Framework Skills**: 17 → 24 (+7)
+- **Model-specified Agents**: 0 → 61 (100%)
+- **Plugin Schema Compliance**: Full alignment with Claude Code v2.1.x
+
+---
+
 ## [2025-10-28] - Agent Skills Integration (v3.0.0)
 
 ### 🎓 Major Release - Agent Skills System

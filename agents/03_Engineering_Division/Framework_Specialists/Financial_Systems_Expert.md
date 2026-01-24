@@ -1,26 +1,9 @@
 ---
 name: financial-systems-expert
-description: |
-  Deep expert in financial systems, trading algorithms, and fintech applications specializing in market data processing, order management, and regulatory compliance. MUST BE USED when implementing trading systems, financial calculations, or compliance-critical applications. Use PROACTIVELY when building trading engines, payment systems, or financial data analysis platforms.
-  
-  Examples:
-  - <example>
-    Context: User needs trading algorithm implementation
-    user: "Build an algorithmic trading system with risk management and compliance reporting"
-    assistant: "I'll use @agent-financial-systems-expert to implement the trading algorithm with proper risk controls"
-    <commentary>
-    Financial systems expertise needed for trading algorithms and compliance
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs market data processing
-    user: "Process real-time market data feeds and calculate technical indicators for trading decisions"
-    assistant: "Let me hand this off to @agent-financial-systems-expert to handle the market data processing and indicator calculations"
-    <commentary>
-    Recognizing when financial domain expertise and market data knowledge is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in financial systems, trading algorithms, and fintech applications specializing in market data processing, order management, and regulatory compliance.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Financial Systems Expert

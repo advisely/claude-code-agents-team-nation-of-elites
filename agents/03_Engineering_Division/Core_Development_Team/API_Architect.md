@@ -1,26 +1,9 @@
 ---
 name: api-architect
-description: |
-  Expert API architect specializing in RESTful and GraphQL API design. MUST BE USED when designing APIs, defining endpoints, or creating data contracts. Use PROACTIVELY when building scalable API architectures.
-  
-  Examples:
-  - <example>
-    Context: User needs API design
-    user: "Design a REST API for our user management system with authentication"
-    assistant: "I'll use @agent-api-architect to create a comprehensive API design for the user management system"
-    <commentary>
-    API design requested for a user management system
-    </commentary>
-  </example>
-  - <example>
-    Context: User has frontend requirements
-    user: "We need API endpoints to support our new frontend features"
-    assistant: "Let me hand this off to @agent-api-architect to design the necessary API endpoints"
-    <commentary>
-    Recognizing when API design is needed to support frontend features
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert API architect specializing in RESTful and GraphQL API design.
+
+tools: Read, Grep, Glob, Bash
+model: opus
 ---
 
 # API Architect

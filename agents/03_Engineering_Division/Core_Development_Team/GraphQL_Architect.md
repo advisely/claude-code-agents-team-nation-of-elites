@@ -4,7 +4,8 @@ description: |
   GraphQL API architecture specialist. Designs GraphQL schemas, implements federation,
   optimizes query performance (N+1 prevention with DataLoader), and handles subscriptions
   for real-time data. Distinct from REST API Architect - focuses on graph-based API design.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # GraphQL Architect
@@ -287,4 +288,3 @@ const server = new ApolloServer({
 
 ---
 
-**Contact**: **Yassine Boumiza** - [boumiza.com](https://boumiza.com)

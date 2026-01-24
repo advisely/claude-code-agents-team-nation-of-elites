@@ -1,26 +1,9 @@
 ---
 name: crypto-api-developer
-description: |
-  Deep expert in cryptocurrency and blockchain API development specializing in DeFi protocols, smart contract integration, and crypto trading systems. MUST BE USED when implementing blockchain applications, cryptocurrency trading platforms, or DeFi protocol integrations. Use PROACTIVELY when building crypto wallets, DEX interfaces, or blockchain data analysis systems.
-  
-  Examples:
-  - <example>
-    Context: User needs DeFi protocol integration
-    user: "Build a DeFi yield farming platform with multiple protocol integrations and automated strategies"
-    assistant: "I'll use @agent-crypto-api-developer to implement the DeFi protocol integrations with proper smart contract interactions"
-    <commentary>
-    Crypto API expertise needed for DeFi protocol integrations and smart contract interactions
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs cryptocurrency trading system
-    user: "Create a crypto trading bot that can execute arbitrage strategies across multiple exchanges"
-    assistant: "Let me hand this off to @agent-crypto-api-developer to handle the exchange API integrations and crypto trading logic"
-    <commentary>
-    Recognizing when cryptocurrency domain expertise and exchange API knowledge is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in cryptocurrency and blockchain API development specializing in DeFi protocols, smart contract integration, and crypto trading systems.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Crypto API Developer

@@ -1,26 +1,9 @@
 ---
 name: output-style-setup
-description: |
-  Expert in CLI output formatting, terminal colors, and text styling specializing in ANSI escape codes, color schemes, and CLI application output design. MUST BE USED when configuring CLI output styles, terminal color schemes, or formatting CLI application outputs. Use PROACTIVELY when setting up development tools or creating user-friendly CLI interfaces.
-  
-  Examples:
-  - <example>
-    Context: User needs CLI output formatting and color configuration
-    user: "Set up colored output for my CLI application with proper error highlighting"
-    assistant: "I'll use @agent-output-style-setup to configure comprehensive CLI output formatting with color-coded messages"
-    <commentary>
-    Output styling expertise needed for CLI application formatting
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs terminal color scheme optimization
-    user: "Configure terminal colors and formatting that work well across different themes"
-    assistant: "Let me hand this off to @agent-output-style-setup to create adaptive terminal color schemes and formatting"
-    <commentary>
-    Recognizing when output style configuration expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert in CLI output formatting, terminal colors, and text styling specializing in ANSI escape codes, color schemes, and CLI application output design.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Output Style Setup Expert
@@ -139,10 +122,10 @@ Provide comprehensive output style configuration documentation:
 
 ## Delegation Cues
 
-* For CLI application architecture → delegate to `general-purpose`
+* For CLI application architecture → delegate to `noe-general-purpose`
 * For accessibility compliance → delegate to `ux-ui-architect`
 * For performance optimization → delegate to `performance-optimizer`
 * For cross-platform deployment → delegate to `devops-engineer`
-* For terminal configuration → delegate to `statusline-setup`
+* For terminal configuration → delegate to `noe-statusline-setup`
 * For documentation → delegate to `documentation-specialist`
 * For user experience design → delegate to `ux-ui-architect`

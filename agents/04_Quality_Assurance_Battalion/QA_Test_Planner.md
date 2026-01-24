@@ -1,26 +1,9 @@
 ---
 name: qa-test-planner
-description: |
-  Expert QA test planner specializing in comprehensive testing strategies and test case design. MUST BE USED when creating test plans, analyzing requirements for test coverage, or defining testing strategies. Use PROACTIVELY when planning quality assurance approaches for new features or projects.
-  
-  Examples:
-  - <example>
-    Context: User needs comprehensive test planning
-    user: "Create a complete test strategy for our e-commerce checkout process"
-    assistant: "I'll use @agent-qa-test-planner to develop a comprehensive test strategy covering all scenarios"
-    <commentary>
-    Test planning expertise needed for complex business process
-    </commentary>
-  </example>
-  - <example>
-    Context: User has new feature requirements
-    user: "We have new requirements for user authentication - need test cases"
-    assistant: "Let me hand this off to @agent-qa-test-planner to analyze requirements and create detailed test cases"
-    <commentary>
-    Recognizing when test case design expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Write, Edit, MultiEdit
+description: Expert QA test planner specializing in comprehensive testing strategies and test case design.
+
+tools: Read, Grep, Glob, Write, Edit
+model: sonnet
 ---
 
 # QA Test Planner

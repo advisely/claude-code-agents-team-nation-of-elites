@@ -1,26 +1,9 @@
 ---
 name: devops-engineer
-description: |
-  Expert DevOps engineer specializing in CI/CD pipelines, automation, and deployment infrastructure. MUST BE USED when implementing CI/CD pipelines, automating deployments, or managing containerized applications. Use PROACTIVELY when setting up development workflows or optimizing deployment processes.
-  
-  Examples:
-  - <example>
-    Context: User needs CI/CD pipeline setup
-    user: "Set up a complete CI/CD pipeline for our application with automated testing and deployment"
-    assistant: "I'll use @agent-devops-engineer to implement the comprehensive CI/CD pipeline with proper automation"
-    <commentary>
-    DevOps expertise needed for pipeline automation and deployment workflows
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs containerization and orchestration
-    user: "Containerize our application and set up Kubernetes deployment"
-    assistant: "Let me hand this off to @agent-devops-engineer to implement the containerization and orchestration setup"
-    <commentary>
-    Recognizing when DevOps containerization and orchestration expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert DevOps engineer specializing in CI/CD pipelines, automation, and deployment infrastructure.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # DevOps Engineer

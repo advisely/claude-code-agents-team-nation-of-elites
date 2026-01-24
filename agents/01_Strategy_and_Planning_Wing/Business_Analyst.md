@@ -1,26 +1,9 @@
 ---
 name: business-analyst
-description: |
-  Expert business analyst specializing in translating business needs into detailed technical requirements. MUST BE USED when gathering requirements, creating user stories, or bridging business-technical communication. Use PROACTIVELY when detailed requirement analysis is needed.
+description: Expert business analyst specializing in translating business needs into detailed technical requirements.
 
-  Examples:
-  - <example>
-    Context: User needs requirement analysis
-    user: "Analyze the business requirements for our new customer onboarding feature"
-    assistant: "I'll use @agent-business-analyst to gather detailed requirements and create technical specifications for the customer onboarding feature"
-    <commentary>
-    Requirement analysis requested for a new feature
-    </commentary>
-  </example>
-  - <example>
-    Context: User has high-level user stories
-    user: "Elaborate these user stories with detailed acceptance criteria and edge cases"
-    assistant: "Let me hand this off to @agent-business-analyst to flesh out the user stories with detailed specifications"
-    <commentary>
-    Recognizing when user story elaboration is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Business Analyst

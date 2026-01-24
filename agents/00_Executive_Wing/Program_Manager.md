@@ -1,26 +1,9 @@
 ---
 name: program-manager
-description: |
-  Expert program manager overseeing portfolios of related projects. MUST BE USED when coordinating multiple projects, managing interdependencies, or optimizing resource allocation. Use PROACTIVELY when strategic program oversight is needed.
-  
-  Examples:
-  - <example>
-    Context: User needs program coordination
-    user: "Coordinate our portfolio of related projects to ensure strategic alignment and resource optimization"
-    assistant: "I'll use @agent-program-manager to oversee the portfolio and manage interdependencies across projects"
-    <commentary>
-    Program coordination requested for a portfolio of related projects
-    </commentary>
-  </example>
-  - <example>
-    Context: User has resource conflicts
-    user: "Resolve resource conflicts between our marketing and development projects"
-    assistant: "Let me hand this off to @agent-program-manager to optimize resource allocation across projects"
-    <commentary>
-    Recognizing when program-level resource optimization is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert program manager overseeing portfolios of related projects.
+
+tools: Read, Grep, Glob, Bash
+model: opus
 ---
 
 # Program Manager

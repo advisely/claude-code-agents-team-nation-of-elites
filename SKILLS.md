@@ -254,6 +254,77 @@ See [templates/](templates/) for project scaffolding.
   - Django testing with pytest-django
   - Coverage reporting
 
+#### Workflow Automation (3 skills) - NEW in v3.2.0
+- **feature-workflow** - Complete 7-phase development workflow
+  - Plan → Implement → Test → Validate Edge Cases → Simplify → Review → Document
+  - User confirmation at quality gates
+  - Rollback protocol for failures
+  - Invoke with `/feature-workflow [description]`
+
+- **quick-fix** - Rapid 4-step bug fix workflow
+  - Diagnose → Fix → Test → Output
+  - Fast-track for simple bugs
+  - Skip planning overhead
+  - Invoke with `/quick-fix [bug description]`
+
+- **pr-ready** - Complete PR workflow with git operations
+  - Quality checks (tests, lint, types, security)
+  - Code simplification pass
+  - Git commit with conventional commits
+  - Push to remote, create PR with GitHub CLI
+  - Optional release creation with version bump
+  - Invoke with `/pr-ready [--release minor]`
+
+#### Core Language Patterns (7 skills) - NEW in v3.2.0
+- **nodejs-patterns** - Node.js server-side JavaScript
+  - Async patterns (Promise.all, Promise.allSettled)
+  - Streams and pipelines
+  - Worker threads for CPU-intensive tasks
+  - Custom error classes and global handlers
+  - Event loop best practices
+
+- **python-patterns** - Modern Python 3.12+
+  - Type hints with new syntax (T | None, generics)
+  - Dataclasses and Pydantic models
+  - Async/await patterns with asyncio
+  - Context managers and generators
+  - Decorators with ParamSpec
+
+- **fastapi-patterns** - FastAPI web framework
+  - Dependency injection with Depends
+  - Async database sessions
+  - Authentication middleware (JWT, OAuth2)
+  - Request/response schemas with Pydantic
+  - Background tasks and error handling
+
+- **express-patterns** - Express.js middleware patterns
+  - Async handler wrapper
+  - Authentication and authorization middleware
+  - Validation with Zod
+  - Custom error classes and global handler
+  - Controller and router patterns
+
+- **typescript-patterns** - Advanced TypeScript
+  - Discriminated unions and template literals
+  - Mapped types and conditional types
+  - Generic constraints and utility types
+  - Type guards and assertion functions
+  - Builder and repository patterns
+
+- **vite-patterns** - Vite build tool configuration
+  - Plugin configuration and custom plugins
+  - Code splitting and manual chunks
+  - Environment variables with Zod validation
+  - Proxy configuration and HMR
+  - Vitest testing integration
+
+- **zustand-patterns** - Zustand state management
+  - Slices pattern for modular stores
+  - Persist, devtools, and immer middleware
+  - Optimized selectors with useShallow
+  - Async actions with loading states
+  - TypeScript store patterns
+
 ---
 
 ## How Skills Work

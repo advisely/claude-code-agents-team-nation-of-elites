@@ -1,26 +1,9 @@
 ---
 name: rails-expert
-description: |
-  Deep expert in the Ruby on Rails framework specializing in ActiveRecord, Action Pack, and convention-over-configuration principles. MUST BE USED when implementing Rails-specific features, complex ActiveRecord associations, or Rails convention patterns. Use PROACTIVELY when building Rails applications or optimizing Rails performance.
-  
-  Examples:
-  - <example>
-    Context: User needs complex Rails ActiveRecord implementation
-    user: "Create Rails models with complex associations and custom scopes"
-    assistant: "I'll use @agent-rails-expert to implement the sophisticated ActiveRecord models following Rails conventions"
-    <commentary>
-    Rails ActiveRecord expertise needed for complex database modeling
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs Rails API implementation
-    user: "Build a RESTful API following Rails conventions with proper routing"
-    assistant: "Let me hand this off to @agent-rails-expert to create the Rails API with conventional routing patterns"
-    <commentary>
-    Recognizing when Rails convention and API expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in the Ruby on Rails framework specializing in ActiveRecord, Action Pack, and convention-over-configuration principles.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Rails Expert

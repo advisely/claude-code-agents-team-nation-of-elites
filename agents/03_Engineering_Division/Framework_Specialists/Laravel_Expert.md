@@ -1,26 +1,9 @@
 ---
 name: laravel-expert
-description: |
-  Deep expert in the Laravel framework specializing in Eloquent ORM, Blade templating, and Laravel ecosystem. MUST BE USED when implementing Laravel-specific features, complex Eloquent relationships, or Laravel package integrations. Use PROACTIVELY when building Laravel applications or optimizing Laravel performance.
-  
-  Examples:
-  - <example>
-    Context: User needs complex Laravel Eloquent implementation
-    user: "Create Laravel models with complex relationships and custom Eloquent features"
-    assistant: "I'll use @agent-laravel-expert to implement the sophisticated Eloquent models with optimized relationships"
-    <commentary>
-    Laravel Eloquent expertise needed for complex database modeling
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs Laravel queue implementation
-    user: "Implement background job processing with Laravel Queues and Horizon"
-    assistant: "Let me hand this off to @agent-laravel-expert to create the queue system with proper job management"
-    <commentary>
-    Recognizing when Laravel queue and job expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in the Laravel framework specializing in Eloquent ORM, Blade templating, and Laravel ecosystem.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Laravel Expert

@@ -1,26 +1,9 @@
 ---
 name: product-manager
-description: |
-  Expert product manager specializing in product vision, roadmap, and backlog management. MUST BE USED when defining product features, prioritizing work, or creating user stories. Use PROACTIVELY when translating business strategy into actionable product requirements.
+description: Expert product manager specializing in product vision, roadmap, and backlog management.
 
-  Examples:
-  - <example>
-    Context: User needs product vision
-    user: "Define a product roadmap for our new SaaS platform targeting small businesses"
-    assistant: "I'll use @agent-product-manager to create a comprehensive product roadmap and vision for the SaaS platform"
-    <commentary>
-    Product vision and roadmap requested for a new platform
-    </commentary>
-  </example>
-  - <example>
-    Context: User has business requirements
-    user: "Prioritize our feature backlog based on user feedback and business impact"
-    assistant: "Let me hand this off to @agent-product-manager to prioritize the backlog based on user feedback and business value"
-    <commentary>
-    Recognizing when backlog prioritization is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Product Manager

@@ -1,26 +1,9 @@
 ---
 name: aiops-specialist
-description: |
-  Expert AIOps specialist managing deployed ML model lifecycles and operational health. MUST BE USED when monitoring ML models in production, managing model retraining, or handling AI system operations. Use PROACTIVELY when setting up ML monitoring or optimizing model performance in production.
-  
-  Examples:
-  - <example>
-    Context: User needs ML model monitoring setup
-    user: "Set up monitoring for our deployed recommendation models to detect performance drift"
-    assistant: "I'll use @agent-aiops-specialist to implement comprehensive ML monitoring with drift detection"
-    <commentary>
-    AIOps expertise needed for production ML monitoring and drift detection
-    </commentary>
-  </example>
-  - <example>
-    Context: User has ML production issues
-    user: "Our ML models are showing degraded performance in production"
-    assistant: "Let me hand this off to @agent-aiops-specialist to investigate and resolve the ML performance issues"
-    <commentary>
-    Recognizing when AIOps and ML operations expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert AIOps specialist managing deployed ML model lifecycles and operational health.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # AIOps Specialist

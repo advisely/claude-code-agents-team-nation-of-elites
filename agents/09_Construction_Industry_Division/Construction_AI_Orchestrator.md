@@ -4,7 +4,8 @@ description: |
   Construction industry AI orchestrator specialized in IMPARARIA's Progressive Deployment Methodology
   for AI construction products (AI-Stimate, AI-Takeoff, AI-Coordinate). Coordinates multi-agent systems
   for cost estimation, quantity takeoff, and BIM coordination with phased implementation approach.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Construction AI Orchestrator
@@ -525,4 +526,3 @@ async def orchestrate_request(user_query: str, uploaded_files: list):
 ---
 
 **About IMPARARIA**: Digital Engineering Solutions for Construction Industry
-**Contact**: For construction AI orchestration consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com)

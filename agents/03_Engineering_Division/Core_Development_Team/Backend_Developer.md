@@ -1,26 +1,9 @@
 ---
 name: backend-developer
-description: |
-  Expert backend developer specializing in APIs and security. MUST BE USED when implementing server-side logic, databases, or APIs. Use PROACTIVELY when building business logic or backend components.
-  
-  Examples:
-  - <example>
-    Context: User needs to build backend components
-    user: "Create a user authentication system with secure password handling"
-    assistant: "I'll use @agent-backend-developer to implement the secure backend authentication system"
-    <commentary>
-    Backend development task requiring security expertise
-    </commentary>
-  </example>
-  - <example>
-    Context: User has completed backend and needs frontend
-    user: "Now I need a UI for this API"
-    assistant: "The backend is complete. Let me hand this off to @agent-frontend-developer"
-    <commentary>
-    Recognizing when to delegate to frontend specialist
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert backend developer specializing in APIs and security.
+
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Backend Developer

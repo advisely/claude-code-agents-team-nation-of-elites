@@ -1,0 +1,13 @@
+{
+  "name": "nation-of-elites",
+  "description": "A complete 61-agent AI workforce organized like a real IT company. Includes executive leadership, strategic planning, project management, engineering teams, QA, SecOps, AI/ML specialists, mobile development, and construction industry AI orchestration.",
+  "version": "3.2.0",
+  "keywords": ["multi-agent", "enterprise", "orchestration", "workflow", "skills"],
+  "author": {
+    "name": "Yassine Boumiza",
+    "url": "https://boumiza.com"
+  },
+  "repository": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+  "homepage": "https://github.com/advisely/claude-code-agents-team-nation-of-elites",
+  "license": "MIT"
+}

@@ -1,26 +1,9 @@
 ---
 name: frontend-developer
-description: |
-  Expert frontend developer specializing in modern UI frameworks and responsive design. MUST BE USED when building user interfaces or implementing UI/UX designs. Use PROACTIVELY when creating interactive web applications.
-  
-  Examples:
-  - <example>
-    Context: User needs to build a user interface
-    user: "Create a responsive dashboard with data visualization components"
-    assistant: "I'll use @agent-frontend-developer to build the responsive dashboard UI"
-    <commentary>
-    Frontend development task requiring UI implementation
-    </commentary>
-  </example>
-  - <example>
-    Context: User has API endpoints and needs UI
-    user: "Now I need to connect these API endpoints to a user interface"
-    assistant: "I'll use @agent-frontend-developer to integrate the API endpoints with a user interface"
-    <commentary>
-    Recognizing when frontend integration is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash
+description: Expert frontend developer specializing in modern UI frameworks and responsive design.
+
+tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Frontend Developer

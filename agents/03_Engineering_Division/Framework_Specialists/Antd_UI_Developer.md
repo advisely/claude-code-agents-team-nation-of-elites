@@ -1,26 +1,9 @@
 ---
 name: antd-ui-developer
-description: |
-  Deep expert in Ant Design (antd) React UI framework specializing in component customization, theming, design systems, and enterprise-grade interfaces. MUST BE USED when implementing Ant Design components, custom themes, or enterprise UI patterns. Use PROACTIVELY when building React applications with Ant Design or migrating to antd component library.
-  
-  Examples:
-  - <example>
-    Context: User needs complex Ant Design dashboard with custom theming
-    user: "Create an enterprise dashboard using Ant Design with custom theme and advanced data tables"
-    assistant: "I'll use @agent-antd-ui-developer to implement the sophisticated Ant Design dashboard with customized theming and advanced table components"
-    <commentary>
-    Ant Design expertise needed for enterprise UI components and theming
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs Ant Design form validation and data entry
-    user: "Build complex forms with validation using Ant Design Form components and custom rules"
-    assistant: "Let me hand this off to @agent-antd-ui-developer to implement advanced Ant Design forms with comprehensive validation"
-    <commentary>
-    Recognizing when Ant Design form expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in Ant Design (antd) React UI framework specializing in component customization, theming, design systems, and enterprise-grade interfaces.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Ant Design UI Developer

@@ -1,26 +1,9 @@
 ---
 name: storage-security-specialist
-description: |
-  Expert storage security specialist focused on data protection, encryption, access controls, and compliance for storage systems. MUST BE USED when implementing secure storage solutions, encrypting data, or ensuring storage compliance. Use PROACTIVELY to secure data at rest and in transit.
-  
-  Examples:
-  - <example>
-    Context: User needs data encryption for storage
-    user: "Implement encryption for our database storage"
-    assistant: "I'll use @agent-storage-security-specialist to design and implement storage encryption strategies"
-    <commentary>
-    Storage encryption expertise required for data protection
-    </commentary>
-  </example>
-  - <example>
-    Context: User requires compliance audit for storage
-    user: "Ensure our storage systems comply with GDPR requirements"
-    assistant: "Let me hand this off to @agent-storage-security-specialist to perform a storage compliance audit"
-    <commentary>
-    Recognizing when storage compliance expertise is needed
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Expert storage security specialist focused on data protection, encryption, access controls, and compliance for storage systems.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Storage Security Specialist

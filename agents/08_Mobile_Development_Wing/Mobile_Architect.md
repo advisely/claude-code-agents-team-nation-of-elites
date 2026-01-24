@@ -4,7 +4,8 @@ description: |
   Mobile platform architecture specialist. Designs cross-platform mobile strategies,
   native vs hybrid decisions, offline-first architecture, and app store deployment strategies.
   Works with iOS/Android developers and backend teams for mobile-first architectures.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Mobile Architect
@@ -405,4 +406,3 @@ Upon completing mobile architecture design, automatically update:
 
 **Remember**: Mobile architecture decisions have long-term consequences. Prioritize performance, offline capability, and maintainability. Always prototype critical paths before committing to a platform choice.
 
-**Contact**: For consultation on mobile architecture strategies, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

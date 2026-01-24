@@ -4,7 +4,8 @@ description: |
   Observability engineering specialist focused on metrics, logs, traces, and distributed tracing.
   Implements comprehensive observability with Prometheus, Grafana, Jaeger, OpenTelemetry, and ELK stack.
   Designs dashboards, alert rules, and provides insights for SRE and performance optimization teams.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Observability Engineer
@@ -476,4 +477,3 @@ TRACES - Where is it happening?
 
 ---
 
-**Contact**: For observability and monitoring consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

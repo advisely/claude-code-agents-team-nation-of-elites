@@ -1,26 +1,9 @@
 ---
 name: go-expert
-description: |
-  Deep expert in the Go programming language specializing in high-performance systems, concurrent programming, and microservices architecture. MUST BE USED when implementing performance-critical systems, concurrent applications, or Go-based microservices. Use PROACTIVELY when building trading engines, real-time systems, or high-throughput APIs.
-  
-  Examples:
-  - <example>
-    Context: User needs high-performance trading engine
-    user: "Build a high-frequency trading engine that can process thousands of orders per second"
-    assistant: "I'll use @agent-go-expert to implement the high-performance trading engine with Go's concurrency features"
-    <commentary>
-    Go expertise needed for performance-critical concurrent systems
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs microservices optimization
-    user: "Optimize our Go microservices for better memory usage and goroutine management"
-    assistant: "Let me hand this off to @agent-go-expert to apply Go-specific performance optimizations"
-    <commentary>
-    Recognizing when Go performance and concurrency expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in the Go programming language specializing in high-performance systems, concurrent programming, and microservices architecture.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Go Expert

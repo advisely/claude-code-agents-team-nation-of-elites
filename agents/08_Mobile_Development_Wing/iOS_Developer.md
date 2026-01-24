@@ -4,7 +4,8 @@ description: |
   Native iOS development specialist using Swift and SwiftUI. Implements iOS applications
   following Apple Human Interface Guidelines, integrates iOS SDK features, and handles
   App Store submission. Expert in UIKit, SwiftUI, CoreData, and iOS-specific patterns.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # iOS Developer
@@ -462,4 +463,3 @@ enum AppError: LocalizedError {
 
 **Remember**: iOS development requires attention to Apple's guidelines, performance, and user privacy. Always test on real devices, use Instruments for profiling, and follow Apple Human Interface Guidelines.
 
-**Contact**: For iOS development consultation, reach out to **Yassine Boumiza** at [boumiza.com](https://boumiza.com).

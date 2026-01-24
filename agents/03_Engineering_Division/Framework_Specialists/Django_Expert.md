@@ -1,26 +1,9 @@
 ---
 name: django-expert
-description: |
-  Deep expert in the Django framework specializing in complex ORM operations, DRF APIs, and class-based views. MUST BE USED when implementing Django-specific features, complex database queries, or Django Rest Framework APIs. Use PROACTIVELY when building Django applications or optimizing Django performance.
-  
-  Examples:
-  - <example>
-    Context: User needs complex Django ORM implementation
-    user: "Create a Django model with complex relationships and custom manager methods"
-    assistant: "I'll use @agent-django-expert to implement the complex Django ORM structure with optimized queries"
-    <commentary>
-    Django ORM expertise needed for complex database modeling
-    </commentary>
-  </example>
-  - <example>
-    Context: User needs Django Rest Framework API
-    user: "Build a RESTful API with custom serializers and viewsets for user management"
-    assistant: "Let me hand this off to @agent-django-expert to create the DRF API with proper serialization"
-    <commentary>
-    Recognizing when Django Rest Framework expertise is required
-    </commentary>
-  </example>
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+description: Deep expert in the Django framework specializing in complex ORM operations, DRF APIs, and class-based views.
+
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Django Expert

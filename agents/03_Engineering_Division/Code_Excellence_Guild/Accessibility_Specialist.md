@@ -4,7 +4,8 @@ description: |
   Web accessibility (a11y) specialist focused on WCAG 2.1 AA/AAA compliance, screen reader testing,
   keyboard navigation, ARIA attributes, and inclusive design. Ensures applications are usable by
   people with disabilities, meeting ADA and Section 508 legal requirements.
-tools: LS, Read, Grep, Glob, Bash, Write, Edit, MultiEdit
+tools: Read, Grep, Glob, Bash, Write, Edit
+model: sonnet
 ---
 
 # Accessibility Specialist
@@ -375,4 +376,3 @@ test('should not have any automatically detectable accessibility issues', async 
 
 ---
 
-**Contact**: **Yassine Boumiza** - [boumiza.com](https://boumiza.com)
