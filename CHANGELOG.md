@@ -5,6 +5,66 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-02-14] - Anthropic Best Practices Alignment & New Agents (v3.3.0)
+
+### 🏗️ Major Update - Modular Rules Architecture & Opus 4.6 Alignment
+
+This release restructures CLAUDE.md into modular rule files per Anthropic's latest best practices, adds two new specialist agents, and integrates Opus 4.6 features including Agent Teams and adaptive thinking.
+
+### Added - Modular Rule Files (7 files)
+
+- **`docs/rules/organization.md`** (46 lines) - Division structure and full agent roster
+- **`docs/rules/orchestration.md`** (73 lines) - Agent Teams, subagent coordination, context compaction, adaptive thinking
+- **`docs/rules/thinking-policies.md`** (40 lines) - Reasoning budgets (100-800 tokens) per role
+- **`docs/rules/sdk-compliance.md`** (66 lines) - Claude Agent SDK alignment, Opus 4.6 features, server-side tools
+- **`docs/rules/agent-selection.md`** (70 lines) - Division selection guide and invocation patterns
+- **`docs/rules/skills-integration.md`** (46 lines) - Skills vs agents, progressive disclosure, agent-skill mapping
+- **`docs/rules/standards.md`** (58 lines) - Agent format standards, documentation standards, strict tool use
+
+### Added - New Agents (2)
+
+- **`rust-expert`** - Rust programming specialist: ownership/borrowing, zero-cost abstractions, async/await, unsafe boundary documentation, clippy/audit workflows
+- **`unreal-engine-expert`** - Unreal Engine 5 specialist: C++ gameplay programming, Blueprints, Nanite/Lumen rendering, GAS multiplayer, World Partition, cross-platform deployment
+
+### Added - Opus 4.6 Features
+
+- **Agent Teams**: Parallel multi-agent coordination beyond simple subagent spawning (documented in orchestrator and orchestration rules)
+- **Adaptive Thinking**: Effort levels (low/medium/high/maximum) for dynamic reasoning depth
+- **Strict Tool Use**: `strict: true` schema validation for guaranteed tool input conformance
+- **Server-Side Tools**: `web_search_20250305` and `web_fetch_20250305` documentation
+- **MCP Connector**: Direct remote MCP server connections without client implementation
+- **Context Compaction API**: Server-side beta feature noted alongside manual compaction
+
+### Changed - CLAUDE.md Refactored
+
+- **Reduced from 738 → 206 lines** — now a lightweight index pointing to 7 modular rule files
+- **Structured memory pattern** — Identity & Voice (CLAUDE.md) → Facts & Canon (rule files) → Working Notes (PLAN.md, CHANGELOG.md)
+- **UE5 quick start example** added to invocation patterns
+
+### Changed - Tech Lead Orchestrator Enhanced
+
+- Agent Teams section with comparison table (Agent Teams vs Subagents)
+- Adaptive thinking capability with effort levels
+- Routing rules for `rust-expert` and `unreal-engine-expert`
+- Delegation table entries for both new agents
+
+### Fixed - Documentation Accuracy
+
+- **Agent count**: SKILLS.md corrected from 45 → 63
+- **Roadmap**: v3.1 and v3.2 marked as released, v4.0 added as next milestone
+- **Engineering Division count**: Updated across all docs to reflect new agents
+
+### Stats 📈
+
+- **Total Agents**: 61 → 63 (+2 agents)
+- **Total Rule Files**: 0 → 7 (new modular architecture)
+- **CLAUDE.md Size**: 738 → 206 lines (72% reduction)
+- **Opus 4.6 Features**: 6 new capabilities documented
+- **Engineering Division**: 23 → 25 agents
+- **Framework Specialists**: 14 → 16 agents
+
+---
+
 ## [2026-01-24] - Claude Code v2.1.x Alignment (v3.2.0)
 
 ### 🔧 Major Update - Full Claude Code v2.1.x Compliance

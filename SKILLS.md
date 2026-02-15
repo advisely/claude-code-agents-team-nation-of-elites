@@ -431,7 +431,7 @@ bash scripts/deploy_agents.sh
 ```
 
 **What Gets Installed:**
-- `~/.claude/agents/` - All 45 agents
+- `~/.claude/agents/` - All 63 agents
 - `~/.claude/skills/` - Official + custom skills
 
 ### Manual Installation
@@ -637,22 +637,23 @@ Before installing a skill:
 
 ## Roadmap
 
-### v3.1 (Next Release)
+### ✅ v3.1 (Released)
 - Laravel patterns skill
 - Vue.js patterns skill
 - Next.js patterns skill
 - Kubernetes deployment skill
 
-### v3.2 (Future)
-- Skills marketplace
-- Community skill submissions
-- Skill ratings and reviews
-- Skill dependency management
+### ✅ v3.2 (Released)
+- Feature workflow, quick-fix, and PR-ready workflow automation skills
+- Core language patterns: Node.js, Python, FastAPI, Express, TypeScript, Vite, Zustand
+- 7 new skills bringing total to 27 custom skills
 
-### v3.3 (Future)
-- Agent self-modification (agents create their own skills)
+### v4.0 (Next)
+- Opus 4.6 Agent Teams integration in skill workflows
+- Skills marketplace and community submissions
 - Skill composition (skills that use other skills)
-- Skill versioning and updates
+- Skill dependency management and versioning
+- Agent self-modification (agents create their own skills)
 
 ---
 

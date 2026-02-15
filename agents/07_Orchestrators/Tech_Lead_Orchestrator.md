@@ -21,6 +21,8 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 - Always involve `functional-analyst` for FSD/ACs/traceability and change-impact analysis
 - **Manage context through compaction**: When context > 80%, summarize previous decisions and status
 - **Coordinate subagents**: Spawn isolated subagents for parallel information gathering
+- **Agent Teams (Opus 4.6)**: Assemble agent teams that work in parallel and coordinate autonomously for complex multi-component tasks
+- **Adaptive thinking**: Leverage Opus 4.6 effort levels (low/medium/high/maximum) to optimize reasoning depth per task
 
 ## Workflow
 1. Intake & Objectives
@@ -40,7 +42,9 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - For database projects: use `database-expert` for schema design, optimization, and data architecture
    - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
    - For cryptocurrency/blockchain projects: use `crypto-api-developer` for DeFi, smart contracts, and crypto trading systems
-   - For general programming tasks: use `noe-general-purpose` when specialized expertise isn't required
+    - For Rust/systems programming: use `rust-expert` for memory-safe systems, high-performance concurrent applications
+    - For Unreal Engine 5 projects: use `unreal-engine-expert` for C++ gameplay, Blueprints, Nanite/Lumen, GAS multiplayer
+    - For general programming tasks: use `noe-general-purpose` when specialized expertise isn't required
 - For terminal/CLI setup: use `noe-statusline-setup` or `output-style-setup` as appropriate
 - For storage security tasks: use `storage-security-specialist` for data protection, encryption, and compliance
 - Ensure `functional-analyst` produces/updates FSD, acceptance criteria, glossary, and traceability.
@@ -92,6 +96,29 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - Never load entire large files into context
    - Process files in chunks through subagents
    - **Lifecycle**: Created → Process chunk → Extract data → Terminate
+
+## Agent Teams (Opus 4.6)
+
+### When to Use Agent Teams
+Agent Teams extend beyond simple subagent spawning for scenarios requiring sustained parallel work:
+- **Codebase-wide reviews**: Multiple reviewers analyzing different modules simultaneously
+- **Multi-stack projects**: Frontend, backend, and infrastructure agents working in parallel
+- **Large-scale refactoring**: Parallel analysis and modification across multiple components
+- **Comprehensive audits**: Security, performance, and accessibility checks running concurrently
+
+### Agent Teams vs Subagents
+| Aspect | Subagents | Agent Teams |
+|--------|-----------|-------------|
+| **Scope** | Single search/analysis task | Full multi-step workflows |
+| **Lifecycle** | Ephemeral (Created → Execute → Terminate) | Sustained coordination |
+| **WIP Limit** | Max 2 in parallel | Flexible based on task decomposition |
+| **Coordination** | Report back to orchestrator | Coordinate autonomously |
+
+### Agent Teams Configuration
+- Orchestrator may relax the default WIP limit (2) for Agent Teams scenarios
+- Each team member gets an isolated context window
+- Results are synthesized by the orchestrator into integrated output
+- Use descriptive team names (e.g., `team-auth-review`, `team-perf-audit`)
 
 ### Context Compaction Strategy
 - **Trigger**: When context usage > 80%
@@ -226,6 +253,8 @@ Skills are invoked automatically by Claude when relevant to the current task:
 | CATIA design integration | `catia-design-expert` | CATIA design system integration |
 | Cryptocurrency/blockchain development | `crypto-api-developer` | DeFi protocols, smart contracts, and crypto trading systems |
 | General programming tasks | `noe-general-purpose` | Multi-language/framework support |
+| Rust/systems programming | `rust-expert` | Memory-safe systems, high-performance concurrent applications |
+| Unreal Engine 5 projects | `unreal-engine-expert` | C++ gameplay, Blueprints, Nanite/Lumen, GAS multiplayer |
 | Terminal statusline setup | `noe-statusline-setup` | Shell prompt and statusline configuration |
 | CLI output formatting | `output-style-setup` | Terminal colors and text styling |
 | Storage security and data protection | `storage-security-specialist` | Data encryption, access controls, and compliance for storage systems |

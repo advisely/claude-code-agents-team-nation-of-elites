@@ -39,7 +39,7 @@ cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**Done!** All 61 agents are now in `~/.claude/agents/` and ready to use.
+**Done!** All 63 agents are now in `~/.claude/agents/` and ready to use.
 
 #### 🔌 Plugin Installation (Alternative)
 
@@ -132,7 +132,7 @@ claude "Use the project-sponsor to define business objectives, program-manager t
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **61 specialized agents** across **9 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **63 specialized agents** across **10 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), Rust systems programming, Unreal Engine 5 development, and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
 
 ### 🚀 Claude Agent SDK Aligned Features (2025 Updates)
 - **Subagent Coordination**: Parallel information gathering with isolated context windows
@@ -143,7 +143,8 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 - **Code Generation First**: Prioritizes code over configuration for precision
 - **Background Agents** (Dec 2025): Agents run in background while you work
 - **Skills API** (2025): `/v1/skills` endpoints for programmatic skill management
-- **Claude Opus 4.5 & Sonnet 4.5**: Latest models with enhanced agent capabilities
+- **Claude Opus 4.6** (Feb 2026): Agent Teams, adaptive thinking, 1M token context
+- **Modular Rules** (Feb 2026): Domain-specific rule files (50-100 lines each) for reduced context overhead
 
 ```
 /agents
@@ -153,10 +154,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 │   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
 ├── 02_Project_Management_Office/ (1 agent)
 │   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/ (23 agents)
+├── 03_Engineering_Division/ (25 agents)
 │   ├── Core_Development_Team/ (4 agents): API Architect, Backend, Frontend, GraphQL Architect
-│   ├── Framework_Specialists/ (16 agents): React, Vue, Next.js, Django, Laravel, Rails, Java, Go, Database, etc.
-│   └── Code_Excellence_Guild/ (8 agents): Code Reviewer, Documentation, Performance, Accessibility, etc.
+│   ├── Framework_Specialists/ (16 agents): React, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, UE5, Database, etc.
+│   └── Code_Excellence_Guild/ (5 agents): Code Reviewer, Documentation, Performance, Accessibility, etc.
 ├── 04_Quality_Assurance_Battalion/ (4 agents)
 │   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
 ├── 05_SecOps_and_Infrastructure_Division/ (9 agents)
@@ -174,10 +175,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 -   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
 -   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
 -   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division` (23 agents)**: The core builders with specialized teams:
+-   **`03_Engineering_Division` (25 agents)**: The core builders with specialized teams:
     - **Core Development Team** (4 agents): API Architect, Backend Developer, Frontend Developer, GraphQL Architect
-    - **Framework Specialists** (16 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk/CATIA experts
-    - **Code Excellence Guild** (8 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
+    - **Framework Specialists** (16 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, Unreal Engine 5, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk/CATIA experts
+    - **Code Excellence Guild** (5 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
 -   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
 -   **`05_SecOps_and_Infrastructure_Division` (9 agents)**: Deploys the application to a secure, scalable production environment with SRE practices, comprehensive observability, platform engineering for developer experience, and specialized infrastructure/messaging/storage security expertise.
 -   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
@@ -283,7 +284,7 @@ The Nation of Elites features **automatic project documentation updates**. Key a
 
 | Aspect | **Agents** | **Skills** |
 |--------|------------|------------|
-| **What** | Team members (45 specialists) | Training manuals & toolkits |
+| **What** | Team members (63 specialists) | Training manuals & toolkits |
 | **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
 | **How** | Orchestrate & execute | Provide procedures & code |
 | **Loading** | Task-based spawning | Progressive disclosure (efficient) |
@@ -415,7 +416,7 @@ cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**All 45 agents are now v2.0 compatible** with both:
+**All 63 agents are v3.3.0 compatible** with both:
 - Natural language invocation (new)
 - Explicit agent mentions (legacy - still works)
 
@@ -442,6 +443,6 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v3.1** - 61 Specialized Agents | Mobile + SRE + Construction AI | Agent Skills Integration | 10/10 SDK Compliance
+**The Nation of Elites v3.3.0** - 63 Specialized Agents | Modular Rules | Rust & UE5 Experts | Opus 4.6 Agent Teams | 10/10 SDK Compliance
 
 **Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)
