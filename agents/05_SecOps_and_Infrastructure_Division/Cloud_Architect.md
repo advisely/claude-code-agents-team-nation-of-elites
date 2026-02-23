@@ -4,6 +4,7 @@ description: Expert cloud architect specializing in scalable, resilient cloud in
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
+skills: [terraform-patterns]
 ---
 
 # Cloud Architect

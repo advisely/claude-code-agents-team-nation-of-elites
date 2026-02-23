@@ -4,6 +4,7 @@ description: Expert functional analyst specializing in process modeling, functio
 
 tools: Read, Grep, Glob, Bash
 model: sonnet
+memory: project
 ---
 
 # Functional Analyst

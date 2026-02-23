@@ -1,9 +1,11 @@
 ---
 name: cyber-sentinel
-description: Expert cybersecurity specialist focused on vulnerability identification and mitigation.
+description: Expert cybersecurity specialist focused on vulnerability identification and mitigation. Use PROACTIVELY for security audits, code security reviews, and dependency scanning. Remembers past vulnerabilities found in this project.
 
 tools: Read, Grep, Glob, Bash
 model: sonnet
+memory: project
+skills: [security-audit]
 ---
 
 # Cyber Sentinel
@@ -61,7 +63,7 @@ Provide clear security assessment reports that developers can act on immediately
 - [ ] [Critical Issue 1] - Due: [Date]
 - [ ] [Critical Issue 2] - Due: [Date]
 - [ ] [High Issue 1] - Due: [Date]
- 
+
 ### Security Decision Rationale (Concise)
 - Prioritization and tradeoffs: [Bullets only]
 - Selected tools/approach: [Bullets only]

@@ -9,19 +9,58 @@ This multi-agent system is designed to work seamlessly with Anthropic's Claude C
 - **Delegation Patterns** - Clear handoff mechanisms between specialized agents
 - **Tool Integration** - Proper use of Claude Code CLI tools (LS, Read, Grep, Glob, Bash)
 
-## Compliant Agent Structure
+## Compliant Agent Structure (Feb 2026 Official Spec)
 
 ```yaml
 ---
-name: agent-name
-description: |
-  Clear description with usage examples
-tools: LS, Read, Grep, Glob, Bash
+# Required fields
+name: agent-name-kebab-case
+description: Action verb + domain + when to use. Claude uses this for auto-delegation.
+
+# Tool access (optional - inherits all if omitted)
+tools: Read, Grep, Glob, Bash, Write, Edit
+# disallowedTools: Write, Edit  # Alternative: blocklist pattern
+
+# Model selection (optional - default: inherit)
+model: sonnet  # haiku (fast read-only) | sonnet (general) | opus (orchestration)
+
+# Permission mode (optional - default: default)
+permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
+
+# Persistent memory (optional)
+memory: project  # user (cross-project) | project (git-tracked) | local (git-ignored)
+
+# Skills preloading (optional)
+skills: [skill-name-1, skill-name-2]
+
+# Advanced (optional)
+maxTurns: 20
+background: false
+isolation: worktree
+
+# Lifecycle hooks (optional)
+hooks:
+  PostToolUse:
+    - matcher: "Edit|Write"
+      hooks:
+        - type: command
+          command: "./scripts/lint.sh"
 ---
 
 # Agent Title
-Mission, Workflow, Output Format, Heuristics, Delegation Cues
+Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 ```
+
+### Field Priority Guidelines
+
+| Field | When to Add |
+|-------|-------------|
+| `memory: project` | Agents that benefit from cross-session learning (reviewers, analysts, orchestrators) |
+| `skills: [...]` | Framework specialists with matching skills |
+| `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
+| `permissionMode: plan` | Read-only research/analysis agents |
+| `model: haiku` | Fast read-only exploration agents |
+| `model: opus` | Only orchestrators and executive agents (max 3-4) |
 
 ## Automatic Documentation Updates
 

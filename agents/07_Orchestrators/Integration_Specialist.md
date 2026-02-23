@@ -1,9 +1,10 @@
 ---
 name: integration-specialist
-description: Expert in Model Context Protocol (MCP) and external service integrations.
+description: Expert in Model Context Protocol (MCP) and external service integrations. Use when connecting to external APIs, configuring MCP servers, or setting up OAuth flows. Remembers integration patterns for this project.
 
 tools: Read, Grep, Glob, Bash
-model: opus
+model: sonnet
+memory: project
 ---
 
 # Integration Specialist

@@ -4,6 +4,8 @@ description: Deep expert in the React library specializing in component architec
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [react-patterns]
 ---
 
 # React Expert

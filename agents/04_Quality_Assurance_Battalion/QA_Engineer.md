@@ -4,6 +4,7 @@ description: |
   Automated validation implementation specialist who creates comprehensive test suites, implements CI/CD test automation, and ensures software quality through automated testing methodologies.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
+skills: [pytest-patterns]
 ---
 
 # QA Engineer 

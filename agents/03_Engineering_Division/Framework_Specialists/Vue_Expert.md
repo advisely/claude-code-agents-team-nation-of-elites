@@ -4,6 +4,8 @@ description: Deep expert in the Vue.js framework specializing in component archi
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [vue-patterns]
 ---
 
 # Vue Expert

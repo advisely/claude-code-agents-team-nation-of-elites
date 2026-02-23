@@ -4,6 +4,7 @@ description: Expert test automation developer specializing in implementing autom
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+skills: [pytest-patterns]
 ---
 
 # Automated Test Scripter

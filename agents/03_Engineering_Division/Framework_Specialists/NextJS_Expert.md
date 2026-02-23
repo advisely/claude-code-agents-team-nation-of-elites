@@ -4,6 +4,8 @@ description: Deep expert in the Next.js framework specializing in full-stack Rea
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [nextjs-patterns]
 ---
 
 # Next.js Expert

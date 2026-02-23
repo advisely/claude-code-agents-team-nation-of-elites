@@ -4,6 +4,7 @@ description: Deep expert in Unreal Engine 5 specializing in C++ gameplay program
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
 ---
 
 # Unreal Engine Expert

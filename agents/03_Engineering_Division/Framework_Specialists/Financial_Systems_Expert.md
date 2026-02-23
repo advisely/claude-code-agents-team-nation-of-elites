@@ -4,6 +4,8 @@ description: Deep expert in financial systems, trading algorithms, and fintech a
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [financial-trading-patterns]
 ---
 
 # Financial Systems Expert

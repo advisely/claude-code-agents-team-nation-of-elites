@@ -4,6 +4,8 @@ description: Deep expert in React with TypeScript specializing in type-safe comp
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [react-patterns, typescript-patterns]
 ---
 
 # React TypeScript Expert

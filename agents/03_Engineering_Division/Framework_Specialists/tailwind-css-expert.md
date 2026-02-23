@@ -4,6 +4,8 @@ description: Specialist in Tailwind CSS who translates designs into pixel-perfec
 
 tools: Read, Grep, Glob, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [tailwind-patterns]
 ---
 
 # Tailwind CSS Expert

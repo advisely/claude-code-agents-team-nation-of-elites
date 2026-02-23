@@ -1,5 +1,14 @@
 # Agent Selection & Usage Guidelines
 
+## Platform Support
+
+Agents are platform-independent `.md` files and work on **Windows**, **Linux**, **macOS**, and **WSL2**. They are used by both the Claude Code CLI and IDE extensions (VS Code, JetBrains) from the same `~/.claude/agents/` directory.
+
+| Platform | Deploy Command |
+|----------|---------------|
+| Linux / macOS / WSL2 | `bash scripts/deploy_agents.sh` |
+| Windows (PowerShell) | `powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1` |
+
 ## Project Initiation Workflow
 
 1. **Executive Kickoff** - Start with `project-sponsor` to define business objectives
@@ -62,6 +71,30 @@
 # Explicit agent mention (still supported)
 "Use @agent-solution-architect to design the system architecture"
 ```
+
+## New Features (Feb 2026)
+
+### Persistent Agent Memory
+Agents with `memory: project` build institutional knowledge across sessions:
+- **code-reviewer** - Remembers code patterns, style conventions, recurring issues
+- **cyber-sentinel** - Remembers vulnerabilities found, security patterns, scan history
+- **tech-lead-orchestrator** - Remembers decisions, team assignments, project context
+- **functional-analyst** - Remembers FSD, acceptance criteria, domain glossary
+- **code-archaeologist** - Remembers codebase structure and previous findings
+- **integration-specialist** - Remembers integration configs and MCP server patterns
+- **catia-design-expert** - Remembers design patterns and MCP connector configurations
+
+### Skills Preloading
+Framework specialists preload matching skills for faster, more consistent results:
+- `django-expert` preloads `django-patterns`
+- `react-expert` preloads `react-patterns`
+- `cyber-sentinel` preloads `security-audit`
+- `devops-engineer` preloads `github-actions`, `kubernetes-deployment`
+- See each agent's `skills:` field for full mapping
+
+### Permission Modes
+- Code-writing agents use `permissionMode: acceptEdits` for frictionless development
+- Read-only analysts could use `permissionMode: plan` for safe exploration
 
 ## Coordination Guidelines
 - Respect the hierarchical structure for major decisions

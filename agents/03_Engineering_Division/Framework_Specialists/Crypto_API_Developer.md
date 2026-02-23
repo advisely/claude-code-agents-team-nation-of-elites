@@ -4,6 +4,8 @@ description: Deep expert in cryptocurrency and blockchain API development specia
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [crypto-defi-patterns]
 ---
 
 # Crypto API Developer

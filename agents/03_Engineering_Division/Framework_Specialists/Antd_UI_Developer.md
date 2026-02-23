@@ -4,6 +4,8 @@ description: Deep expert in Ant Design (antd) React UI framework specializing in
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [antd-patterns]
 ---
 
 # Ant Design UI Developer

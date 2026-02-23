@@ -5,6 +5,87 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-02-22] - Official Spec Compliance, Persistent Memory & Skills Preloading (v3.4.0)
+
+### Major Update - Feb 2026 Official Spec Alignment
+
+Full audit against official Anthropic documentation (Feb 2026), 6+ popular community repos (wshobson/agents, VoltAgent, affaan-m, 0xfurai), and Claude Code CLI v2.1.50 spec. Updated 28 agent files and 2 documentation files.
+
+### Added - Persistent Agent Memory (7 agents)
+
+- **`tech-lead-orchestrator`**: `memory: project` - Remembers decisions, team assignments, project context
+- **`code-reviewer`**: `memory: project` - Remembers code patterns, style conventions, recurring issues
+- **`cyber-sentinel`**: `memory: project` - Remembers vulnerabilities found, security patterns, scan history
+- **`functional-analyst`**: `memory: project` - Remembers FSD, acceptance criteria, domain glossary
+- **`code-archaeologist`**: `memory: project` - Remembers codebase structure and previous findings
+- **`integration-specialist`**: `memory: project` - Remembers integration configs and MCP server patterns
+- **`catia-design-expert`**: `memory: project` - Remembers design patterns and MCP connector configs
+
+### Added - Skills Preloading (18 agents)
+
+Framework specialists now preload matching skills at startup via `skills:` frontmatter:
+
+- `django-expert` -> `django-patterns`
+- `react-expert` -> `react-patterns`
+- `vue-expert` -> `vue-patterns`
+- `nextjs-expert` -> `nextjs-patterns`
+- `rails-expert` -> `rails-patterns`
+- `java-expert` -> `java-patterns`
+- `go-expert` -> `go-patterns`
+- `laravel-expert` -> `laravel-patterns`
+- `react-typescript-expert` -> `react-patterns, typescript-patterns`
+- `tailwind-css-expert` -> `tailwind-patterns`
+- `antd-ui-developer` -> `antd-patterns`
+- `crypto-api-developer` -> `crypto-defi-patterns`
+- `financial-systems-expert` -> `financial-trading-patterns`
+- `cyber-sentinel` -> `security-audit`
+- `devops-engineer` -> `github-actions, kubernetes-deployment`
+- `cloud-architect` -> `terraform-patterns`
+- `qa-engineer` -> `pytest-patterns`
+- `automated-test-scripter` -> `pytest-patterns`
+
+### Added - Permission Modes (16 agents)
+
+All code-writing framework specialists now use `permissionMode: acceptEdits` for frictionless development flow.
+
+### Added - CATIA MCP Connector Support
+
+Enhanced `catia-design-expert` with 90+ lines covering:
+- **CATIA v5 connector**: COM/VBA automation via Python (pywin32) or Node.js MCP server
+- **CATIA v6 connector**: 3DEXPERIENCE REST API via HTTP-based MCP server
+- **MCP tool definitions**: `catia_open_part`, `catia_add_feature`, `catia_run_ekl`, `catia_export`, etc.
+- **MCP resource definitions**: `catia://parameters`, `catia://feature-tree`, etc.
+- **Development workflow**: 8-step process from assessment to documentation
+- **Delegation to `integration-specialist`** for MCP scaffolding and OAuth
+
+### Changed - Model Optimization
+
+- **`integration-specialist`**: `model: opus` -> `model: sonnet` (integration work doesn't need opus-level reasoning)
+
+### Changed - Description Improvements
+
+- **`cyber-sentinel`**: Added "Use PROACTIVELY for security audits" trigger and memory note
+- **`integration-specialist`**: Added "Use when connecting to external APIs" trigger and memory note
+
+### Changed - Documentation Updates
+
+- **`docs/rules/standards.md`**: Updated agent format template with full Feb 2026 official spec (memory, skills, permissionMode, hooks, isolation, background, maxTurns)
+- **`docs/rules/agent-selection.md`**: Added "New Features (Feb 2026)" section documenting persistent memory, skills preloading, and permission modes
+- **`CLAUDE.md`**: Added v3.4 features summary table
+- **`plugin.json`**: Version bumped to 3.4.0, updated description
+
+### Stats
+
+- **Total Agents**: 63 (unchanged)
+- **Agents with `memory: project`**: 0 -> 7
+- **Agents with `skills:` preloading**: 0 -> 18
+- **Agents with `permissionMode:`**: 0 -> 16
+- **Files changed**: 30 (28 agents + 2 docs)
+- **Lines added**: 475+
+- **Model cost optimization**: 1 agent demoted from opus to sonnet
+
+---
+
 ## [2026-02-14] - Anthropic Best Practices Alignment & New Agents (v3.3.0)
 
 ### 🏗️ Major Update - Modular Rules Architecture & Opus 4.6 Alignment

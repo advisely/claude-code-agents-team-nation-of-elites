@@ -61,15 +61,88 @@ The Nation of Elites consists of **63 specialized agents** organized across **10
 | 08_Mobile_Development_Wing | 3 | Native & cross-platform mobile |
 | 09_Construction_Industry | 1 | Construction industry AI orchestration |
 
-## Agent Skills Integration (v3.2)
+## New in v3.4: Persistent Memory, Skills Preloading, Permission Modes
 
-**27 custom skills** + 9 official Anthropic skills using progressive disclosure (3-level loading). See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md) for details.
+| Feature | Agents Affected | Impact |
+|---------|----------------|--------|
+| `memory: project` | 7 key agents (orchestrator, reviewer, sentinel, analyst, archaeologist, integration, CATIA) | Cross-session institutional knowledge |
+| `skills: [...]` | 18 specialists (all framework experts + SecOps) | Preloaded domain expertise at startup |
+| `permissionMode: acceptEdits` | 16 code-writing agents | Frictionless development flow |
+| CATIA MCP connector support | catia-design-expert | Claude-to-CATIA v5 (COM) and v6 (3DEXPERIENCE) integration |
+| Model optimization | integration-specialist (opus -> sonnet) | Cost reduction without capability loss |
+
+See [agent-selection.md](docs/rules/agent-selection.md) for details on new features.
+
+## Agent Skills Integration (v3.4)
+
+**27 custom skills** + 9 official Anthropic skills using progressive disclosure (3-level loading). Framework specialists now preload their matching skills via the `skills:` frontmatter field. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md) for details.
+
+## Platform Compatibility
+
+Agents are platform-independent `.md` files. They work identically on **Windows**, **Linux**, **macOS**, and **WSL2**. Both the Claude Code CLI and the VS Code extension read from the same `~/.claude/` directory, so your custom agents are available in both interfaces.
+
+| Interface | Agents Supported | Config Path |
+|-----------|-----------------|-------------|
+| Claude Code CLI (terminal) | Yes | `~/.claude/agents/` |
+| VS Code + Claude Code extension | Yes | Same `~/.claude/agents/` |
+| JetBrains + Claude Code extension | Yes | Same `~/.claude/agents/` |
 
 ## Configuration and Setup
 
-### Installation
+### Prerequisites
 
-#### 🚀 Recommended: Automated Deployment (Works Immediately)
+| Platform | Requirement |
+|----------|-------------|
+| **Windows** | [Git for Windows](https://git-scm.com/downloads/win) |
+| **Linux / WSL2** | `git`, `rsync` |
+| **macOS** | `git` (included with Xcode CLI tools) |
+
+### Installing Claude Code
+
+<details>
+<summary><strong>Linux / macOS / WSL2</strong></summary>
+
+```bash
+# npm (if Node.js is installed)
+npm install -g @anthropic-ai/claude-code
+
+# Or use the official installer
+curl -fsSL https://claude.ai/install.sh | sh
+```
+
+</details>
+
+<details>
+<summary><strong>Windows (native)</strong></summary>
+
+```powershell
+# PowerShell (recommended)
+irm https://claude.ai/install.ps1 | iex
+
+# Or via WinGet
+winget install Anthropic.ClaudeCode
+```
+
+After installing, verify with:
+
+```powershell
+claude doctor
+```
+
+**Git for Windows is required.** If you use a portable Git installation, set:
+
+```powershell
+$env:CLAUDE_CODE_GIT_BASH_PATH = "C:\Program Files\Git\bin\bash.exe"
+```
+
+</details>
+
+### Deploying the Agents
+
+#### Automated Deployment (Recommended)
+
+<details>
+<summary><strong>Linux / macOS / WSL2 (Bash)</strong></summary>
 
 ```bash
 # Clone repository
@@ -84,10 +157,47 @@ bash scripts/deploy_agents.sh
 
 This script:
 - Copies agents to `~/.claude/agents/`
+- Installs skills to `~/.claude/skills/`
 - Validates installation
-- Ensures all 61 agents are ready to use
+- Ensures all agents are ready to use
 
-#### 🔌 Alternative: Plugin Installation
+**WSL2 note**: The Linux path `~/.claude` corresponds in Windows Explorer to `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
+
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+# Clone repository
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+
+# Navigate to directory
+cd claude-code-agents-team-nation-of-elites
+
+# Run automated deployment
+powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
+```
+
+This script:
+- Copies agents to `%USERPROFILE%\.claude\agents\`
+- Installs skills to `%USERPROFILE%\.claude\skills\`
+- Validates installation
+- Ensures all agents are ready to use
+
+Optional parameters:
+
+```powershell
+# Use a custom fork
+.\scripts\deploy_agents.ps1 -RepoUrl "https://github.com/myorg/my-fork.git"
+
+# Full wipe of ~/.claude before deploying (DANGEROUS)
+.\scripts\deploy_agents.ps1 -ForceWipe
+```
+
+</details>
+
+#### Plugin Installation
 
 **For Claude Code v2.0+ with plugin system**:
 
@@ -113,53 +223,56 @@ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.g
 **Note**: The marketplace must be added **before** installing the plugin, otherwise `/plugin install` will fail with "Marketplace not found".
 
 Plugin benefits:
-- ✅ Integrated with plugin system
-- ✅ Easy enable/disable per project
-- ✅ Automatic updates (when marketplace is live)
-- ✅ Reduced context overhead
+- Integrated with plugin system
+- Easy enable/disable per project
+- Automatic updates (when marketplace is live)
+- Reduced context overhead
 
-#### 🔧 Manual Installation
+#### Manual Installation
+
+<details>
+<summary><strong>Linux / macOS / WSL2</strong></summary>
 
 ```bash
-# Clone the repository
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 
-# Sanitize target to avoid conflicts with older configurations
 rm -rf ~/.claude/agents ~/.claude/projects
-
-# Deploy current agents set
 mkdir -p ~/.claude
 cp -r agents ~/.claude/agents
 
-# Validate key files
+# Validate
 test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Tech Lead Orchestrator present"
-! grep -R "tech-lead-orchestrator-deprecated" ~/.claude/agents -n && echo "No deprecated orchestrator found"
 ```
 
-#### 🤖 Automated Deployment Script
+</details>
 
-```bash
-# From the repository root
-bash scripts/deploy_agents.sh
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
+
+Remove-Item "$env:USERPROFILE\.claude\agents" -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\agents" | Out-Null
+Copy-Item -Recurse -Force agents\* "$env:USERPROFILE\.claude\agents\"
+
+# Validate
+Test-Path "$env:USERPROFILE\.claude\agents\07_Orchestrators\Tech_Lead_Orchestrator.md"
 ```
 
-The script will:
-- Clone/pull the repo (if needed)
-- Remove `~/.claude/agents` and `~/.claude/projects`
-- Copy `agents/` into `~/.claude/agents`
-- Validate presence of canonical orchestrator and absence of deprecated entries
-
-**WSL2 note**: The Linux path `~/.claude` corresponds in Windows Explorer to `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
+</details>
 
 ### Verification
 
 ```bash
-# List installed plugins
-/plugin list
+# Verify Claude Code installation
+claude doctor
 
-# Check for Nation of Elites
-# You should see "nation-of-elites v2.0.0" in the list
+# Test agent invocation
+claude "Coordinate development of a REST API feature"
+# Should spawn the tech-lead-orchestrator agent
 ```
 
 ### Quick Start

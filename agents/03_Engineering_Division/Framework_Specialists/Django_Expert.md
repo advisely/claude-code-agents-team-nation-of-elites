@@ -4,6 +4,8 @@ description: Deep expert in the Django framework specializing in complex ORM ope
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [django-patterns]
 ---
 
 # Django Expert

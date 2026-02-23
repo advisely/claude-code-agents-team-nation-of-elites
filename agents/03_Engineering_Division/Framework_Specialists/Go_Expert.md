@@ -4,6 +4,8 @@ description: Deep expert in the Go programming language specializing in high-per
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [go-patterns]
 ---
 
 # Go Expert

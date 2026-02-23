@@ -4,6 +4,7 @@ description: Deep expert in the Rust programming language specializing in memory
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
 ---
 
 # Rust Expert

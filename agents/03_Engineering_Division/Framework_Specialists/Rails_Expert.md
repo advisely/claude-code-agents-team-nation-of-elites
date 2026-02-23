@@ -4,6 +4,8 @@ description: Deep expert in the Ruby on Rails framework specializing in ActiveRe
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [rails-patterns]
 ---
 
 # Rails Expert

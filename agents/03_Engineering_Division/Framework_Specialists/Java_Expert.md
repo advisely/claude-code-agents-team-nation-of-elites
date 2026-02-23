@@ -4,6 +4,8 @@ description: Deep expert in Java programming language and ecosystem specializing
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [java-patterns]
 ---
 
 # Java Expert

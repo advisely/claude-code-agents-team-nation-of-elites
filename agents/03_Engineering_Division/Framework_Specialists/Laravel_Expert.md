@@ -4,6 +4,8 @@ description: Deep expert in the Laravel framework specializing in Eloquent ORM, 
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
+skills: [laravel-patterns]
 ---
 
 # Laravel Expert

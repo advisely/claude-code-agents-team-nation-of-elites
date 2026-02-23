@@ -22,15 +22,70 @@ A single, generalist AI, no matter how powerful, lacks the specialized expertise
 
 **The "Nation of Elites" is the solution.** It's not just a collection of agents; it's a fully-realized, virtual IT organization. Each agent has a specific role, a clear mission, and defined responsibilities, mirroring the structure of a high-performing tech company. This allows for unparalleled coordination, deep expertise, and a systematic approach to building software.
 
+## 🖥️ Platform Compatibility
+
+Agents are platform-independent `.md` files — they work identically on **Windows**, **Linux**, **macOS**, and **WSL2**. Both the Claude Code CLI and IDE extensions read from the same `~/.claude/` directory, so your custom agents are available everywhere.
+
+| Interface | Agents Supported | Config Path |
+|-----------|-----------------|-------------|
+| Claude Code CLI (terminal) | Yes | `~/.claude/agents/` |
+| VS Code + Claude Code extension | Yes | Same `~/.claude/agents/` |
+| JetBrains + Claude Code extension | Yes | Same `~/.claude/agents/` |
+
 ## 🚀 Quick Start
 
 Get your AI workforce operational in under one minute.
 
-### Installation
+### Prerequisites
 
-#### 🚀 Quick Install (Recommended - Works Immediately)
+| Platform | Requirement |
+|----------|-------------|
+| **Windows** | [Git for Windows](https://git-scm.com/downloads/win) |
+| **Linux / WSL2** | `git`, `rsync` |
+| **macOS** | `git` (included with Xcode CLI tools) |
 
-**The fastest and most reliable way** - automated deployment script:
+### Step 1: Install Claude Code
+
+<details>
+<summary><strong>Linux / macOS / WSL2</strong></summary>
+
+```bash
+# npm (if Node.js is installed)
+npm install -g @anthropic-ai/claude-code
+
+# Or use the official installer
+curl -fsSL https://claude.ai/install.sh | sh
+```
+
+</details>
+
+<details>
+<summary><strong>Windows (native)</strong></summary>
+
+```powershell
+# PowerShell (recommended)
+irm https://claude.ai/install.ps1 | iex
+
+# Or via WinGet
+winget install Anthropic.ClaudeCode
+```
+
+**Git for Windows is required.** If using a portable Git, set:
+
+```powershell
+$env:CLAUDE_CODE_GIT_BASH_PATH = "C:\Program Files\Git\bin\bash.exe"
+```
+
+</details>
+
+Verify with `claude doctor`.
+
+### Step 2: Deploy the Agents
+
+#### Automated Deployment (Recommended)
+
+<details>
+<summary><strong>Linux / macOS / WSL2 (Bash)</strong></summary>
 
 ```bash
 # Clone and deploy
@@ -41,7 +96,35 @@ bash scripts/deploy_agents.sh
 
 **Done!** All 63 agents are now in `~/.claude/agents/` and ready to use.
 
-#### 🔌 Plugin Installation (Alternative)
+**WSL2 note:** The path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
+
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+# Clone and deploy
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
+powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
+```
+
+**Done!** All 63 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
+
+Optional parameters:
+
+```powershell
+# Use a custom fork
+.\scripts\deploy_agents.ps1 -RepoUrl "https://github.com/myorg/my-fork.git"
+
+# Full wipe of ~/.claude before deploying (DANGEROUS)
+.\scripts\deploy_agents.ps1 -ForceWipe
+```
+
+</details>
+
+#### Plugin Installation (Alternative)
 
 **For Claude Code v2 plugin system**:
 
@@ -67,29 +150,44 @@ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.g
 **Important**: You **must** add the marketplace source first (Step 1) before installing. If you skip this step, `/plugin install` will fail with "Marketplace not found".
 
 **Plugin Benefits:**
-- ✅ Integrated with Claude Code plugin system
-- ✅ Easy enable/disable per project
-- ✅ Automatic updates (when marketplace is live)
-- ✅ Reduced context overhead with toggling
+- Integrated with Claude Code plugin system
+- Easy enable/disable per project
+- Automatic updates (when marketplace is live)
+- Reduced context overhead with toggling
 
-#### 🔧 Manual Installation (Alternative)
+#### Manual Installation (Alternative)
 
-**Step-by-step manual deployment:**
+<details>
+<summary><strong>Linux / macOS / WSL2</strong></summary>
 
 ```bash
-# Clone repository
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 
-# Deploy agents
 mkdir -p ~/.claude
 cp -r agents ~/.claude/agents
 
 # Validate
-test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "✓ Installation successful"
+test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Installation successful"
 ```
 
-**WSL2 note:** The path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
+
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\agents" | Out-Null
+Copy-Item -Recurse -Force agents\* "$env:USERPROFILE\.claude\agents\"
+
+# Validate
+Test-Path "$env:USERPROFILE\.claude\agents\07_Orchestrators\Tech_Lead_Orchestrator.md"
+```
+
+</details>
 
 ### Using the Agents
 
@@ -145,6 +243,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 - **Skills API** (2025): `/v1/skills` endpoints for programmatic skill management
 - **Claude Opus 4.6** (Feb 2026): Agent Teams, adaptive thinking, 1M token context
 - **Modular Rules** (Feb 2026): Domain-specific rule files (50-100 lines each) for reduced context overhead
+- **Persistent Agent Memory** (Feb 2026): 7 key agents build institutional knowledge across sessions via `memory: project`
+- **Skills Preloading** (Feb 2026): 18 specialists preload matching skills at startup via `skills:` frontmatter
+- **Permission Modes** (Feb 2026): 16 code-writing agents use `permissionMode: acceptEdits` for frictionless flow
+- **CATIA MCP Connector** (Feb 2026): Claude-to-CATIA v5 (COM/VBA) and v6 (3DEXPERIENCE) integration support
 
 ```
 /agents
@@ -313,7 +415,7 @@ This means Claude only loads what it needs, when it needs it. A skill library of
 - 🎨 **artifacts-builder** - React/Tailwind components
 - 🖼️ **canvas-design** - Visual art creation
 
-**Custom Nation of Elites Skills** (17 included):
+**Custom Nation of Elites Skills** (27 included):
 
 **Framework Patterns (8 skills):**
 - 🐍 **django-patterns** - Django ORM, DRF, authentication, testing
@@ -359,11 +461,14 @@ This means Claude only loads what it needs, when it needs it. A skill library of
 Skills are automatically installed by the deployment script:
 
 ```bash
+# Linux / macOS / WSL2
 bash scripts/deploy_agents.sh
-# Installs both agents AND skills
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 ```
 
-For detailed skills documentation, see **[SKILLS.md](SKILLS.md)**.
+Both scripts install agents AND skills. For detailed skills documentation, see **[SKILLS.md](SKILLS.md)**.
 
 ## 📚 Documentation
 
@@ -407,16 +512,30 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for detailed guidelines on:
 See the **[Migration Guide](MIGRATION_GUIDE.md)** for detailed instructions.
 
 **Quick Upgrade (Recommended):**
+
+<details>
+<summary><strong>Linux / macOS / WSL2</strong></summary>
+
 ```bash
-# Clone the latest version
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
-
-# Deploy (overwrites old agents with v2.0)
 bash scripts/deploy_agents.sh
 ```
 
-**All 63 agents are v3.3.0 compatible** with both:
+</details>
+
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
+powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
+```
+
+</details>
+
+**All 63 agents are v3.4.0 compatible** with both:
 - Natural language invocation (new)
 - Explicit agent mentions (legacy - still works)
 
@@ -443,6 +562,6 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v3.3.0** - 63 Specialized Agents | Modular Rules | Rust & UE5 Experts | Opus 4.6 Agent Teams | 10/10 SDK Compliance
+**The Nation of Elites v3.4.0** - 63 Specialized Agents | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
 
 **Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)
