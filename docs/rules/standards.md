@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # haiku (fast read-only) | sonnet (general) | opus (orchestration)
+model: sonnet  # sonnet (fast read-only / general) | opus (orchestration)
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -59,7 +59,7 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `skills: [...]` | Framework specialists with matching skills |
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
-| `model: haiku` | Fast read-only exploration agents |
+| `model: sonnet` | Fast read-only exploration agents |
 | `model: opus` | Only orchestrators and executive agents (max 3-4) |
 
 ## Automatic Documentation Updates
