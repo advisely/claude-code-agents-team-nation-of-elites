@@ -254,6 +254,14 @@ See [templates/](templates/) for project scaffolding.
   - Django testing with pytest-django
   - Coverage reporting
 
+#### Quality Assurance (1 skill) - NEW in v3.5.0
+- **silent-failure-audit** - Detect silent failures in status/health/detection code
+  - 7 mandatory checks for truthfulness of status reports
+  - Catches hardcoded status, swallowed errors, stale data, no-op handlers
+  - Security checks for info disclosure, persistence integrity, status spoofing
+  - Environment-diversity test case templates
+  - CLAUDE.md template for project-level enforcement
+
 #### Workflow Automation (3 skills) - NEW in v3.2.0
 - **feature-workflow** - Complete 7-phase development workflow
   - Plan → Implement → Test → Validate Edge Cases → Simplify → Review → Document
@@ -399,17 +407,17 @@ the PDF content into context.
 
 **Code Excellence Guild:**
 - `documentation-specialist` → pdf, docx, pptx, xlsx
-- `code-reviewer` → security-audit, framework best practices
+- `code-reviewer` → security-audit, silent-failure-audit, framework best practices
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion
-- `qa-engineer` → webapp-testing
-- `automated-test-scripter` → webapp-testing, test patterns
+- `qa-engineer` → webapp-testing, silent-failure-audit
+- `automated-test-scripter` → webapp-testing, silent-failure-audit, test patterns
 - `visual-regression-specialist` → canvas-design, artifacts-builder
 
 ### SecOps & Infrastructure Division
 - `devops-engineer` → github-actions, kubernetes patterns
-- `cyber-sentinel` → security-audit (primary user)
+- `cyber-sentinel` → security-audit, silent-failure-audit (primary users)
 - `cloud-architect` → cloud deployment patterns
 
 ### Orchestrators
@@ -647,6 +655,11 @@ Before installing a skill:
 - Feature workflow, quick-fix, and PR-ready workflow automation skills
 - Core language patterns: Node.js, Python, FastAPI, Express, TypeScript, Vite, Zustand
 - 7 new skills bringing total to 27 custom skills
+
+### ✅ v3.5 (Released)
+- Silent failure audit skill for detecting truthfulness gaps in status/health/detection code
+- 7 mandatory checks, security patterns, environment-diversity test templates
+- 1 new skill bringing total to 28 custom skills
 
 ### v4.0 (Next)
 - Opus 4.6 Agent Teams integration in skill workflows

@@ -75,7 +75,13 @@ See [agent-selection.md](docs/rules/agent-selection.md) for details on new featu
 
 ## Agent Skills Integration (v3.4)
 
-**27 custom skills** + 9 official Anthropic skills using progressive disclosure (3-level loading). Framework specialists now preload their matching skills via the `skills:` frontmatter field. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md) for details.
+**28 custom skills** + 9 official Anthropic skills using progressive disclosure (3-level loading). Framework specialists now preload their matching skills via the `skills:` frontmatter field. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md) for details.
+
+### Silent Failure Prevention (v3.5)
+
+The `silent-failure-audit` skill provides cross-project protection against code that passes all tests but lies about reality. It is loaded automatically by `code-reviewer`, `cyber-sentinel`, `qa-engineer`, and `automated-test-scripter` when reviewing status/health/detection code. No per-project CLAUDE.md changes required — the skill travels with the agents.
+
+For projects that want stricter enforcement, add the "Silent Failure Prevention" section from the skill's CLAUDE.md template to your project's CLAUDE.md.
 
 ## Platform Compatibility
 

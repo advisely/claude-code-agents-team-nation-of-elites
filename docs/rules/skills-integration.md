@@ -26,12 +26,13 @@
 - `documentation-specialist` → pdf, docx, pptx skills
 
 **Quality Assurance:**
-- `qa-engineer`, `automated-test-scripter` → webapp-testing skill
+- `qa-engineer`, `automated-test-scripter` → webapp-testing, silent-failure-audit skills
 - `visual-regression-specialist` → canvas-design, artifacts-builder skills
+- `code-reviewer` → security-audit, silent-failure-audit skills
 
 **SecOps & Infrastructure:**
 - `devops-engineer` → github-actions, kubernetes-deployment skills
-- `cyber-sentinel` → security-audit, owasp-checklist skills
+- `cyber-sentinel` → security-audit, owasp-checklist, silent-failure-audit skills
 
 **Orchestrators:**
 - `integration-specialist` → mcp-builder skill for external integrations
