@@ -439,7 +439,7 @@ bash scripts/deploy_agents.sh
 ```
 
 **What Gets Installed:**
-- `~/.claude/agents/` - All 63 agents
+- `~/.claude/agents/` - All 64 agents
 - `~/.claude/skills/` - Official + custom skills
 
 ### Manual Installation

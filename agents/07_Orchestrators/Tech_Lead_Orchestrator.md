@@ -41,7 +41,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - For TypeScript React projects: use `react-typescript-expert` instead of `react-expert`
    - For Java/Spring projects: use `java-expert` for enterprise Java development
    - For database projects: use `database-expert` for schema design, optimization, and data architecture
-   - For construction/BIM projects: engage `autodesk-cloud-construction-expert` or `catia-design-expert`
+   - For construction/BIM projects: engage `autodesk-cloud-construction-expert`, `revit-bim-expert`, or `catia-design-expert`
    - For cryptocurrency/blockchain projects: use `crypto-api-developer` for DeFi, smart contracts, and crypto trading systems
     - For Rust/systems programming: use `rust-expert` for memory-safe systems, high-performance concurrent applications
     - For Unreal Engine 5 projects: use `unreal-engine-expert` for C++ gameplay, Blueprints, Nanite/Lumen, GAS multiplayer
@@ -251,6 +251,7 @@ Skills are invoked automatically by Claude when relevant to the current task:
 | Java/Spring development | `java-expert` | Enterprise Java and Spring Framework implementation |
 | Database projects | `database-expert` | Schema design, optimization, and data architecture |
 | Construction/BIM projects | `autodesk-cloud-construction-expert` | ACC/BIM coordination and workflows |
+| Revit BIM automation | `revit-bim-expert` | Revit API, pyRevit, Dynamo, parametric families |
 | CATIA design integration | `catia-design-expert` | CATIA design system integration |
 | Cryptocurrency/blockchain development | `crypto-api-developer` | DeFi protocols, smart contracts, and crypto trading systems |
 | General programming tasks | `noe-general-purpose` | Multi-language/framework support |

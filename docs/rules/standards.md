@@ -2,12 +2,12 @@
 
 ## Claude Code CLI Alignment
 
-This multi-agent system is designed to work seamlessly with Anthropic's Claude Code CLI, following these key principles:
+This multi-agent system follows these key principles:
 
 - **Agent Metadata** - All agents include proper name, description, and tools configuration
 - **Context Awareness** - Agents understand their role within the larger system
 - **Delegation Patterns** - Clear handoff mechanisms between specialized agents
-- **Tool Integration** - Proper use of Claude Code CLI tools (LS, Read, Grep, Glob, Bash)
+- **Tool Integration** - Proper use of Claude Code CLI tools (Read, Grep, Glob, Bash, Write, Edit)
 
 ## Compliant Agent Structure (Feb 2026 Official Spec)
 
@@ -64,17 +64,13 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 
 ## Automatic Documentation Updates
 
-Key agents automatically maintain project documentation:
+Key agents automatically maintain project documentation without manual intervention:
 - **Backend/Frontend Developers**: Update CLAUDE.md, PLAN.md, CHANGELOG.md after implementation
 - **Code Reviewer**: Updates quality status, security findings, and review completion
 - **DevOps Engineer**: Updates CI/CD configuration, infrastructure status, and deployment milestones
 - **Tech Lead Orchestrator**: Updates team assignments, decisions, and orchestration phases
 
-## Standardized Documentation Files
-
-- **CLAUDE.md**: Project configuration, team assignments, implementation status, architecture decisions
-- **PLAN.md**: Current plan-of-record, milestones, task status, dependencies, risk mitigation
-- **CHANGELOG.md**: Chronological record of features, changes, fixes, and major decisions
+Standard documentation files: `CLAUDE.md` (project config), `PLAN.md` (plan-of-record), `CHANGELOG.md` (version history).
 
 ## Modular Rule Files (Best Practice)
 

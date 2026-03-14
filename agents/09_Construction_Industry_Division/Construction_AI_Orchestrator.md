@@ -6,6 +6,7 @@ description: |
   for cost estimation, quantity takeoff, and BIM coordination with phased implementation approach.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
 ---
 
 # Construction AI Orchestrator

@@ -17,7 +17,7 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles. Ag
 - **AI Strategist**: AI implementation planning, model selection, ethical considerations
 
 ### Medium-Low Complexity (200–300 tokens)
-- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems/Crypto API experts
+- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems/Crypto API/Revit BIM experts
 - **DevOps Engineer**: Pipeline design, deployment strategies, tool selection tradeoffs
 - **Cyber Sentinel**: Security analysis, threat modeling, compliance requirements
 - **Infrastructure Specialist**: Infrastructure design, monitoring setup, performance tuning

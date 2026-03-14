@@ -1,7 +1,7 @@
 {
   "name": "nation-of-elites",
-  "description": "A complete 63-agent AI workforce organized like a real IT company. Includes executive leadership, strategic planning, project management, engineering teams, QA, SecOps, AI/ML specialists, mobile development, construction AI, persistent agent memory, and skills preloading.",
-  "version": "3.4.0",
+  "description": "A complete 64-agent AI workforce organized like a real IT company. Includes executive leadership, strategic planning, project management, engineering teams, QA, SecOps, AI/ML specialists, mobile development, construction AI, Revit BIM, persistent agent memory, and skills preloading.",
+  "version": "3.5.1",
   "keywords": ["multi-agent", "enterprise", "orchestration", "workflow", "skills"],
   "author": {
     "name": "Yassine Boumiza",

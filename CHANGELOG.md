@@ -5,6 +5,51 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-03-13] - Revit BIM Expert & Standards Alignment (v3.5.1)
+
+### Added
+
+- **`revit-bim-expert`** agent (64th agent) - Revit API specialist: pyRevit IronPython/C# scripting, Dynamo visual programming, Autodesk Platform Services (APS/Forge) cloud workflows, MCP connectors for Claude-to-Revit integration
+- Updated Tech Lead Orchestrator delegation table with Revit BIM routing
+
+### Fixed
+
+- **Standards alignment**: Corrected agent counts across all documentation
+  - Framework Specialists: 16 -> 19
+  - Engineering Division: 25 -> 31
+  - Total agents: 63 -> 64
+- **Missing `permissionMode: acceptEdits`** on `autodesk-cloud-construction-expert` and `construction-ai-orchestrator`
+
+### Changed
+
+- **CLAUDE.md optimized**: Reduced from 329 -> 56 lines (85% token reduction) while preserving all essential information
+- **Organization rule file**: Updated agent counts and added Revit BIM Expert to roster
+
+### Stats
+
+- **Total Agents**: 63 -> 64 (+1 agent)
+- **Engineering Division**: 25 -> 31 agents (corrected count)
+- **Framework Specialists**: 16 -> 19 (corrected count)
+- **Files changed**: 14 (1 new agent + 13 modified)
+
+---
+
+## [2026-03-01] - Silent Failure Audit Skill (v3.5.0)
+
+### Added
+
+- **`silent-failure-audit`** skill - Cross-project truthfulness verification for status/health/detection code
+  - Automatically loaded by `code-reviewer`, `cyber-sentinel`, `qa-engineer`, and `automated-test-scripter`
+  - Detects code that passes tests but lies about reality (phantom detections, mock-only validation, silent swallowing)
+  - No per-project CLAUDE.md changes required - the skill travels with the agents
+
+### Stats
+
+- **Total Agents**: 63 (unchanged)
+- **Total Skills**: 27 -> 28 (+1 skill)
+
+---
+
 ## [2026-02-22] - Official Spec Compliance, Persistent Memory & Skills Preloading (v3.4.0)
 
 ### Major Update - Feb 2026 Official Spec Alignment

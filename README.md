@@ -94,7 +94,7 @@ cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**Done!** All 63 agents are now in `~/.claude/agents/` and ready to use.
+**Done!** All 64 agents are now in `~/.claude/agents/` and ready to use.
 
 **WSL2 note:** The path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
 
@@ -110,7 +110,7 @@ cd claude-code-agents-team-nation-of-elites
 powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 ```
 
-**Done!** All 63 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
+**Done!** All 64 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
 
 Optional parameters:
 
@@ -230,7 +230,7 @@ claude "Use the project-sponsor to define business objectives, program-manager t
 
 ## 🏛️ Team Structure and Workflow
 
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **63 specialized agents** across **10 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), Rust systems programming, Unreal Engine 5 development, and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
+The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **64 specialized agents** across **10 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), Rust systems programming, Unreal Engine 5 development, Revit BIM automation, and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
 
 ### 🚀 Claude Agent SDK Aligned Features (2025 Updates)
 - **Subagent Coordination**: Parallel information gathering with isolated context windows
@@ -277,10 +277,10 @@ The "Nation of Elites" is organized hierarchically to mirror a real-world IT com
 -   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
 -   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
 -   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division` (25 agents)**: The core builders with specialized teams:
+-   **`03_Engineering_Division` (31 agents)**: The core builders with specialized teams:
     - **Core Development Team** (4 agents): API Architect, Backend Developer, Frontend Developer, GraphQL Architect
-    - **Framework Specialists** (16 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, Unreal Engine 5, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk/CATIA experts
-    - **Code Excellence Guild** (5 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
+    - **Framework Specialists** (19 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, Unreal Engine 5, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk ACC, CATIA, Revit BIM experts
+    - **Code Excellence Guild** (8 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
 -   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
 -   **`05_SecOps_and_Infrastructure_Division` (9 agents)**: Deploys the application to a secure, scalable production environment with SRE practices, comprehensive observability, platform engineering for developer experience, and specialized infrastructure/messaging/storage security expertise.
 -   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
@@ -386,7 +386,7 @@ The Nation of Elites features **automatic project documentation updates**. Key a
 
 | Aspect | **Agents** | **Skills** |
 |--------|------------|------------|
-| **What** | Team members (63 specialists) | Training manuals & toolkits |
+| **What** | Team members (64 specialists) | Training manuals & toolkits |
 | **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
 | **How** | Orchestrate & execute | Provide procedures & code |
 | **Loading** | Task-based spawning | Progressive disclosure (efficient) |
@@ -535,7 +535,7 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 
 </details>
 
-**All 63 agents are v3.4.0 compatible** with both:
+**All 64 agents are v3.5.1 compatible** with both:
 - Natural language invocation (new)
 - Explicit agent mentions (legacy - still works)
 
@@ -562,6 +562,6 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v3.4.0** - 63 Specialized Agents | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
+**The Nation of Elites v3.5.1** - 64 Specialized Agents | Revit BIM Expert | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
 
 **Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)

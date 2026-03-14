@@ -1,6 +1,6 @@
 # Organizational Structure
 
-The Nation of Elites consists of **63 specialized agents** organized across **10 divisions**:
+The Nation of Elites consists of **64 specialized agents** organized across **10 divisions**:
 
 ## 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -18,10 +18,10 @@ The Nation of Elites consists of **63 specialized agents** organized across **10
 ## 02_Project_Management_Office (1 agent)
 - `project-manager-scrum-master` - Agile delivery, sprint management, and impediment removal
 
-## 03_Engineering_Division (25 agents)
+## 03_Engineering_Division (31 agents)
 **Core Development Team** (4): `api-architect`, `backend-developer`, `frontend-developer`, `graphql-architect`
 
-**Framework Specialists** (16): `django-expert`, `laravel-expert`, `rails-expert`, `react-expert`, `react-typescript-expert`, `vue-expert`, `nextjs-expert`, `java-expert`, `database-expert`, `tailwind-css-expert`, `go-expert`, `rust-expert`, `unreal-engine-expert`, `financial-systems-expert`, `crypto-api-developer`, `autodesk-cloud-construction-expert`, `catia-design-expert`, `antd-ui-developer`
+**Framework Specialists** (19): `django-expert`, `laravel-expert`, `rails-expert`, `react-expert`, `react-typescript-expert`, `vue-expert`, `nextjs-expert`, `java-expert`, `database-expert`, `tailwind-css-expert`, `go-expert`, `rust-expert`, `unreal-engine-expert`, `financial-systems-expert`, `crypto-api-developer`, `autodesk-cloud-construction-expert`, `catia-design-expert`, `antd-ui-developer`, `revit-bim-expert`
 
 **Code Excellence Guild** (8): `code-reviewer`, `documentation-specialist`, `performance-optimizer`, `code-archaeologist`, `accessibility-specialist`, `noe-general-purpose`, `noe-statusline-setup`, `output-style-setup`
 

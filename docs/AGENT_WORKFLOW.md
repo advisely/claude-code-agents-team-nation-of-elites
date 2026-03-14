@@ -59,6 +59,7 @@ Documentation Specialist (Final Documentation)
   - **Tailwind CSS Expert**: Utility-first CSS styling
   - **CATIA Design Expert**: 3D CAD modeling and EKL scripting
   - **Autodesk Cloud Construction Expert**: Construction management and BIM coordination
+  - **Revit BIM Expert**: Revit API add-in development, pyRevit, Dynamo, parametric families
 
 ### Quality & Operations
 - **QA Engineer**: Automated validation implementation

@@ -4,6 +4,7 @@ description: Deep expert in Autodesk Construction Cloud (ACC) platform specializ
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
+permissionMode: acceptEdits
 ---
 
 # Autodesk Cloud Construction Expert
