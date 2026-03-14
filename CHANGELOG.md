@@ -5,6 +5,51 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-03-14] - Semgrep SAST & Universal Pipelines (v3.6.0)
+
+### Added
+
+- **`semgrep-sast`** skill - Semgrep SAST scanning via CLI and MCP plugin integration
+  - Default, OWASP, and secrets rule packs
+  - Custom rule writing with pattern operators
+  - Supply chain / dependency vulnerability scanning
+  - CI/CD integration templates (GitHub Actions)
+  - Severity mapping to NoE quality gates
+
+- **`pipeline-quality`** skill - Universal quality gate pipeline
+  - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
+  - 6-step gate: lint, type check, Semgrep SAST, tests, supply chain, dependency audit
+  - Desktop (Electron+Python) and cloud (web/API) variants
+
+- **`pipeline-full-build`** skill - Universal full build pipeline
+  - 8-step pipeline: version bump, quality gate, build, compile, package, CI, release, post-release
+  - Desktop variant (Electron packaging) and cloud variant (Docker/K8s)
+
+### Changed
+
+- **Agent updates** - Added Semgrep and pipeline skills to 5 agents:
+  - `cyber-sentinel`: +semgrep-sast
+  - `code-reviewer`: +semgrep-sast, +pipeline-quality (plus Semgrep in automated pass workflow)
+  - `qa-engineer`: +semgrep-sast, +pipeline-quality
+  - `automated-test-scripter`: +semgrep-sast
+  - `devops-engineer`: +semgrep-sast, +pipeline-quality, +pipeline-full-build
+
+- **Deployment scripts** - Both bash and PowerShell now:
+  - Check for Semgrep CLI installation and token configuration
+  - Validate semgrep-sast and pipeline skills deployment
+  - Report Semgrep status in deployment output
+
+- **`pr-ready`** skill updated with Semgrep SAST scan step in security checks
+- **`security-audit`** skill updated with Semgrep reference in static analysis tools
+
+### Stats
+
+- **Total Agents**: 64 (unchanged)
+- **Total Skills**: 28 -> 31 (+3 skills)
+- **Agents updated**: 5
+
+---
+
 ## [2026-03-13] - Revit BIM Expert & Standards Alignment (v3.5.1)
 
 ### Added

@@ -4,6 +4,7 @@ description: MUST BE USED to run a rigorous, security-aware review after every f
 tools: Read, Grep, Glob, Bash
 model: sonnet
 memory: project
+skills: [semgrep-sast, pipeline-quality]
 ---
 
 # Code‑Reviewer – High‑Trust Quality Gate
@@ -21,6 +22,7 @@ Guarantee that all code merged to the mainline is **secure, maintainable, perfor
 
 2. **Automated Pass (quick)**
    • Grep for TODO/FIXME, debug prints, hard‑coded secrets.
+   • Run Semgrep SAST scan (`semgrep scan --config auto .`) when available.
    • Bash‑run linters or `npm test`, `pytest`, `go test` when available.
 
 3. **Deep Analysis**

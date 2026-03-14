@@ -34,7 +34,13 @@ npx tsc --noEmit || mypy . || pyright
 ```
 
 #### Step 4: Security Scan
+Run Semgrep SAST scan (if available):
+```bash
+semgrep scan --config auto --error .
+```
+
 Check for:
+- [ ] Semgrep findings (ERROR severity blocks merge)
 - [ ] Hardcoded secrets (API keys, passwords, tokens)
 - [ ] SQL injection vulnerabilities
 - [ ] XSS vulnerabilities

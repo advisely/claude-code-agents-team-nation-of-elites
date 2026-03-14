@@ -202,13 +202,35 @@ See [templates/](templates/) for project scaffolding.
   - TypeScript integration
   - Professional dashboard components
 
-#### Security & DevOps (4 skills)
+#### Security & DevOps (7 skills)
 - **security-audit** - OWASP Top 10 security checklist
   - OWASP Top 10 (2021) comprehensive checklist
   - Authentication and authorization patterns
   - Input validation and sanitization
   - Cryptographic best practices
   - Security logging and monitoring
+
+- **semgrep-sast** - Semgrep SAST scanning and MCP plugin integration - NEW in v3.6.0
+  - Static analysis security testing via Semgrep CLI and MCP plugin
+  - Default, OWASP, and secrets rule packs
+  - Custom rule writing with pattern operators
+  - Supply chain / dependency vulnerability scanning
+  - CI/CD integration templates (GitHub Actions)
+  - Severity mapping to NoE quality gates
+
+- **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0
+  - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
+  - 6-step gate: lint, type check, Semgrep SAST, tests, supply chain, dependency audit
+  - Desktop (Electron+Python) and cloud (web/API) variants
+  - CI/CD template for GitHub Actions
+  - Standardized output report format
+
+- **pipeline-full-build** - Universal full build pipeline - NEW in v3.6.0
+  - 8-step pipeline: version bump, quality gate, build, compile, package, CI, release, post-release
+  - Desktop variant: Electron packaging (Windows/macOS/Linux)
+  - Cloud variant: Docker build, registry push, Kubernetes deploy
+  - GitHub Release creation with artifact upload
+  - Standardized build report format
 
 - **github-actions** - CI/CD pipeline templates
   - Node.js CI/CD pipelines
@@ -254,7 +276,7 @@ See [templates/](templates/) for project scaffolding.
   - Django testing with pytest-django
   - Coverage reporting
 
-#### Quality Assurance (1 skill) - NEW in v3.5.0
+#### Quality Assurance (1 skill)
 - **silent-failure-audit** - Detect silent failures in status/health/detection code
   - 7 mandatory checks for truthfulness of status reports
   - Catches hardcoded status, swallowed errors, stale data, no-op handlers
@@ -407,17 +429,17 @@ the PDF content into context.
 
 **Code Excellence Guild:**
 - `documentation-specialist` → pdf, docx, pptx, xlsx
-- `code-reviewer` → security-audit, silent-failure-audit, framework best practices
+- `code-reviewer` → security-audit, silent-failure-audit, semgrep-sast, pipeline-quality
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion
-- `qa-engineer` → webapp-testing, silent-failure-audit
-- `automated-test-scripter` → webapp-testing, silent-failure-audit, test patterns
+- `qa-engineer` → webapp-testing, silent-failure-audit, semgrep-sast, pipeline-quality
+- `automated-test-scripter` → webapp-testing, silent-failure-audit, semgrep-sast
 - `visual-regression-specialist` → canvas-design, artifacts-builder
 
 ### SecOps & Infrastructure Division
-- `devops-engineer` → github-actions, kubernetes patterns
-- `cyber-sentinel` → security-audit, silent-failure-audit (primary users)
+- `devops-engineer` → github-actions, kubernetes patterns, semgrep-sast, pipeline-quality, pipeline-full-build
+- `cyber-sentinel` → security-audit, silent-failure-audit, semgrep-sast (primary users)
 - `cloud-architect` → cloud deployment patterns
 
 ### Orchestrators
@@ -654,12 +676,19 @@ Before installing a skill:
 ### ✅ v3.2 (Released)
 - Feature workflow, quick-fix, and PR-ready workflow automation skills
 - Core language patterns: Node.js, Python, FastAPI, Express, TypeScript, Vite, Zustand
-- 7 new skills bringing total to 27 custom skills
+- 7 new skills bringing total to 28 custom skills
 
 ### ✅ v3.5 (Released)
 - Silent failure audit skill for detecting truthfulness gaps in status/health/detection code
 - 7 mandatory checks, security patterns, environment-diversity test templates
 - 1 new skill bringing total to 28 custom skills
+
+### ✅ v3.6 (Released)
+- Semgrep SAST skill with MCP plugin integration for automated security scanning
+- Universal pipeline-quality skill: auto-detect stack, lint + Semgrep + tests + audit
+- Universal pipeline-full-build skill: version bump through release for desktop and cloud
+- 3 new skills bringing total to 31 custom skills
+- Updated agents: cyber-sentinel, code-reviewer, qa-engineer, automated-test-scripter, devops-engineer
 
 ### v4.0 (Next)
 - Opus 4.6 Agent Teams integration in skill workflows

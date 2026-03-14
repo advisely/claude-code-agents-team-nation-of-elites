@@ -158,13 +158,34 @@ if (-not (Test-Path $pdfSkill) -and -not (Test-Path $docxSkill)) {
     Write-Ok "Anthropic skills already installed (skipping)"
 }
 
-# --- 5. Validate ---
+# --- 5. Semgrep Check ---
+Write-Banner "Semgrep SAST Check"
+
+$semgrepCmd = Get-Command semgrep -ErrorAction SilentlyContinue
+if ($semgrepCmd) {
+    $sgVersion = & semgrep --version 2>$null
+    Write-Ok "Semgrep installed: v$sgVersion"
+
+    # Check for Semgrep token
+    $semgrepSettings = Join-Path (Join-Path $env:USERPROFILE ".semgrep") "settings.yml"
+    if (Test-Path $semgrepSettings) {
+        Write-Ok "Semgrep token configured ($semgrepSettings)"
+    } else {
+        Write-Warn "Semgrep token not found. Run 'semgrep login' to authenticate for full rule access."
+    }
+} else {
+    Write-Warn "Semgrep not installed. Install with: pip install semgrep"
+    Write-Info "Semgrep SAST skill is deployed but CLI scanning requires the semgrep binary."
+    Write-Info "The Semgrep MCP plugin (if enabled in Claude Code) works independently."
+}
+
+# --- 6. Validate ---
 Write-Banner "Validating Installation"
 
 $failed = $false
 
 # Canonical orchestrator
-$orchestrator = Join-Path $AgentsDst "07_Orchestrators" "Tech_Lead_Orchestrator.md"
+$orchestrator = Join-Path (Join-Path $AgentsDst "07_Orchestrators") "Tech_Lead_Orchestrator.md"
 if (Test-Path $orchestrator) {
     Write-Ok "Tech Lead Orchestrator present (canonical)"
 } else {
@@ -173,7 +194,7 @@ if (Test-Path $orchestrator) {
 }
 
 # No deprecated orchestrator
-$deprecated = Select-String -Path (Join-Path $AgentsDst "**" "*.md") -Pattern "tech-lead-orchestrator-deprecated" -ErrorAction SilentlyContinue
+$deprecated = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Select-String -Pattern "tech-lead-orchestrator-deprecated" -ErrorAction SilentlyContinue
 if ($deprecated) {
     Write-Warn "Found deprecated orchestrator entries"
     $failed = $true
@@ -199,6 +220,23 @@ if (Test-Path $SkillsDst) {
     } else {
         Write-Warn "Low skills count: $skillCount (installation may be incomplete)"
     }
+}
+
+# Semgrep SAST skill
+$semgrepSkill = Join-Path (Join-Path $SkillsDst "semgrep-sast") "SKILL.md"
+if (Test-Path $semgrepSkill) {
+    Write-Ok "Semgrep SAST skill deployed"
+} else {
+    Write-Warn "Semgrep SAST skill not found at $semgrepSkill"
+}
+
+# Pipeline skills
+$pipelineQuality = Join-Path (Join-Path $SkillsDst "pipeline-quality") "SKILL.md"
+$pipelineBuild = Join-Path (Join-Path $SkillsDst "pipeline-full-build") "SKILL.md"
+if ((Test-Path $pipelineQuality) -and (Test-Path $pipelineBuild)) {
+    Write-Ok "Pipeline skills deployed (quality + full-build)"
+} else {
+    Write-Warn "Pipeline skills not fully deployed"
 }
 
 if ($failed) {

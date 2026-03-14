@@ -392,7 +392,8 @@ def fetch_url(user_url):
 
 ## Security Tools
 
-**Static Analysis:**
+**Static Analysis (SAST):**
+- Semgrep (multi-language) — see [semgrep-sast](../semgrep-sast/SKILL.md) skill for detailed usage
 - Bandit (Python)
 - ESLint security plugin (JavaScript)
 - SonarQube

@@ -415,7 +415,7 @@ This means Claude only loads what it needs, when it needs it. A skill library of
 - 🎨 **artifacts-builder** - React/Tailwind components
 - 🖼️ **canvas-design** - Visual art creation
 
-**Custom Nation of Elites Skills** (27 included):
+**Custom Nation of Elites Skills** (31 included):
 
 **Framework Patterns (8 skills):**
 - 🐍 **django-patterns** - Django ORM, DRF, authentication, testing
@@ -431,8 +431,11 @@ This means Claude only loads what it needs, when it needs it. A skill library of
 - 🎨 **tailwind-patterns** - Tailwind utility-first CSS, responsive design
 - 🐜 **antd-patterns** - Ant Design React components, enterprise UI
 
-**Security & DevOps (4 skills):**
+**Security & DevOps (7 skills):**
 - 🔒 **security-audit** - OWASP Top 10 security checklist
+- 🛡️ **semgrep-sast** - Semgrep SAST scanning + MCP plugin integration
+- 🔬 **pipeline-quality** - Universal quality gate (lint + Semgrep + tests + audit)
+- 📦 **pipeline-full-build** - Universal build pipeline (desktop + cloud variants)
 - 🚀 **github-actions** - CI/CD pipeline templates
 - ☸️ **kubernetes-deployment** - K8s deployments, autoscaling, services
 - 🏗️ **terraform-patterns** - Infrastructure as Code, modules
@@ -453,7 +456,8 @@ This means Claude only loads what it needs, when it needs it. A skill library of
 - **React Expert** → react-patterns (component architecture)
 - **QA Engineer** → webapp-testing (automated UI tests)
 - **DevOps Engineer** → github-actions (deployment pipelines)
-- **Cyber Sentinel** → security-audit (vulnerability scanning)
+- **Cyber Sentinel** → security-audit, semgrep-sast (vulnerability scanning)
+- **DevOps Engineer** → pipeline-quality, pipeline-full-build (build pipelines)
 - **Integration Specialist** → mcp-builder (external integrations)
 
 ### Installation
@@ -535,7 +539,7 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 
 </details>
 
-**All 64 agents are v3.5.1 compatible** with both:
+**All 64 agents are v3.6.0 compatible** with both:
 - Natural language invocation (new)
 - Explicit agent mentions (legacy - still works)
 
@@ -562,6 +566,6 @@ Distributed under the MIT License with a friendly request for attribution. See *
 
 ---
 
-**The Nation of Elites v3.5.1** - 64 Specialized Agents | Revit BIM Expert | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
+**The Nation of Elites v3.6.0** - 64 Specialized Agents | Semgrep SAST | Universal Pipelines | Revit BIM Expert | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
 
 **Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)

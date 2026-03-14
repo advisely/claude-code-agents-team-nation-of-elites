@@ -47,9 +47,13 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 
 ## Skills System
 
-**28 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
+**31 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
 
 `silent-failure-audit` skill loads automatically on `code-reviewer`, `cyber-sentinel`, `qa-engineer`, and `automated-test-scripter` — no per-project config needed.
+
+`semgrep-sast` skill integrates with the Semgrep MCP plugin for automated SAST scanning. Preloaded on `cyber-sentinel`, `code-reviewer`, `qa-engineer`, `automated-test-scripter`, and `devops-engineer`.
+
+`pipeline-quality` and `pipeline-full-build` skills provide universal, stack-adaptive quality gates and full build pipelines (desktop + cloud variants). Preloaded on `code-reviewer`, `qa-engineer`, and `devops-engineer`.
 
 ## Setup & Usage
 

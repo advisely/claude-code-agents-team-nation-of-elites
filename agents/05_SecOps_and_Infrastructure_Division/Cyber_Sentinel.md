@@ -5,7 +5,7 @@ description: Expert cybersecurity specialist focused on vulnerability identifica
 tools: Read, Grep, Glob, Bash
 model: sonnet
 memory: project
-skills: [security-audit]
+skills: [security-audit, semgrep-sast]
 ---
 
 # Cyber Sentinel

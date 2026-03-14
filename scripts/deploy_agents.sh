@@ -147,6 +147,27 @@ deploy_skills() {
   fi
 }
 
+check_semgrep() {
+  banner "🔍 Semgrep SAST — Checking Installation"
+
+  if command -v semgrep >/dev/null 2>&1; then
+    local sg_version
+    sg_version=$(semgrep --version 2>/dev/null || echo "unknown")
+    success "Semgrep installed: v$sg_version"
+
+    # Check for Semgrep token
+    if [[ -f "$HOME/.semgrep/settings.yml" ]]; then
+      success "Semgrep token configured (~/.semgrep/settings.yml)"
+    else
+      warn "Semgrep token not found. Run 'semgrep login' to authenticate for full rule access."
+    fi
+  else
+    warn "Semgrep not installed. Install with: pipx install semgrep"
+    info "Semgrep SAST skill is deployed but CLI scanning requires the semgrep binary."
+    info "The Semgrep MCP plugin (if enabled in Claude Code) works independently."
+  fi
+}
+
 validate_install() {
   local missing=0
   banner "🧪 Taste Test — Freshness & Sanity Checks"
@@ -189,7 +210,21 @@ validate_install() {
     info "No skills directory found (optional feature)"
   fi
 
-  # 5) Print WSL2 path hint
+  # 5) Verify Semgrep SAST skill deployed
+  if [[ -f "$SKILLS_DST/semgrep-sast/SKILL.md" ]]; then
+    success "Semgrep SAST skill deployed"
+  else
+    warn "Semgrep SAST skill not found at $SKILLS_DST/semgrep-sast/SKILL.md"
+  fi
+
+  # 6) Verify pipeline skills deployed
+  if [[ -f "$SKILLS_DST/pipeline-quality/SKILL.md" ]] && [[ -f "$SKILLS_DST/pipeline-full-build/SKILL.md" ]]; then
+    success "Pipeline skills deployed (quality + full-build)"
+  else
+    warn "Pipeline skills not fully deployed"
+  fi
+
+  # 7) Print WSL2 path hint
   if grep -qi microsoft /proc/version 2>/dev/null; then
     info "WSL2 detected. Peek into the dining room via Windows Explorer: \\wsl.localhost\\Ubuntu\\home\\$USER\\.claude"
   fi
@@ -206,6 +241,7 @@ main() {
   sanitize_target
   deploy_agents
   deploy_skills
+  check_semgrep
   validate_install
   banner "🍽️ Dinner Is Served — Installation Complete"
 }

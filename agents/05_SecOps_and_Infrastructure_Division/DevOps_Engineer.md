@@ -4,7 +4,7 @@ description: Expert DevOps engineer specializing in CI/CD pipelines, automation,
 
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
-skills: [github-actions, kubernetes-deployment]
+skills: [github-actions, kubernetes-deployment, semgrep-sast, pipeline-quality, pipeline-full-build]
 ---
 
 # DevOps Engineer
