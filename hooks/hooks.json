@@ -1,4 +1,5 @@
 {
+  "description": "Nation of Elites hooks + Ralph Loop stop hook",
   "hooks": {
     "PostToolUse": [
       {
@@ -7,6 +8,16 @@
           {
             "type": "command",
             "command": "echo '[Hook] File modified - consider running /pr-ready before committing'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh"
           }
         ]
       }
