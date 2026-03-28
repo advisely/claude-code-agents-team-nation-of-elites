@@ -1,45 +1,56 @@
+<div align="center">
+
 # Claude Code Agents - Team Nation of Elites
 
-<p align="center">
-  <em>Created by: Yassine Boumiza</em>
-</p>
+<img src="banner.png" alt="Nation of Elites Banner" width="600"/>
 
-<p align="center">
-  <img src="banner.png" alt="Nation of Elites Banner" width="600"/>
-</p>
+**An orchestrated AI workforce that functions like a real-world IT company.**
 
-<p align="center">
-  <strong>An orchestrated AI workforce that functions like a real-world IT company.</strong>
-  <br />
-  Supercharge your development with a complete, role-based AI team that can take a project from initial idea to production-ready deployment.
-</p>
+Supercharge your development with a complete, role-based AI team that takes projects from initial idea to production-ready deployment.
+
+[![Agents](https://img.shields.io/badge/agents-64-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
+[![Divisions](https://img.shields.io/badge/divisions-10-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
+[![Skills](https://img.shields.io/badge/skills-31-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
+[![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
+[![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
+[![Version](https://img.shields.io/badge/version-3.7.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+
+*Created by [Yassine Boumiza](https://boumiza.com)*
+
+[Quick Start](#-quick-start) | [Agent Roster](#-complete-agent-roster-by-department) | [Skills](#-agent-skills-system) | [Docs](#-documentation) | [Contributing](#-contributing)
+
+</div>
 
 ---
 
-## 🎯 The Problem & The Solution
+## The Problem & The Solution
 
-A single, generalist AI, no matter how powerful, lacks the specialized expertise and structured workflow of a real-world company. Complex projects require a team of specialists—architects, managers, developers, testers, and security experts—all working in concert.
+A single, generalist AI, no matter how powerful, lacks the specialized expertise and structured workflow of a real-world company. Complex projects require a team of specialists -- architects, managers, developers, testers, and security experts -- all working in concert.
 
-**The "Nation of Elites" is the solution.** It's not just a collection of agents; it's a fully-realized, virtual IT organization. Each agent has a specific role, a clear mission, and defined responsibilities, mirroring the structure of a high-performing tech company. This allows for unparalleled coordination, deep expertise, and a systematic approach to building software.
+**The "Nation of Elites" is the solution.** It's not just a collection of agents; it's a fully-realized, virtual IT organization. Each agent has a specific role, a clear mission, and defined responsibilities, mirroring the structure of a high-performing tech company.
 
-## 🖥️ Platform Compatibility
+---
 
-Agents are platform-independent `.md` files — they work identically on **Windows**, **Linux**, **macOS**, and **WSL2**. Both the Claude Code CLI and IDE extensions read from the same `~/.claude/` directory, so your custom agents are available everywhere.
+## Platform Compatibility
 
-| Interface | Agents Supported | Config Path |
-|-----------|-----------------|-------------|
+Agents are platform-independent `.md` files -- they work identically on **Windows**, **Linux**, **macOS**, and **WSL2**.
+
+| Interface | Supported | Config Path |
+|:---|:---:|:---|
 | Claude Code CLI (terminal) | Yes | `~/.claude/agents/` |
-| VS Code + Claude Code extension | Yes | Same `~/.claude/agents/` |
-| JetBrains + Claude Code extension | Yes | Same `~/.claude/agents/` |
+| VS Code + Claude Code extension | Yes | `~/.claude/agents/` |
+| JetBrains + Claude Code extension | Yes | `~/.claude/agents/` |
 
-## 🚀 Quick Start
+---
+
+## Quick Start
 
 Get your AI workforce operational in under one minute.
 
 ### Prerequisites
 
 | Platform | Requirement |
-|----------|-------------|
+|:---|:---|
 | **Windows** | [Git for Windows](https://git-scm.com/downloads/win) |
 | **Linux / WSL2** | `git`, `rsync` |
 | **macOS** | `git` (included with Xcode CLI tools) |
@@ -88,7 +99,6 @@ Verify with `claude doctor`.
 <summary><strong>Linux / macOS / WSL2 (Bash)</strong></summary>
 
 ```bash
-# Clone and deploy
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
@@ -104,7 +114,6 @@ bash scripts/deploy_agents.sh
 <summary><strong>Windows (PowerShell)</strong></summary>
 
 ```powershell
-# Clone and deploy
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
 powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
@@ -112,50 +121,19 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 
 **Done!** All 64 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
 
-Optional parameters:
-
-```powershell
-# Use a custom fork
-.\scripts\deploy_agents.ps1 -RepoUrl "https://github.com/myorg/my-fork.git"
-
-# Full wipe of ~/.claude before deploying (DANGEROUS)
-.\scripts\deploy_agents.ps1 -ForceWipe
-```
-
 </details>
 
 #### Plugin Installation (Alternative)
 
-**For Claude Code v2 plugin system**:
-
 ```bash
-# Step 1: Add the GitHub marketplace source
-/marketplace add advisely/claude-code-agents-team-nation-of-elites
+# Install as a Claude Code plugin
+/plugin install nation-of-elites@claude-plugins-official
 
-# Step 2: Install the plugin from marketplace
-/plugin install nation-of-elites
-
-# Step 3: Verify installation
-/plugin list
-# Should show: "nation-of-elites v2.0.0"
-```
-
-**Alternative**: Clone directly to plugins directory (bypasses marketplace):
-
-```bash
+# Or clone directly to plugins directory
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
-/plugin list  # Verify it appears
 ```
 
-**Important**: You **must** add the marketplace source first (Step 1) before installing. If you skip this step, `/plugin install` will fail with "Marketplace not found".
-
-**Plugin Benefits:**
-- Integrated with Claude Code plugin system
-- Easy enable/disable per project
-- Automatic updates (when marketplace is live)
-- Reduced context overhead with toggling
-
-#### Manual Installation (Alternative)
+#### Manual Installation
 
 <details>
 <summary><strong>Linux / macOS / WSL2</strong></summary>
@@ -163,12 +141,7 @@ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.g
 ```bash
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
-
-mkdir -p ~/.claude
-cp -r agents ~/.claude/agents
-
-# Validate
-test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Installation successful"
+mkdir -p ~/.claude && cp -r agents ~/.claude/agents
 ```
 
 </details>
@@ -179,393 +152,482 @@ test -f ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md && echo "Ins
 ```powershell
 git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
 cd claude-code-agents-team-nation-of-elites
-
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\agents" | Out-Null
 Copy-Item -Recurse -Force agents\* "$env:USERPROFILE\.claude\agents\"
-
-# Validate
-Test-Path "$env:USERPROFILE\.claude\agents\07_Orchestrators\Tech_Lead_Orchestrator.md"
 ```
 
 </details>
 
 ### Using the Agents
 
-Navigate to your project directory and start using the agents:
-
 ```bash
-mkdir my-new-app
-cd my-new-app
-```
+cd my-project
 
-#### Natural Language Commands (Claude Code v2)
+# Strategic planning - auto-spawns project-sponsor, program-manager, product-manager
+claude "Initialize a new e-commerce project. Define goals, roadmap, and tech stack."
 
-Simply describe what you need and Claude will automatically select and spawn the appropriate agents:
-
-```bash
-# Strategic planning - automatically spawns project-sponsor, program-manager, product-manager
-claude "Initialize a new e-commerce project for selling custom t-shirts. Define business goals, create roadmap, and propose technology stack."
-
-# Development - spawns tech-lead-orchestrator and appropriate specialists
+# Development - spawns tech-lead-orchestrator and specialists
 claude "Build user authentication with React frontend and Django REST API backend"
 
-# Code review - spawns code-reviewer
+# Code review - spawns code-reviewer with Semgrep SAST
 claude "Review the payment integration code for security and best practices"
 
 # Deployment - spawns devops-engineer and cloud-architect
 claude "Setup production infrastructure with CI/CD pipeline on AWS"
 ```
 
-#### Explicit Agent Mentions (Legacy)
-
-For backward compatibility with Claude Code v1.x:
-
-```bash
-claude "Use the project-sponsor to define business objectives, program-manager to create roadmap, and solution-architect to propose tech stack"
-```
-
-**The difference:**
-- **v2**: Natural language → Claude picks agents automatically
-- **v1**: Explicit mentions → You specify which agents to use
-
-## 🏛️ Team Structure and Workflow
-
-The "Nation of Elites" is organized hierarchically to mirror a real-world IT company, ensuring a clear flow of command and responsibility from high-level strategy to hands-on implementation. With **64 specialized agents** across **10 strategic divisions**, the team now includes mobile development (iOS/Android), site reliability engineering (SRE), observability, platform engineering, GraphQL architecture, accessibility compliance (WCAG), Rust systems programming, Unreal Engine 5 development, Revit BIM automation, and construction industry AI orchestration (IMPARARIA Progressive Deployment Methodology).
-
-### 🚀 Claude Agent SDK Aligned Features (2025 Updates)
-- **Subagent Coordination**: Parallel information gathering with isolated context windows
-- **Context Compaction**: Automatic summarization when context exceeds 80%
-- **File System Context Engineering**: Efficient large file handling with grep/head/tail
-- **MCP Integration**: Seamless external service connections (Slack, GitHub, Google Drive)
-- **Visual Feedback Loops**: Real-time UI validation during development
-- **Code Generation First**: Prioritizes code over configuration for precision
-- **Background Agents** (Dec 2025): Agents run in background while you work
-- **Skills API** (2025): `/v1/skills` endpoints for programmatic skill management
-- **Claude Opus 4.6** (Feb 2026): Agent Teams, adaptive thinking, 1M token context
-- **Modular Rules** (Feb 2026): Domain-specific rule files (50-100 lines each) for reduced context overhead
-- **Persistent Agent Memory** (Feb 2026): 7 key agents build institutional knowledge across sessions via `memory: project`
-- **Skills Preloading** (Feb 2026): 18 specialists preload matching skills at startup via `skills:` frontmatter
-- **Permission Modes** (Feb 2026): 16 code-writing agents use `permissionMode: acceptEdits` for frictionless flow
-- **CATIA MCP Connector** (Feb 2026): Claude-to-CATIA v5 (COM/VBA) and v6 (3DEXPERIENCE) integration support
-
-```
-/agents
-├── 00_Executive_Wing/ (2 agents)
-│   └── (Project Sponsor, Program Manager)
-├── 01_Strategy_and_Planning_Wing/ (5 agents)
-│   └── (Product Manager, Solution Architect, Business Analyst, Functional Analyst, UX/UI Architect)
-├── 02_Project_Management_Office/ (1 agent)
-│   └── (Project Manager/Scrum Master)
-├── 03_Engineering_Division/ (25 agents)
-│   ├── Core_Development_Team/ (4 agents): API Architect, Backend, Frontend, GraphQL Architect
-│   ├── Framework_Specialists/ (16 agents): React, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, UE5, Database, etc.
-│   └── Code_Excellence_Guild/ (5 agents): Code Reviewer, Documentation, Performance, Accessibility, etc.
-├── 04_Quality_Assurance_Battalion/ (4 agents)
-│   └── (QA Engineer, QA Test Planner, Automated Test Scripter, Visual Regression Specialist)
-├── 05_SecOps_and_Infrastructure_Division/ (9 agents)
-│   └── (DevOps, Security, Cloud, Infrastructure, Message Queue, Storage Security, SRE, Observability, Platform Engineer)
-├── 06_AI_and_Machine_Learning_Division/ (5 agents)
-│   └── (Data Scientists, ML Engineers, AI Strategist, Data Engineer, AIOps Specialist)
-├── 07_Orchestrators/ (3 agents)
-│   └── (Tech Lead Orchestrator, Team Configurator, Integration Specialist)
-├── 08_Mobile_Development_Wing/ (3 agents) ✨ NEW
-│   └── (Mobile Architect, iOS Developer, Android Developer)
-└── 09_Construction_Industry_Division/ (1 agent) ✨ NEW
-    └── (Construction AI Orchestrator - IMPARARIA Progressive Deployment)
-```
-
--   **`00_Executive_Wing` (2 agents)**: Sets the high-level business vision and provides resources. The project starts here.
--   **`01_Strategy_and_Planning_Wing` (5 agents)**: Takes the vision and creates a concrete plan. They define *what* to build, *why*, and the high-level technical approach.
--   **`02_Project_Management_Office` (1 agent)**: Manages the project's execution, timeline, and agile processes.
--   **`03_Engineering_Division` (31 agents)**: The core builders with specialized teams:
-    - **Core Development Team** (4 agents): API Architect, Backend Developer, Frontend Developer, GraphQL Architect
-    - **Framework Specialists** (19 agents): React, React TypeScript, Vue, Next.js, Django, Laravel, Rails, Java, Go, Rust, Unreal Engine 5, Database Expert, Financial Systems, Crypto API, Tailwind CSS, Ant Design, Autodesk ACC, CATIA, Revit BIM experts
-    - **Code Excellence Guild** (8 agents): Code Reviewer, Documentation Specialist, Performance Optimizer, Code Archaeologist, Accessibility Specialist, General Purpose, Statusline Setup, Output Style Setup
--   **`04_Quality_Assurance_Battalion` (4 agents)**: Systematically tests the software to ensure it's bug-free and meets requirements.
--   **`05_SecOps_and_Infrastructure_Division` (9 agents)**: Deploys the application to a secure, scalable production environment with SRE practices, comprehensive observability, platform engineering for developer experience, and specialized infrastructure/messaging/storage security expertise.
--   **`06_AI_and_Machine_Learning_Division` (5 agents)**: Integrates data-driven intelligence and machine learning capabilities into the product.
--   **`07_Orchestrators` (3 agents)**: Coordinates multi-agent execution, team setup, and external integrations.
-    - `tech-lead-orchestrator`: Central execution coordinator (planning, delegation, gates, subagent spawning, context compaction)
-    - `team-configurator`: Team setup orchestrator (stack detection, subagent selection, CLAUDE.md config)
-    - `integration-specialist`: MCP server configuration and external service connections (cross-cutting coordinator)
--   **`08_Mobile_Development_Wing` (3 agents)** ✨ NEW: Native and cross-platform mobile development for iOS and Android.
-    - `mobile-architect`: Platform strategy, offline-first architecture, app store deployment
-    - `ios-developer`: Swift, SwiftUI, iOS SDK integration, App Store submission
-    - `android-developer`: Kotlin, Jetpack Compose, Android SDK, Google Play Store
--   **`09_Construction_Industry_Division` (1 agent)** ✨ NEW: Construction industry AI orchestration with IMPARARIA's Progressive Deployment Methodology.
-    - `construction-ai-orchestrator`: Multi-agent systems for cost estimation (AI-Stimate), quantity takeoff (AI-Takeoff), and BIM coordination (AI-Coordinate)
-
-## 🧠 Advanced Agent Capabilities
-
-### Context Management
-- **Automatic Compaction**: When context usage > 80%, agents summarize and preserve critical information
-- **Subagent Spawning**: Tech Lead Orchestrator can spawn 3-5 parallel subagents for isolated analysis
-- **File System Intelligence**: Agents use bash commands (grep, head, tail) for efficient large file processing
-
-### External Integrations (MCP)
-The **Integration Specialist** configures Model Context Protocol servers for:
-- **Communication**: Slack, Discord, Email
-- **Development**: GitHub, GitLab, Jira
-- **Productivity**: Google Drive, Notion, Asana
-- **Data**: PostgreSQL, MongoDB, Elasticsearch
-- **Cloud**: AWS, GCP, Azure
-
-### SDK Alignment & Best Practices
-
-**Version 2.0.0 achieves perfect 10/10 Claude Agent SDK compliance:**
-
-- ✅ **Subagent Coordination** - Parallel processing with temporary, task-specific spawns
-- ✅ **Context Compaction** - Automatic summarization at 80% usage (47% token reduction)
-- ✅ **File System Context Engineering** - Efficient large file handling with bash commands
-- ✅ **MCP Integration** - Seamless external service connections via Integration Specialist
-- ✅ **Visual Feedback Loops** - Real-time UI validation during development
-- ✅ **Code Generation Priority** - Emphasizes code over configuration for precision
-
-[📖 See full SDK compliance report](SDK_COMPLIANCE_REPORT.md)
-
-### Thinking Policies & Budgets
-
-The orchestrator enforces explicit, budgeted internal reasoning across roles based on task complexity. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
-
-### Reasoning Complexity Levels
-
-#### **🔴 High Complexity (600–800 tokens)**
-- **Solution/UX/UI/API/Cloud Architects**: System design, architectural patterns, scalability planning
-
-#### **🟡 Medium Complexity (400–600 tokens)**
-- **Business/Functional Analysts**: Requirements analysis, process modeling, stakeholder alignment
-- **QA Test Planner**: Test strategy, coverage planning, risk-based testing
-- **AI Strategist**: AI implementation planning, model selection, ethical considerations
-
-#### **🟠 Medium-Low Complexity (200–300 tokens)**
-- **Framework Specialists**: React/Vue/Next.js/Go/Django/Laravel/Financial Systems/Crypto API experts
-- **DevOps/Security/Infrastructure**: Pipeline design, security analysis, infrastructure tuning
-- **Message Queue Specialist**: Event-driven architecture, messaging patterns
-- **Storage Security Specialist**: Data protection, encryption strategies, compliance auditing
-
-#### **🟢 Low Complexity (100–200 tokens)**
-- **Backend/Frontend Developers**: Implementation details, component composition, data patterns
-- **QA Engineer**: Test case design, automation strategy
-- **Performance Optimizer**: Optimization techniques, bottleneck analysis
-
-#### **⚙️ Orchestration (≤300 tokens)**
-- **Tech Lead Orchestrator**: Multi-agent planning, delegation decisions
-- **Team Configurator**: Stack detection, agent selection
-
-Guardrails (enforced by orchestrator):
-- Trigger thinking only for complex tradeoffs/uncertainty. Stop at budget.
-- Output concise rationale sections only (bullets). No raw chain-of-thought.
-- After two passes, if uncertainty remains → request clarification or delegate to the appropriate role.
-
-## 📋 Automatic Documentation
-
-The Nation of Elites features **automatic project documentation updates**. Key agents maintain project documentation without manual intervention:
-
-### Self-Documenting Agents
-- **🔧 Backend/Frontend Developers**: Auto-update implementation status, API endpoints, UI components
-- **✅ Code Reviewer**: Auto-update quality metrics, security findings, review completion status
-- **🚀 DevOps Engineer**: Auto-update CI/CD configuration, infrastructure status, deployment milestones
-- **🎯 Tech Lead Orchestrator**: Auto-update team assignments, architectural decisions, orchestration phases
-
-### Maintained Documentation Files
-- **📖 CLAUDE.md**: Project configuration, team assignments, implementation status, architecture decisions
-- **📋 PLAN.md**: Current plan-of-record, milestones, task status, dependencies, risk mitigation
-- **📝 CHANGELOG.md**: Chronological record of features, changes, fixes, and major decisions
-
-### Benefits
-- ✅ **No Manual Reminders**: Agents automatically document their completed work
-- ✅ **Consistent Format**: Standardized changelog entries across all agents
-- ✅ **Complete Traceability**: Every major work completion is documented
-- ✅ **Always Current**: Project documentation stays up-to-date automatically
-
-## 🎓 Agent Skills System (v3.0)
-
-**What are Skills?** Think of skills as training manuals and toolkits that agents can access when needed. While agents are the *team members* who do the work, skills are the *procedural knowledge* they use to do it better.
-
-### Skills vs Agents
-
-| Aspect | **Agents** | **Skills** |
-|--------|------------|------------|
-| **What** | Team members (64 specialists) | Training manuals & toolkits |
-| **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
-| **How** | Orchestrate & execute | Provide procedures & code |
-| **Loading** | Task-based spawning | Progressive disclosure (efficient) |
-
-**Example**: The `backend-developer` agent might use the `django-patterns` skill to access Django best practices, or the `pdf` skill to generate documentation.
-
-### Progressive Disclosure
-
-Skills load in three levels to minimize context usage:
-
-1. **Metadata** (always loaded) - Name and description
-2. **Core instructions** (when relevant) - Full `SKILL.md` file
-3. **Additional resources** (on-demand) - Scripts, templates, references
-
-This means Claude only loads what it needs, when it needs it. A skill library of unlimited size can exist without bloating the context window.
-
-### Available Skills
-
-**Official Anthropic Skills** (automatically installed):
-- 📄 **pdf** - PDF manipulation, forms, extraction
-- 📝 **docx** - Word document creation/editing
-- 📊 **pptx** - PowerPoint presentations
-- 📈 **xlsx** - Excel with formulas and charts
-- 🔌 **mcp-builder** - MCP server development
-- 🧪 **webapp-testing** - Playwright UI testing
-- 🎨 **artifacts-builder** - React/Tailwind components
-- 🖼️ **canvas-design** - Visual art creation
-
-**Custom Nation of Elites Skills** (31 included):
-
-**Framework Patterns (8 skills):**
-- 🐍 **django-patterns** - Django ORM, DRF, authentication, testing
-- ⚛️ **react-patterns** - React hooks, performance optimization, component architecture
-- 💚 **vue-patterns** - Vue 3 Composition API, Pinia state management
-- ⚡ **nextjs-patterns** - Next.js 14 App Router, Server Components, Server Actions
-- 💎 **rails-patterns** - Ruby on Rails, ActiveRecord, RESTful APIs
-- ☕ **java-patterns** - Java Spring Boot, JPA/Hibernate, microservices
-- 🔵 **go-patterns** - Go concurrency, interfaces, idiomatic patterns
-- 🔶 **laravel-patterns** - Laravel Eloquent, API resources, authentication
-
-**UI/Styling Patterns (2 skills):**
-- 🎨 **tailwind-patterns** - Tailwind utility-first CSS, responsive design
-- 🐜 **antd-patterns** - Ant Design React components, enterprise UI
-
-**Security & DevOps (7 skills):**
-- 🔒 **security-audit** - OWASP Top 10 security checklist
-- 🛡️ **semgrep-sast** - Semgrep SAST scanning + MCP plugin integration
-- 🔬 **pipeline-quality** - Universal quality gate (lint + Semgrep + tests + audit)
-- 📦 **pipeline-full-build** - Universal build pipeline (desktop + cloud variants)
-- 🚀 **github-actions** - CI/CD pipeline templates
-- ☸️ **kubernetes-deployment** - K8s deployments, autoscaling, services
-- 🏗️ **terraform-patterns** - Infrastructure as Code, modules
-
-**Specialized Domains (2 skills):**
-- 💹 **financial-trading-patterns** - Algorithmic trading, risk management
-- 🪙 **crypto-defi-patterns** - Cryptocurrency, DeFi, blockchain integration
-
-**Testing (1 skill):**
-- 🧪 **pytest-patterns** - Python testing with pytest
-
-### Skills + Agents = Power
-
-**Which Agents Use Which Skills:**
-
-- **Documentation Specialist** → pdf, docx, pptx (creates professional docs)
-- **Django Expert** → django-patterns (framework best practices)
-- **React Expert** → react-patterns (component architecture)
-- **QA Engineer** → webapp-testing (automated UI tests)
-- **DevOps Engineer** → github-actions (deployment pipelines)
-- **Cyber Sentinel** → security-audit, semgrep-sast (vulnerability scanning)
-- **DevOps Engineer** → pipeline-quality, pipeline-full-build (build pipelines)
-- **Integration Specialist** → mcp-builder (external integrations)
-
-### Installation
-
-Skills are automatically installed by the deployment script:
-
-```bash
-# Linux / macOS / WSL2
-bash scripts/deploy_agents.sh
-
-# Windows (PowerShell)
-powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
-```
-
-Both scripts install agents AND skills. For detailed skills documentation, see **[SKILLS.md](SKILLS.md)**.
-
-## 📚 Documentation
-
-### Core Documentation
-- **[README.md](README.md)** - This file - Quick start and overview
-- **[CLAUDE.md](CLAUDE.md)** - Detailed configuration and usage guide
-- **[SKILLS.md](SKILLS.md)** - Agent Skills system documentation
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
-
-### v2.0 Plugin System
-- **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** - Upgrading from v1.x to v2.0
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Community contribution guidelines
-- **[.claude-plugin/manifest.json](.claude-plugin/manifest.json)** - Plugin metadata
-- **[.claude-plugin/marketplace.json](.claude-plugin/marketplace.json)** - Marketplace configuration
-
-### Advanced Guides
-- **[docs/SDK_COMPLIANCE_REPORT.md](docs/SDK_COMPLIANCE_REPORT.md)** - 10/10 SDK compliance certification
-- **[docs/CONTEXT_ENGINEERING.md](docs/CONTEXT_ENGINEERING.md)** - Context management best practices
-
-## 🤝 Contributing
-
-The "Nation of Elites" is an ambitious project, and contributions are welcome! Whether you want to refine an existing agent's prompt, add a new specialist role, or improve the orchestration workflow, please see our **[Contributing Guide](CONTRIBUTING.md)**.
-
-**Quick Start for Contributors:**
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingNewAgent`)
-3.  Follow the [Agent Development Guidelines](CONTRIBUTING.md#agent-development-guidelines)
-4.  Test your changes locally
-5.  Commit with [conventional commits](CONTRIBUTING.md#commit-messages)
-6.  Push to your fork and open a Pull Request
-
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for detailed guidelines on:
-- Agent structure and naming conventions
-- Testing procedures
-- Documentation requirements
-- PR submission process
-
-## 🔄 Upgrading from v1.x?
-
-See the **[Migration Guide](MIGRATION_GUIDE.md)** for detailed instructions.
-
-**Quick Upgrade (Recommended):**
+---
+
+## Complete Agent Roster by Department
+
+<table>
+<tr>
+<td>
+
+### Executive Office
+| | Agent | Role |
+|:---:|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/target/blueviolet"> | `project-sponsor` | Strategic vision, budget, ROI |
+| <img width="16" src="https://cdn.simpleicons.org/trello/blueviolet"> | `program-manager` | Portfolio oversight, cross-project |
+
+</td>
+<td>
+
+### Strategy & Planning
+| | Agent | Role |
+|:---:|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/blueprint/royalblue"> | `business-analyst` | Requirements, gap analysis |
+| <img width="16" src="https://cdn.simpleicons.org/diagramsdotnet/royalblue"> | `functional-analyst` | Process modeling, specs |
+| <img width="16" src="https://cdn.simpleicons.org/roadmapdotsh/royalblue"> | `product-manager` | Vision, roadmap, priorities |
+| <img width="16" src="https://cdn.simpleicons.org/archlinux/royalblue"> | `solution-architect` | Tech architecture, stacks |
+| <img width="16" src="https://cdn.simpleicons.org/figma/royalblue"> | `ux-ui-architect` | UX research, interfaces |
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+### Project Management
+| | Agent | Role |
+|:---:|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/jirasoftware/teal"> | `project-manager-scrum-master` | Agile delivery, sprints |
+
+</td>
+<td>
+
+### Orchestration & Integration
+| | Agent | Role |
+|:---:|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/apachekafka/darkorange"> | `tech-lead-orchestrator` | Central coordinator |
+| <img width="16" src="https://cdn.simpleicons.org/stackblitz/darkorange"> | `team-configurator` | Stack detection, setup |
+| <img width="16" src="https://cdn.simpleicons.org/zapier/darkorange"> | `integration-specialist` | MCP, APIs, OAuth |
+
+</td>
+</tr>
+</table>
 
 <details>
-<summary><strong>Linux / macOS / WSL2</strong></summary>
+<summary><strong>Engineering Division - Core Development (4 agents)</strong></summary>
 
-```bash
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
-cd claude-code-agents-team-nation-of-elites
-bash scripts/deploy_agents.sh
-```
+| | Agent | Role | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/swagger/green"> | `api-architect` | REST/GraphQL API design | opus |
+| <img width="16" src="https://cdn.simpleicons.org/graphql/green"> | `graphql-architect` | Schemas, federation, subscriptions | opus |
+| <img width="16" src="https://cdn.simpleicons.org/fastapi/green"> | `backend-developer` | Server-side APIs, business logic | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/css3/green"> | `frontend-developer` | UI frameworks, responsive design | sonnet |
 
 </details>
 
 <details>
-<summary><strong>Windows (PowerShell)</strong></summary>
+<summary><strong>Engineering Division - Framework Specialists (19 agents)</strong></summary>
 
-```powershell
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
-cd claude-code-agents-team-nation-of-elites
-powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
-```
+**Python & Web Frameworks**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/django/green"> | `django-expert` | django-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/laravel/green"> | `laravel-expert` | laravel-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/rubyonrails/green"> | `rails-expert` | rails-patterns | sonnet |
+
+**JavaScript & Frontend Frameworks**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/react/green"> | `react-expert` | react-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/typescript/green"> | `react-typescript-expert` | react-patterns, typescript-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/vuedotjs/green"> | `vue-expert` | vue-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/nextdotjs/green"> | `nextjs-expert` | nextjs-patterns | sonnet |
+
+**Backend Languages**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/spring/green"> | `java-expert` | java-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/go/green"> | `go-expert` | go-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/rust/green"> | `rust-expert` | -- | sonnet |
+
+**Data & Finance**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/postgresql/green"> | `database-expert` | -- | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/bloomberg/green"> | `financial-systems-expert` | financial-trading-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/bitcoin/green"> | `crypto-api-developer` | crypto-defi-patterns | sonnet |
+
+**UI & Styling**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/tailwindcss/green"> | `tailwind-css-expert` | tailwind-patterns | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/antdesign/green"> | `antd-ui-developer` | antd-patterns | sonnet |
+
+**CAD, BIM & Game Engines**
+
+| | Agent | Skills Preloaded | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/unrealengine/green"> | `unreal-engine-expert` | -- | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/dassaultsystemes/green"> | `catia-design-expert` | -- | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/autodesk/green"> | `autodesk-cloud-construction-expert` | -- | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/autodesk/green"> | `revit-bim-expert` | -- | sonnet |
 
 </details>
 
-**All 64 agents are v3.6.0 compatible** with both:
-- Natural language invocation (new)
-- Explicit agent mentions (legacy - still works)
+<details>
+<summary><strong>Engineering Division - Code Excellence Guild (8 agents)</strong></summary>
 
-No breaking changes - your existing workflows continue to work!
+| | Agent | Role | Memory |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/codereview/green"> | `code-reviewer` | Security-aware PR reviews | project |
+| <img width="16" src="https://cdn.simpleicons.org/files/green"> | `code-archaeologist` | Legacy codebase analysis | project |
+| <img width="16" src="https://cdn.simpleicons.org/readthedocs/green"> | `documentation-specialist` | READMEs, API docs, guides | -- |
+| <img width="16" src="https://cdn.simpleicons.org/speedtest/green"> | `performance-optimizer` | Bottleneck diagnosis | -- |
+| <img width="16" src="https://cdn.simpleicons.org/w3c/green"> | `accessibility-specialist` | WCAG 2.1 AA/AAA | -- |
+| <img width="16" src="https://cdn.simpleicons.org/visualstudiocode/green"> | `noe-general-purpose` | Versatile multi-language | -- |
+| <img width="16" src="https://cdn.simpleicons.org/gnometerminal/green"> | `noe-statusline-setup` | Terminal/shell config | -- |
+| <img width="16" src="https://cdn.simpleicons.org/windowsterminal/green"> | `output-style-setup` | CLI output, ANSI colors | -- |
 
-## 📚 Credits and References
+</details>
 
--   **Author**: Yassine Boumiza - [Website](https://boumiza.com) | [GitHub Profile](https://github.com/advisely/)
--   **Repository**: [claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites)
--   **Inspiration & Best Practices**: [Building Effective Agents - Anthropic Engineering](https://www.anthropic.com/engineering/building-effective-agents), [How we built our multi-agent research system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
--   **Claude Agent SDK** (2025): [Anthropic Documentation](https://docs.anthropic.com/), [Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
--   **Claude Code Plugins**: [Plugin System Announcement](https://www.anthropic.com/news/claude-code-plugins)
--   **Construction Industry AI**: [IMPARARIA](https://impararia.com) - Progressive Deployment Methodology for Construction AI Products
+<details>
+<summary><strong>Quality Assurance Battalion (4 agents)</strong></summary>
 
-## 📄 License
+| | Agent | Role | Skills |
+|:---:|:---|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/testinglibrary/crimson"> | `qa-test-planner` | Test strategy, case design | -- |
+| <img width="16" src="https://cdn.simpleicons.org/pytest/crimson"> | `qa-engineer` | Automated suites, CI/CD | pytest, semgrep, pipeline-quality |
+| <img width="16" src="https://cdn.simpleicons.org/selenium/crimson"> | `automated-test-scripter` | Test framework implementation | pytest, semgrep |
+| <img width="16" src="https://cdn.simpleicons.org/percy/crimson"> | `visual-regression-specialist` | UI consistency, visual defects | -- |
 
-Distributed under the MIT License with a friendly request for attribution. See **[LICENSE.md](LICENSE.md)** for more information.
+</details>
 
-**If you find this project useful**, please:
-- ⭐ Star the repository
-- 🔗 Share with your team
-- 💬 Provide feedback via [GitHub Discussions](https://github.com/advisely/claude-code-agents-team-nation-of-elites/discussions)
-- 🐛 Report issues via [GitHub Issues](https://github.com/advisely/claude-code-agents-team-nation-of-elites/issues)
+<details>
+<summary><strong>Security Operations (2 agents)</strong></summary>
+
+| | Agent | Role | Memory |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/snyk/orange"> | `cyber-sentinel` | Vulnerability scanning, audits | project |
+| <img width="16" src="https://cdn.simpleicons.org/bitwarden/orange"> | `storage-security-specialist` | Data protection, encryption | -- |
+
+</details>
+
+<details>
+<summary><strong>Infrastructure & Platform (7 agents)</strong></summary>
+
+| | Agent | Role | Skills |
+|:---:|:---|:---|:---|
+| <img width="16" src="https://cdn.simpleicons.org/githubactions/orange"> | `devops-engineer` | CI/CD, automation | github-actions, k8s, semgrep, pipelines |
+| <img width="16" src="https://cdn.simpleicons.org/amazonaws/orange"> | `cloud-architect` | Cloud infra, IaC | terraform-patterns |
+| <img width="16" src="https://cdn.simpleicons.org/linux/orange"> | `infrastructure-specialist` | Servers, networking | -- |
+| <img width="16" src="https://cdn.simpleicons.org/backstage/orange"> | `platform-engineer` | Developer platforms, DevEx | -- |
+| <img width="16" src="https://cdn.simpleicons.org/pagerduty/orange"> | `sre-specialist` | SLO/SLI, incident mgmt | -- |
+| <img width="16" src="https://cdn.simpleicons.org/grafana/orange"> | `observability-engineer` | Metrics, logs, traces | -- |
+| <img width="16" src="https://cdn.simpleicons.org/apachekafka/orange"> | `message-queue-specialist` | Kafka, RabbitMQ, events | -- |
+
+</details>
+
+<details>
+<summary><strong>AI & Machine Learning Division (5 agents)</strong></summary>
+
+| | Agent | Role | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/openai/purple"> | `ai-strategist` | AI opportunities, vision | opus |
+| <img width="16" src="https://cdn.simpleicons.org/jupyter/purple"> | `data-scientist` | EDA, modeling, ML prototyping | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/apacheairflow/purple"> | `data-engineer` | ETL pipelines, data platforms | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/mlflow/purple"> | `ml-engineer` | MLOps, model productionization | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/datadog/purple"> | `aiops-specialist` | ML model lifecycle, ops health | sonnet |
+
+</details>
+
+<details>
+<summary><strong>Mobile Development Wing (3 agents)</strong></summary>
+
+| | Agent | Role | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/android/teal"> | `mobile-architect` | Cross-platform strategy | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/apple/teal"> | `ios-developer` | Swift/SwiftUI, App Store | sonnet |
+| <img width="16" src="https://cdn.simpleicons.org/android/teal"> | `android-developer` | Kotlin/Compose, Play Store | sonnet |
+
+</details>
+
+<details>
+<summary><strong>Construction Industry Division (1 agent)</strong></summary>
+
+| | Agent | Role | Model |
+|:---:|:---|:---|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/autodesk/sienna"> | `construction-ai-orchestrator` | IMPARARIA AI-Stimate/Takeoff/Coordinate | sonnet |
+
+</details>
 
 ---
 
-**The Nation of Elites v3.6.0** - 64 Specialized Agents | Semgrep SAST | Universal Pipelines | Revit BIM Expert | Persistent Agent Memory | Skills Preloading | CATIA MCP Connector | Opus 4.6 Agent Teams | 10/10 SDK Compliance
+## Organization at a Glance
 
-**Contact**: Yassine Boumiza - [boumiza.com](https://boumiza.com)
+```
+agents/
+  00_Executive_Wing/           (2)   Strategic vision & portfolio management
+  01_Strategy_and_Planning/    (5)   Architecture, requirements, UX design
+  02_Project_Management/       (1)   Agile delivery & sprint management
+  03_Engineering_Division/    (31)   Core dev + 19 framework specialists + 8 code excellence
+  04_Quality_Assurance/        (4)   Testing strategy, automation, visual regression
+  05_SecOps_and_Infrastructure/(9)   Security, DevOps, cloud, SRE, observability
+  06_AI_and_ML_Division/       (5)   Data science, ML engineering, AIOps
+  07_Orchestrators/            (3)   Coordination, team config, MCP integration
+  08_Mobile_Development/       (3)   iOS, Android, cross-platform architecture
+  09_Construction_Industry/    (1)   Construction AI (IMPARARIA methodology)
+                              ----
+                               64 agents total
+```
+
+---
+
+## Key Capabilities
+
+### Claude Agent SDK Features
+
+| Feature | Description |
+|:---|:---|
+| **Subagent Coordination** | Parallel processing with isolated context windows |
+| **Agent Teams** (experimental) | Multi-agent parallel work with shared task lists (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) |
+| **Context Compaction** | Automatic summarization at 80% usage (47% token reduction) |
+| **Persistent Memory** | 7 agents retain project knowledge across sessions via `memory: project` |
+| **Skills Preloading** | 18 specialists preload matching skills at startup via `skills:` frontmatter |
+| **Permission Modes** | 16 code-writing agents use `permissionMode: acceptEdits` for frictionless flow |
+| **MCP Integration** | External services (Slack, GitHub, Jira, Figma, Sentry) via Model Context Protocol |
+| **Worktree Isolation** | Subagents work in isolated git worktrees for parallel development |
+| **Official Plugins** | Auto-detection and setup of Anthropic official plugins (GitHub, Slack, Jira, etc.) |
+| **Semgrep SAST** | Automated security scanning via CLI and MCP plugin integration |
+| **Universal Pipelines** | Stack-adaptive quality gates and full build pipelines |
+
+### Thinking Policies & Budgets
+
+| Complexity | Tokens | Agents |
+|:---|:---:|:---|
+| High | 600-800 | Solution, UX/UI, API, Cloud Architects |
+| Medium | 400-600 | Business/Functional Analysts, QA Planner, AI Strategist |
+| Medium-Low | 200-300 | Framework Specialists, DevOps, Security |
+| Low | 100-200 | Backend/Frontend Devs, QA Engineer, Performance |
+| Orchestration | <=300 | Tech Lead, Team Configurator |
+
+### Official Plugin Integrations
+
+The deploy script auto-detects and offers to configure these official Anthropic plugins:
+
+| Plugin | Category | Best For |
+|:---|:---|:---|
+| **GitHub** | Development | code-reviewer, devops-engineer |
+| **Slack** | Communication | tech-lead-orchestrator, program-manager |
+| **Jira** | Project Management | project-manager-scrum-master, product-manager |
+| **Linear** | Project Management | product-manager |
+| **Figma** | Design | ux-ui-architect, frontend-developer |
+| **Sentry** | Monitoring | sre-specialist, observability-engineer |
+| **Vercel** | Deployment | nextjs-expert, devops-engineer |
+| **Firebase** | Backend | mobile-architect, backend-developer |
+| **Supabase** | Database | database-expert, backend-developer |
+| **Notion** | Documentation | documentation-specialist, business-analyst |
+| **Confluence** | Documentation | functional-analyst |
+| **Asana** | Project Management | program-manager |
+
+---
+
+## Agent Skills System
+
+**31 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
+
+### How Skills Work
+
+| Aspect | Agents | Skills |
+|:---|:---|:---|
+| **What** | Team members (64 specialists) | Training manuals & toolkits |
+| **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
+| **Loading** | Task-based spawning | Progressive disclosure |
+
+### Skills Library
+
+<details>
+<summary><strong>Official Anthropic Skills (9)</strong></summary>
+
+| Skill | Purpose |
+|:---|:---|
+| pdf | PDF manipulation, forms, extraction |
+| docx | Word document creation/editing |
+| pptx | PowerPoint presentations |
+| xlsx | Excel with formulas and charts |
+| mcp-builder | MCP server development |
+| webapp-testing | Playwright UI testing |
+| skill-creator | Interactive skill development |
+| artifacts-builder | React/Tailwind components |
+| canvas-design | Visual art creation |
+
+</details>
+
+<details>
+<summary><strong>Framework Patterns (8 skills)</strong></summary>
+
+| Skill | Framework | Preloaded By |
+|:---|:---|:---|
+| django-patterns | Django ORM, DRF, auth | django-expert |
+| react-patterns | React hooks, performance | react-expert, react-typescript-expert |
+| vue-patterns | Vue 3 Composition API, Pinia | vue-expert |
+| nextjs-patterns | Next.js 14 App Router, RSC | nextjs-expert |
+| rails-patterns | Ruby on Rails, ActiveRecord | rails-expert |
+| java-patterns | Spring Boot, JPA, microservices | java-expert |
+| go-patterns | Concurrency, interfaces | go-expert |
+| laravel-patterns | Eloquent, API resources | laravel-expert |
+
+</details>
+
+<details>
+<summary><strong>Security & DevOps (7 skills)</strong></summary>
+
+| Skill | Purpose | Preloaded By |
+|:---|:---|:---|
+| security-audit | OWASP Top 10 checklist | cyber-sentinel |
+| semgrep-sast | SAST scanning + MCP plugin | cyber-sentinel, code-reviewer, qa-engineer |
+| pipeline-quality | Universal quality gate | code-reviewer, qa-engineer, devops-engineer |
+| pipeline-full-build | Universal build pipeline | devops-engineer |
+| github-actions | CI/CD templates | devops-engineer |
+| kubernetes-deployment | K8s patterns, autoscaling | devops-engineer |
+| terraform-patterns | IaC modules, state mgmt | cloud-architect |
+
+</details>
+
+<details>
+<summary><strong>More Skills (9)</strong></summary>
+
+| Skill | Category |
+|:---|:---|
+| tailwind-patterns | UI/Styling |
+| antd-patterns | UI/Styling |
+| financial-trading-patterns | Specialized Domain |
+| crypto-defi-patterns | Specialized Domain |
+| pytest-patterns | Testing |
+| silent-failure-audit | Quality Assurance |
+| feature-workflow | Workflow Automation |
+| quick-fix | Workflow Automation |
+| pr-ready | Workflow Automation |
+
+</details>
+
+<details>
+<summary><strong>Core Language Patterns (7 skills)</strong></summary>
+
+| Skill | Focus |
+|:---|:---|
+| nodejs-patterns | Async, streams, worker threads |
+| python-patterns | Type hints, async, dataclasses |
+| fastapi-patterns | DI, async DB, auth |
+| express-patterns | Middleware, error handling |
+| typescript-patterns | Advanced types, generics |
+| vite-patterns | Build config, plugins |
+| zustand-patterns | State management, slices |
+
+</details>
+
+For detailed skills documentation, see **[SKILLS.md](SKILLS.md)**.
+
+---
+
+## Documentation
+
+| Document | Purpose |
+|:---|:---|
+| [README.md](README.md) | Quick start and overview (this file) |
+| [CLAUDE.md](CLAUDE.md) | Project configuration and rule index |
+| [SKILLS.md](SKILLS.md) | Agent Skills system documentation |
+| [CHANGELOG.md](CHANGELOG.md) | Version history and release notes |
+| [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) | Upgrading from v1.x to v2.0+ |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Community contribution guidelines |
+| [docs/SDK_COMPLIANCE_REPORT.md](docs/SDK_COMPLIANCE_REPORT.md) | 10/10 SDK compliance certification |
+| [docs/CONTEXT_ENGINEERING.md](docs/CONTEXT_ENGINEERING.md) | Context management best practices |
+| [docs/rules/](docs/rules/) | Modular rule files (7 files) |
+
+---
+
+## Upgrading
+
+<details>
+<summary><strong>From any previous version</strong></summary>
+
+```bash
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+cd claude-code-agents-team-nation-of-elites
+bash scripts/deploy_agents.sh     # Linux/macOS/WSL2
+# or
+powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1  # Windows
+```
+
+All 64 agents support both natural language invocation (v2+) and explicit agent mentions (v1 legacy). No breaking changes.
+
+</details>
+
+---
+
+## Contributing
+
+Contributions are welcome! See **[CONTRIBUTING.md](CONTRIBUTING.md)** for guidelines.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingNewAgent`)
+3. Follow the [Agent Development Guidelines](CONTRIBUTING.md#agent-development-guidelines)
+4. Commit with [conventional commits](CONTRIBUTING.md#commit-messages)
+5. Open a Pull Request
+
+---
+
+## Credits & References
+
+| | Resource |
+|:---|:---|
+| **Author** | [Yassine Boumiza](https://boumiza.com) -- [GitHub](https://github.com/advisely/) |
+| **Repository** | [advisely/claude-code-agents-team-nation-of-elites](https://github.com/advisely/claude-code-agents-team-nation-of-elites) |
+| **Anthropic Docs** | [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) |
+| **Agent Skills** | [Equipping Agents for the Real World](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) |
+| **Agent SDK** | [Building Agents with Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) |
+| **Plugins** | [Claude Code Plugins Announcement](https://www.anthropic.com/news/claude-code-plugins) |
+| **Agent Teams** | [Building a C Compiler with Agent Teams](https://www.anthropic.com/engineering/building-c-compiler) |
+| **Construction AI** | [IMPARARIA](https://impararia.com) -- Progressive Deployment Methodology |
+
+---
+
+## License
+
+Distributed under the **MIT License**. See [LICENSE.md](LICENSE.md) for details.
+
+If you find this project useful:
+
+- Star the repository
+- Share with your team
+- [Discuss](https://github.com/advisely/claude-code-agents-team-nation-of-elites/discussions) / [Report Issues](https://github.com/advisely/claude-code-agents-team-nation-of-elites/issues)
+
+---
+
+<div align="center">
+
+**Nation of Elites v3.7.0** -- 64 Agents | 10 Divisions | 31 Skills | Official Plugin Integrations | Agent Teams | Semgrep SAST | Universal Pipelines
+
+*[Yassine Boumiza](https://boumiza.com)*
+
+</div>

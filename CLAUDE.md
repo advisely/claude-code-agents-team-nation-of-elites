@@ -24,7 +24,7 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 | [orchestration.md](docs/rules/orchestration.md) | Delegation, Agent Teams, context compaction | Orchestration & planning |
 | [thinking-policies.md](docs/rules/thinking-policies.md) | Reasoning budgets (100–800 tokens) | Agent execution |
 | [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 4.6 features, server tools, strict mode | SDK & API integration |
-| [agent-selection.md](docs/rules/agent-selection.md) | Division guide, invocation patterns, v3.4 features | Task delegation |
+| [agent-selection.md](docs/rules/agent-selection.md) | Division guide, invocation patterns, v3.7 features | Task delegation |
 | [skills-integration.md](docs/rules/skills-integration.md) | Skills vs agents, progressive disclosure, agent-skill map | Skills usage |
 | [standards.md](docs/rules/standards.md) | Agent frontmatter spec, doc standards, tool use | Agent development |
 
@@ -54,6 +54,22 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 `semgrep-sast` skill integrates with the Semgrep MCP plugin for automated SAST scanning. Preloaded on `cyber-sentinel`, `code-reviewer`, `qa-engineer`, `automated-test-scripter`, and `devops-engineer`.
 
 `pipeline-quality` and `pipeline-full-build` skills provide universal, stack-adaptive quality gates and full build pipelines (desktop + cloud variants). Preloaded on `code-reviewer`, `qa-engineer`, and `devops-engineer`.
+
+## Official Plugin Integrations (v3.7.0)
+
+Deploy scripts auto-detect and offer to configure official Anthropic plugins: GitHub, Slack, Jira, Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Confluence, Asana. See [orchestration.md](docs/rules/orchestration.md) for agent-plugin mapping.
+
+## Agent Teams (Experimental)
+
+Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Parallel multi-agent coordination with shared task lists, direct inter-agent messaging, and hooks (`TeammateIdle`, `TaskCreated`, `TaskCompleted`). See [orchestration.md](docs/rules/orchestration.md).
+
+## New Subagent Features (v3.7.0)
+
+- `maxTurns`: Cap agentic turns per subagent for cost control
+- `isolation: worktree`: Git worktree isolation for parallel development
+- MCP Elicitation: Servers can request user input mid-workflow
+- Hook `if` field (v2.1.85+): Permission-rule syntax for fine-grained filtering
+- LSP servers in plugins: `.lsp.json` for language server protocol integrations
 
 ## Setup & Usage
 

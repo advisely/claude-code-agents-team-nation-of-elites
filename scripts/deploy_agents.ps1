@@ -158,7 +158,64 @@ if (-not (Test-Path $pdfSkill) -and -not (Test-Path $docxSkill)) {
     Write-Ok "Anthropic skills already installed (skipping)"
 }
 
-# --- 5. Semgrep Check ---
+# --- 5. Official Plugins ---
+Write-Banner "Official Plugins - Autoconfiguration"
+
+$claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
+if ($claudeCmd) {
+    Write-Info "Detecting available official Anthropic plugins..."
+    Write-Info "These plugins connect your agents to external services via MCP."
+    Write-Host ""
+
+    $plugins = @(
+        @{ Name = "github";     Desc = "GitHub (issues, PRs, code search, actions)" },
+        @{ Name = "slack";      Desc = "Slack (messaging, channels, notifications)" },
+        @{ Name = "jira";       Desc = "Jira (tickets, sprints, boards)" },
+        @{ Name = "linear";     Desc = "Linear (issues, projects, cycles)" },
+        @{ Name = "figma";      Desc = "Figma (design files, components)" },
+        @{ Name = "sentry";     Desc = "Sentry (error tracking, performance)" },
+        @{ Name = "vercel";     Desc = "Vercel (deployments, preview URLs)" },
+        @{ Name = "firebase";   Desc = "Firebase (auth, Firestore, hosting)" },
+        @{ Name = "supabase";   Desc = "Supabase (Postgres, auth, storage)" },
+        @{ Name = "notion";     Desc = "Notion (docs, databases, wikis)" },
+        @{ Name = "confluence"; Desc = "Confluence (wiki, knowledge base)" },
+        @{ Name = "asana";      Desc = "Asana (tasks, timelines, portfolios)" }
+    )
+
+    Write-Host "  Available plugins:" -ForegroundColor White
+    foreach ($p in $plugins) {
+        Write-Host ("    {0,-14} {1}" -f $p.Name, $p.Desc) -ForegroundColor Cyan
+    }
+    Write-Host ""
+
+    if ([Environment]::UserInteractive) {
+        $answer = Read-Host "  Install official plugins interactively? [y/N]"
+        if ($answer -match '^[yY]') {
+            $installed = 0
+            foreach ($p in $plugins) {
+                $ans = Read-Host "    Install $($p.Name) ($($p.Desc))? [y/N]"
+                if ($ans -match '^[yY]') {
+                    Write-Info "Run in Claude Code: /plugin install $($p.Name)@claude-plugins-official"
+                    $installed++
+                }
+            }
+            if ($installed -gt 0) {
+                Write-Ok "$installed plugin(s) selected. Run the /plugin install commands in Claude Code."
+            } else {
+                Write-Info "No plugins selected."
+            }
+        } else {
+            Write-Info "Skipping. Install later: /plugin install <name>@claude-plugins-official"
+        }
+    } else {
+        Write-Info "Non-interactive mode. Install plugins in Claude Code: /plugin install <name>@claude-plugins-official"
+    }
+} else {
+    Write-Warn "Claude Code CLI not found. Skipping plugin autoconfiguration."
+    Write-Info "Install Claude Code first, then re-run to configure plugins."
+}
+
+# --- 6. Semgrep Check ---
 Write-Banner "Semgrep SAST Check"
 
 $semgrepCmd = Get-Command semgrep -ErrorAction SilentlyContinue
@@ -179,7 +236,7 @@ if ($semgrepCmd) {
     Write-Info "The Semgrep MCP plugin (if enabled in Claude Code) works independently."
 }
 
-# --- 6. Validate ---
+# --- 7. Validate ---
 Write-Banner "Validating Installation"
 
 $failed = $false
@@ -244,7 +301,7 @@ if ($failed) {
     exit 2
 }
 
-# --- Done ---
+# --- 8. Done ---
 Write-Banner "Installation Complete"
 Write-Host ""
 Write-Info "Agents deployed to: $AgentsDst"

@@ -147,6 +147,80 @@ deploy_skills() {
   fi
 }
 
+configure_official_plugins() {
+  banner "🔌 Official Plugins — Autoconfiguration"
+
+  local MCP_FILE="$CLAUDE_DIR/.mcp.json"
+  local SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+
+  # Check if Claude Code is installed
+  if ! command -v claude >/dev/null 2>&1; then
+    warn "Claude Code CLI not found. Skipping plugin autoconfiguration."
+    info "Install Claude Code first, then re-run this script to configure plugins."
+    return
+  fi
+
+  info "Detecting available official Anthropic plugins..."
+  info "These plugins connect your agents to external services via MCP."
+  echo ""
+
+  # List of official plugins with descriptions
+  local -a PLUGINS=(
+    "github:GitHub (issues, PRs, code search, actions)"
+    "slack:Slack (messaging, channels, notifications)"
+    "jira:Jira (tickets, sprints, boards)"
+    "linear:Linear (issues, projects, cycles)"
+    "figma:Figma (design files, components)"
+    "sentry:Sentry (error tracking, performance)"
+    "vercel:Vercel (deployments, preview URLs)"
+    "firebase:Firebase (auth, Firestore, hosting)"
+    "supabase:Supabase (Postgres, auth, storage)"
+    "notion:Notion (docs, databases, wikis)"
+    "confluence:Confluence (wiki, knowledge base)"
+    "asana:Asana (tasks, timelines, portfolios)"
+  )
+
+  echo "  Available plugins:"
+  for entry in "${PLUGINS[@]}"; do
+    local name="${entry%%:*}"
+    local desc="${entry#*:}"
+    printf "    ${CYAN}%-14s${RESET} %s\n" "$name" "$desc"
+  done
+  echo ""
+
+  # Non-interactive mode: just inform
+  if [[ ! -t 0 ]]; then
+    info "Running in non-interactive mode. Install plugins manually with:"
+    info "  /plugin install <name>@claude-plugins-official"
+    return
+  fi
+
+  printf "  Install official plugins interactively? [y/N] "
+  read -r answer
+  if [[ "$answer" != [yY]* ]]; then
+    info "Skipping plugin installation. Install later with: /plugin install <name>@claude-plugins-official"
+    return
+  fi
+
+  local installed=0
+  for entry in "${PLUGINS[@]}"; do
+    local name="${entry%%:*}"
+    local desc="${entry#*:}"
+    printf "    Install ${BOLD}%s${RESET} (%s)? [y/N] " "$name" "$desc"
+    read -r ans
+    if [[ "$ans" == [yY]* ]]; then
+      info "Run in Claude Code: /plugin install ${name}@claude-plugins-official"
+      ((installed++))
+    fi
+  done
+
+  if [[ "$installed" -gt 0 ]]; then
+    success "$installed plugin(s) selected. Run the /plugin install commands in Claude Code to complete setup."
+  else
+    info "No plugins selected."
+  fi
+}
+
 check_semgrep() {
   banner "🔍 Semgrep SAST — Checking Installation"
 
@@ -242,6 +316,7 @@ main() {
   deploy_agents
   deploy_skills
   check_semgrep
+  configure_official_plugins
   validate_install
   banner "🍽️ Dinner Is Served — Installation Complete"
 }

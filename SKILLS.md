@@ -691,11 +691,12 @@ Before installing a skill:
 - Updated agents: cyber-sentinel, code-reviewer, qa-engineer, automated-test-scripter, devops-engineer
 
 ### v4.0 (Next)
-- Opus 4.6 Agent Teams integration in skill workflows
+- Agent Teams integration in skill workflows (experimental: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
 - Skills marketplace and community submissions
 - Skill composition (skills that use other skills)
 - Skill dependency management and versioning
 - Agent self-modification (agents create their own skills)
+- LSP server integration for enhanced code intelligence
 
 ---
 

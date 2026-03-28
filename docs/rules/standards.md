@@ -9,7 +9,7 @@ This multi-agent system follows these key principles:
 - **Delegation Patterns** - Clear handoff mechanisms between specialized agents
 - **Tool Integration** - Proper use of Claude Code CLI tools (Read, Grep, Glob, Bash, Write, Edit)
 
-## Compliant Agent Structure (Feb 2026 Official Spec)
+## Compliant Agent Structure (Mar 2026 Official Spec)
 
 ```yaml
 ---
@@ -34,9 +34,16 @@ memory: project  # user (cross-project) | project (git-tracked) | local (git-ign
 skills: [skill-name-1, skill-name-2]
 
 # Advanced (optional)
-maxTurns: 20
-background: false
-isolation: worktree
+maxTurns: 20             # Cap agentic turns for cost control
+background: false        # Run as background task
+isolation: worktree      # Git worktree isolation for parallel dev
+effort: high             # Override session effort level (low/medium/high/maximum)
+
+# MCP servers scoped to this agent (optional)
+mcpServers:
+  my-server:
+    command: "node"
+    args: ["server.js"]
 
 # Lifecycle hooks (optional)
 hooks:
@@ -45,6 +52,12 @@ hooks:
       hooks:
         - type: command
           command: "./scripts/lint.sh"
+  PreToolUse:
+    - matcher: "Bash"
+      if: "command contains 'rm -rf'"
+      hooks:
+        - type: command
+          command: "echo 'Blocked destructive command' >&2; exit 2"
 ---
 
 # Agent Title
@@ -61,6 +74,10 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `permissionMode: plan` | Read-only research/analysis agents |
 | `model: sonnet` | Fast read-only exploration agents |
 | `model: opus` | Only orchestrators and executive agents (max 3-4) |
+| `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
+| `isolation: worktree` | Agents doing parallel implementation work |
+| `mcpServers: {...}` | Agents needing scoped MCP server access |
+| `effort: high` | Override reasoning depth per-agent |
 
 ## Automatic Documentation Updates
 

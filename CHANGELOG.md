@@ -5,6 +5,68 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-03-27] - Official Plugin Integrations, Agent Teams & README Overhaul (v3.7.0)
+
+### Added
+
+- **Official plugin autoconfiguration** in deploy scripts (bash + PowerShell)
+  - Interactive setup for 12 official Anthropic plugins: GitHub, Slack, Jira, Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Confluence, Asana
+  - Agent-to-plugin mapping documented in orchestration rules
+  - Non-interactive fallback with manual install instructions
+
+- **Agent Teams documentation** (experimental feature)
+  - Enable via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+  - Detailed comparison table (Agent Teams vs Subagents)
+  - Hook events: `TeammateIdle`, `TaskCreated`, `TaskCompleted`
+  - Known limitations documented (session resume, nested teams, lead transfer)
+  - Best practices: 3-5 teammates, 5-6 tasks each
+
+- **New subagent features** documented in orchestration rules and standards:
+  - `maxTurns` frontmatter field for cost control
+  - `isolation: worktree` for git worktree isolation
+  - MCP Elicitation support (servers request user input mid-workflow)
+  - Hook `if` field (v2.1.85+) for permission-rule syntax filtering
+  - LSP servers in plugins via `.lsp.json`
+  - `effort` field for per-agent reasoning depth override
+  - `mcpServers` field for scoped MCP server definitions
+
+### Changed
+
+- **README.md completely rewritten** with modern GitHub styling:
+  - Shield badges (agents, divisions, skills, SDK compliance, version, license)
+  - Complete agent roster table organized by department with Simple Icons
+  - Collapsible sections for each division with icons
+  - Official plugin integrations table
+  - Streamlined quick start, documentation, and contributing sections
+
+- **orchestration.md** expanded with:
+  - Agent Teams experimental flag and configuration
+  - Official plugin integrations table (12 plugins with agent mappings)
+  - Subagent advanced features (maxTurns, worktree, elicitation, LSP, hooks)
+
+- **standards.md** updated to Mar 2026 spec:
+  - Added `effort`, `mcpServers`, and `if` hook fields to template
+  - New field priority guidelines for maxTurns, isolation, mcpServers, effort
+
+- **CLAUDE.md** updated with v3.7.0 features:
+  - Official Plugin Integrations section
+  - Agent Teams (experimental) section
+  - New Subagent Features section
+
+- **plugin.json** bumped to 3.7.0 with updated description and keywords
+
+- **Deploy scripts** (bash + PowerShell) now include plugin autoconfiguration step
+
+### Stats
+
+- **Total Agents**: 64 (unchanged)
+- **Total Skills**: 31 (unchanged)
+- **Official Plugins Supported**: 0 -> 12
+- **New Frontmatter Fields Documented**: 5 (maxTurns, effort, mcpServers, isolation details, hook if)
+- **Files Changed**: 8 (README.md, CLAUDE.md, CHANGELOG.md, plugin.json, orchestration.md, standards.md, deploy_agents.sh, deploy_agents.ps1)
+
+---
+
 ## [2026-03-14] - Semgrep SAST & Universal Pipelines (v3.6.0)
 
 ### Added
