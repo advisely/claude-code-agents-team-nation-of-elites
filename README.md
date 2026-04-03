@@ -2,7 +2,7 @@
 
 # Claude Code Agents - Team Nation of Elites
 
-<img src="banner.jpeg" alt="Nation of Elites Banner" width="600"/>
+<img src="banner_v2.jpeg" alt="Nation of Elites Banner" width="600"/>
 
 **An orchestrated AI workforce that functions like a real-world company.**
 
