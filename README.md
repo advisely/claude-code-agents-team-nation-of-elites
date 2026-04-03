@@ -2,18 +2,18 @@
 
 # Claude Code Agents - Team Nation of Elites
 
-<img src="banner.png" alt="Nation of Elites Banner" width="600"/>
+<img src="banner.jpeg" alt="Nation of Elites Banner" width="600"/>
 
-**An orchestrated AI workforce that functions like a real-world IT company.**
+**An orchestrated AI workforce that functions like a real-world company.**
 
-Supercharge your development with a complete, role-based AI team that takes projects from initial idea to production-ready deployment.
+Supercharge your work with a complete, role-based AI team that takes projects from concept to production — and from lead to revenue.
 
-[![Agents](https://img.shields.io/badge/agents-64-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
-[![Divisions](https://img.shields.io/badge/divisions-10-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
+[![Agents](https://img.shields.io/badge/agents-74-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
+[![Divisions](https://img.shields.io/badge/divisions-12-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
 [![Skills](https://img.shields.io/badge/skills-31-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.7.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.8.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
