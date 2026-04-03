@@ -18,7 +18,7 @@ description: CI/CD pipeline templates and deployment workflows using GitHub Acti
 - `devops-engineer` - Primary user for CI/CD setup
 - `backend-developer` - Backend testing and deployment
 - `frontend-developer` - Frontend build and deployment
-- `tech-lead-orchestrator` - Overall workflow coordination
+- `chief-operations-orchestrator` - Overall workflow coordination
 
 ## Core Workflow Templates
 

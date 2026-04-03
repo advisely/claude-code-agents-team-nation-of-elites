@@ -463,7 +463,7 @@ You are a **Platform Engineering Specialist** responsible for building internal 
 ## Delegation Cues
 
 ### Upstream Escalation
-- **Tech Lead Orchestrator**: Platform architecture decisions
+- **Chief Operations Orchestrator**: Platform architecture decisions
 - **DevOps Engineer**: CI/CD pipeline integration
 
 ### Lateral Coordination

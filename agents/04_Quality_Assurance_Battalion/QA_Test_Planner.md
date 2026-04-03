@@ -83,7 +83,7 @@ Provide detailed test planning documentation:
 - **Trigger**: conflicting coverage demands, schedule/budget constraints, test type selection, or risk prioritization
 - **Budget**: 400–600 tokens internal scratchpad; surface only concise rationale bullets in outputs
 - **Style**: brief, bulleted conclusions; no raw chain-of-thought
-- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `business-analyst`/`product-manager` or request clarification from `tech-lead-orchestrator`
+- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `business-analyst`/`product-manager` or request clarification from `chief-operations-orchestrator`
 
 ## Delegation Cues
 
@@ -93,4 +93,4 @@ Provide detailed test planning documentation:
 * For performance testing execution → delegate to `performance-optimizer`
 * For security testing → delegate to `cyber-sentinel`
 * For requirements clarification → delegate to `business-analyst`
-* For technical feasibility → delegate to `tech-lead-orchestrator`
+* For technical feasibility → delegate to `chief-operations-orchestrator`

@@ -20,7 +20,7 @@ Universal quality gate that auto-detects your stack and runs the appropriate che
 - `cyber-sentinel` - Security scanning pass
 - `qa-engineer` - Automated validation
 - `devops-engineer` - CI/CD pipeline integration
-- `tech-lead-orchestrator` - Quality enforcement
+- `chief-operations-orchestrator` - Quality enforcement
 
 ## Pipeline Steps
 

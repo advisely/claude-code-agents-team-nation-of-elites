@@ -36,7 +36,7 @@
 
 **Orchestrators:**
 - `integration-specialist` → mcp-builder skill for external integrations
-- `tech-lead-orchestrator` → skill-creator for new capability development
+- `chief-operations-orchestrator` → skill-creator for new capability development
 
 ## Security Considerations
 

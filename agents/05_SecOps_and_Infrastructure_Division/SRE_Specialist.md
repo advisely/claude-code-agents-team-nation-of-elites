@@ -439,7 +439,7 @@ You are a **Site Reliability Engineering Specialist** responsible for ensuring p
 ## Delegation Cues
 
 ### Upstream Escalation
-- **Tech Lead Orchestrator**: When SLO violations require feature freeze
+- **Chief Operations Orchestrator**: When SLO violations require feature freeze
 - **Cloud Architect**: Infrastructure scaling decisions beyond current capacity
 - **Cyber Sentinel**: Security incidents during on-call
 

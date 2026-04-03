@@ -3,7 +3,7 @@
 The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices.
 
 ## ✅ Subagent Coordination
-- Tech Lead Orchestrator spawns 3-5 temporary, task-specific subagents for parallel information gathering
+- Chief Operations Orchestrator spawns 3-5 temporary, task-specific subagents for parallel information gathering
 - Isolated context windows for efficient parallel processing
 - Clear lifecycle: Created → Execute → Report → Terminate
 - Descriptive naming convention for clarity (e.g., `subagent-search-logs-morning`)

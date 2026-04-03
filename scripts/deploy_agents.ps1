@@ -242,16 +242,16 @@ Write-Banner "Validating Installation"
 $failed = $false
 
 # Canonical orchestrator
-$orchestrator = Join-Path (Join-Path $AgentsDst "07_Orchestrators") "Tech_Lead_Orchestrator.md"
+$orchestrator = Join-Path (Join-Path $AgentsDst "07_Orchestrators") "Chief_Operations_Orchestrator.md"
 if (Test-Path $orchestrator) {
-    Write-Ok "Tech Lead Orchestrator present (canonical)"
+    Write-Ok "Chief Operations Orchestrator present (canonical)"
 } else {
-    Write-Warn "Missing: Tech Lead Orchestrator at $orchestrator"
+    Write-Warn "Missing: Chief Operations Orchestrator at $orchestrator"
     $failed = $true
 }
 
 # No deprecated orchestrator
-$deprecated = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Select-String -Pattern "tech-lead-orchestrator-deprecated" -ErrorAction SilentlyContinue
+$deprecated = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Select-String -Pattern "chief-operations-orchestrator-deprecated" -ErrorAction SilentlyContinue
 if ($deprecated) {
     Write-Warn "Found deprecated orchestrator entries"
     $failed = $true

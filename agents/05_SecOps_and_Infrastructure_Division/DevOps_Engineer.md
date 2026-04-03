@@ -95,7 +95,7 @@ Provide comprehensive DevOps implementation documentation:
 - **Trigger**: complex pipeline design, tool selection tradeoffs, deployment strategy changes, or security/perf conflicts
 - **Budget**: 200–300 tokens internal scratchpad; surface only concise rationale bullets in outputs
 - **Style**: brief, bulleted conclusions; no raw chain-of-thought
-- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `cloud-architect`/`cyber-sentinel` or request clarification from `tech-lead-orchestrator`
+- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `cloud-architect`/`cyber-sentinel` or request clarification from `chief-operations-orchestrator`
 
 ## Delegation Cues
 

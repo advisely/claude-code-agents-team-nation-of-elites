@@ -247,19 +247,19 @@ validate_install() {
   banner "🧪 Taste Test — Freshness & Sanity Checks"
 
   # 1) Canonical orchestrator present
-  if [[ -f "$AGENTS_DST/07_Orchestrators/Tech_Lead_Orchestrator.md" ]]; then
-    success "Chef's special present: Tech Lead Orchestrator (canonical)"
+  if [[ -f "$AGENTS_DST/07_Orchestrators/Chief_Operations_Orchestrator.md" ]]; then
+    success "Chef's special present: Chief Operations Orchestrator (canonical)"
   else
-    echo "Missing canonical Orchestrator at $AGENTS_DST/07_Orchestrators/Tech_Lead_Orchestrator.md" >&2
+    echo "Missing canonical Orchestrator at $AGENTS_DST/07_Orchestrators/Chief_Operations_Orchestrator.md" >&2
     missing=1
   fi
 
   # 2) No deprecated orchestrator
-  if ! grep -R "tech-lead-orchestrator-deprecated" "$AGENTS_DST" -n >/dev/null 2>&1; then
-    success "No stale leftovers: deprecated orchestrator not found"
-  else
-    echo "Found deprecated orchestrator entries in deployed agents" >&2
+  if [[ -f "$AGENTS_DST/07_Orchestrators/Tech_Lead_Orchestrator.md" ]]; then
+    warn "Found old Tech_Lead_Orchestrator.md — the canonical file is now Chief_Operations_Orchestrator.md"
     missing=1
+  else
+    success "No stale leftovers: deprecated orchestrator not found"
   fi
 
   # 3) Basic count sanity (at least 25 agents)

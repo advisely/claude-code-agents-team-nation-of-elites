@@ -30,7 +30,7 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles. Ag
 - **Performance Optimizer**: Optimization techniques, profiling analysis, bottleneck identification
 
 ### Orchestration (≤300 tokens)
-- **Tech Lead Orchestrator**: Multi-agent planning, priority conflicts, delegation decisions
+- **Chief Operations Orchestrator**: Multi-agent planning, priority conflicts, delegation decisions
 - **Team Configurator**: Stack detection, agent selection, configuration setup
 
 ## Guardrails (enforced by orchestrator)

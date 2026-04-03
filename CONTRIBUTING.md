@@ -123,7 +123,7 @@ Use clear, descriptive commit messages:
 ```bash
 # Good commit messages
 git commit -m "feat: add Rust programming language expert agent"
-git commit -m "fix: correct delegation pattern in tech-lead-orchestrator"
+git commit -m "fix: correct delegation pattern in chief-operations-orchestrator"
 git commit -m "docs: update installation guide for Windows users"
 
 # Use conventional commits format

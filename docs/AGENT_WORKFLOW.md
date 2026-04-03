@@ -11,7 +11,7 @@ Program Manager (Portfolio Oversight)
     ↓
 Product Manager (Product Vision) ←→ Business Analyst (Detailed Requirements)
     ↓
-Tech Lead Orchestrator (Technical Coordination)
+Chief Operations Orchestrator (Technical Coordination)
     ↓
 Team Configurator (if unfamiliar codebase)
     ↓
@@ -38,7 +38,7 @@ Documentation Specialist (Final Documentation)
 - **Project Manager/Scrum Master**: Sprint management, impediment removal, progress tracking
 
 ### Technical Coordination
-- **Tech Lead Orchestrator**: Task delegation, technical workflow coordination, subagent spawning, context compaction
+- **Chief Operations Orchestrator**: Task delegation, technical workflow coordination, subagent spawning, context compaction
 - **Team Configurator**: Tech stack detection, agent team setup (one-time per project)
 - **Integration Specialist**: MCP server configuration, external API connections, OAuth flows (cross-cutting orchestrator)
 
@@ -80,17 +80,17 @@ Documentation Specialist (Final Documentation)
 
 ### 2. Parallel Execution Limits
 - Maximum 2 agents can run in parallel
-- Tech Lead Orchestrator enforces this limit
+- Chief Operations Orchestrator enforces this limit
 
 ### 3. Automatic Triggers
 
-#### Project Sponsor → Tech Lead Orchestrator
+#### Project Sponsor → Chief Operations Orchestrator
 **MUST delegate when:**
 - User requests feature implementation
 - Technical work needs planning
 - Development tasks need coordination
 
-#### Tech Lead Orchestrator → Team Configurator
+#### Chief Operations Orchestrator → Team Configurator
 **MUST delegate when:**
 - Unfamiliar codebase detected
 - No CLAUDE.md configuration exists
@@ -110,7 +110,7 @@ Documentation Specialist (Final Documentation)
 
 ## Thinking Policies & Enforcement
 
-The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across all roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
+The Chief Operations Orchestrator enforces explicit, budgeted internal reasoning across all roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
 ### Reasoning Complexity Levels
 
@@ -143,7 +143,7 @@ The Tech Lead Orchestrator enforces explicit, budgeted internal reasoning across
 - **Performance Optimizer**: Optimization techniques, profiling analysis, bottleneck identification
 
 #### **Orchestration (≤300 tokens)**
-- **Tech Lead Orchestrator**: Multi-agent planning, priority conflicts, delegation decisions
+- **Chief Operations Orchestrator**: Multi-agent planning, priority conflicts, delegation decisions
 - **Team Configurator**: Stack detection, agent selection, configuration setup
 
 Guardrails (enforced):
@@ -157,7 +157,7 @@ Guardrails (enforced):
 1. **Project Sponsor**: Defines business objectives
 2. **Product Manager**: Creates product vision and epics
 3. **Business Analyst**: Details requirements and acceptance criteria
-4. **Tech Lead Orchestrator**: Plans technical implementation
+4. **Chief Operations Orchestrator**: Plans technical implementation
 5. **Team Configurator**: Sets up agent team (if needed)
 6. **Specialized Agents**: Implement features
 7. **Code Reviewer**: Reviews implementation
@@ -165,7 +165,7 @@ Guardrails (enforced):
 
 ### Performance Issue
 1. **Project Sponsor**: Identifies business impact
-2. **Tech Lead Orchestrator**: Coordinates performance analysis
+2. **Chief Operations Orchestrator**: Coordinates performance analysis
 3. **Performance Optimizer**: Analyzes and optimizes
 4. **Code Reviewer**: Reviews optimizations
 5. **Documentation Specialist**: Documents changes
@@ -173,7 +173,7 @@ Guardrails (enforced):
 ### New Project Setup
 1. **Project Sponsor**: Defines project vision
 2. **Program Manager**: Allocates resources
-3. **Tech Lead Orchestrator**: Initiates technical planning
+3. **Chief Operations Orchestrator**: Initiates technical planning
 4. **Team Configurator**: Analyzes codebase and sets up team
 5. **Solution Architect**: Defines architecture
 6. **Implementation begins with specialized agents**
@@ -181,7 +181,7 @@ Guardrails (enforced):
 ## Anti-Patterns to Avoid
 
 ### ❌ Circular Loops
-- Tech Lead Orchestrator → Backend Developer → Tech Lead Orchestrator
+- Chief Operations Orchestrator → Backend Developer → Chief Operations Orchestrator
 - Product Manager → Business Analyst → Product Manager
 
 ### ❌ Role Overlap
@@ -206,7 +206,7 @@ Guardrails (enforced):
 If a specialized agent is not available:
 1. **Framework Specialist** → **Backend/Frontend Developer**
 2. **Missing Agent** → **General Purpose** (with notification)
-3. **Circular Loop Detected** → **Tech Lead Orchestrator** takes control
+3. **Circular Loop Detected** → **Chief Operations Orchestrator** takes control
 
 ## Automatic Documentation Updates
 
@@ -217,7 +217,7 @@ Key agents automatically update project documentation after completing their wor
 - **Frontend Developer**: Updates CLAUDE.md (UI components, features, state), PLAN.md (frontend tasks), CHANGELOG.md (UI changes)
 - **Code Reviewer**: Updates CLAUDE.md (quality status, security findings), PLAN.md (review results), CHANGELOG.md (review completion)
 - **DevOps Engineer**: Updates CLAUDE.md (CI/CD config, infrastructure), PLAN.md (deployment milestones), CHANGELOG.md (pipeline implementation)
-- **Tech Lead Orchestrator**: Updates CLAUDE.md (team assignments, decisions), PLAN.md (plan-of-record), CHANGELOG.md (orchestration phases)
+- **Chief Operations Orchestrator**: Updates CLAUDE.md (team assignments, decisions), PLAN.md (plan-of-record), CHANGELOG.md (orchestration phases)
 
 ### Documentation Files Maintained
 - **CLAUDE.md**: Project configuration, team assignments, implementation status, architecture decisions
@@ -244,7 +244,7 @@ This workflow ensures efficient, non-overlapping agent coordination with clear d
 - **Purpose**: Enable parallel information gathering with isolated context windows
 - **Pattern**: Main agent spawns 3-5 subagents for parallel search/analysis
 - **Benefits**: Faster processing, context isolation, reduced token usage
-- **Example**: Tech Lead Orchestrator spawning search subagents for multi-repo analysis
+- **Example**: Chief Operations Orchestrator spawning search subagents for multi-repo analysis
 
 ### Context Compaction
 - **Trigger**: When context usage exceeds 80%

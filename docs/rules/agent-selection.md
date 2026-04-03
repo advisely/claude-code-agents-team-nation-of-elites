@@ -48,6 +48,20 @@
 - AI strategy and implementation
 - Intelligent automation
 
+### Content & Localization Wing
+- Book writing, editing, and publishing
+- Ghostwriting and narrative content
+- Document translation and localization
+- Terminology management and glossary maintenance
+
+### Business Development Wing
+- Lead generation and prospecting
+- Opportunity pipeline management
+- Proposal and RFP creation
+- Client lifecycle and retention
+- Market research and competitive intelligence
+- Social media strategy and paid advertising
+
 ## Agent Invocation
 
 **Claude Code v2 (Recommended)**
@@ -69,12 +83,18 @@
 Agents with `memory: project` build institutional knowledge across sessions:
 - `code-reviewer` - Code patterns, style conventions, recurring issues
 - `cyber-sentinel` - Vulnerabilities found, security patterns, scan history
-- `tech-lead-orchestrator` - Decisions, team assignments, project context
+- `chief-operations-orchestrator` - Decisions, team assignments, project context
 - `functional-analyst` - FSD, acceptance criteria, domain glossary
 - `code-archaeologist` - Codebase structure and previous findings
 - `integration-specialist` - Integration configs and MCP server patterns
 - `catia-design-expert` - Design patterns and MCP connector configurations
 - `revit-bim-expert` - Revit API patterns, family standards, MCP connector configurations
+- `translation-localization-specialist` - Terminology glossaries, translation preferences, style guides
+- `business-development-manager` - Pipeline state, deal history, partner relationships
+- `lead-generation-specialist` - Outreach patterns, response rates, qualification criteria
+- `proposal-architect` - Proposal templates, win rates, common requirements
+- `client-success-manager` - Client health, interaction history, satisfaction trends
+- `social-media-strategist` - Content performance, audience insights, campaign history
 
 ### Skills Preloading
 Framework specialists preload matching skills at startup via `skills:` frontmatter:

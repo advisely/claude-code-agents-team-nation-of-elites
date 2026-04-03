@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`revit-bim-expert`** agent (64th agent) - Revit API specialist: pyRevit IronPython/C# scripting, Dynamo visual programming, Autodesk Platform Services (APS/Forge) cloud workflows, MCP connectors for Claude-to-Revit integration
-- Updated Tech Lead Orchestrator delegation table with Revit BIM routing
+- Updated Chief Operations Orchestrator delegation table with Revit BIM routing
 
 ### Fixed
 
@@ -165,7 +165,7 @@ Full audit against official Anthropic documentation (Feb 2026), 6+ popular commu
 
 ### Added - Persistent Agent Memory (7 agents)
 
-- **`tech-lead-orchestrator`**: `memory: project` - Remembers decisions, team assignments, project context
+- **`chief-operations-orchestrator`**: `memory: project` - Remembers decisions, team assignments, project context
 - **`code-reviewer`**: `memory: project` - Remembers code patterns, style conventions, recurring issues
 - **`cyber-sentinel`**: `memory: project` - Remembers vulnerabilities found, security patterns, scan history
 - **`functional-analyst`**: `memory: project` - Remembers FSD, acceptance criteria, domain glossary
@@ -274,7 +274,7 @@ This release restructures CLAUDE.md into modular rule files per Anthropic's late
 - **Structured memory pattern** — Identity & Voice (CLAUDE.md) → Facts & Canon (rule files) → Working Notes (PLAN.md, CHANGELOG.md)
 - **UE5 quick start example** added to invocation patterns
 
-### Changed - Tech Lead Orchestrator Enhanced
+### Changed - Chief Operations Orchestrator Enhanced
 
 - Agent Teams section with comparison table (Agent Teams vs Subagents)
 - Adaptive thinking capability with effort levels
@@ -422,7 +422,7 @@ This release introduces **Agent Skills** - a revolutionary approach to extending
 - **React Expert** → Accesses react-patterns for component architecture
 - **DevOps Engineer** → Uses github-actions templates for CI/CD
 - **Cyber Sentinel** → Uses security-audit checklists for vulnerability scanning
-- **Tech Lead Orchestrator** → Uses skill-creator for new capability development
+- **Chief Operations Orchestrator** → Uses skill-creator for new capability development
 
 **Documentation Updates:**
 - `CLAUDE.md` - Added comprehensive "Agent Skills Integration (v3.0)" section
@@ -672,12 +672,12 @@ Users can choose to adopt plugin installation at their convenience.
 ## [2025-09-29] - Claude Agent SDK Full Alignment (v1.x)
 
 ### Added - SDK Alignment Features ⭐
-- **Subagent Coordination**: Tech Lead Orchestrator can now spawn 3-5 temporary, task-specific subagents for parallel information gathering
+- **Subagent Coordination**: Chief Operations Orchestrator can now spawn 3-5 temporary, task-specific subagents for parallel information gathering
   - Isolated context windows for each subagent
   - Descriptive naming convention (e.g., `subagent-search-logs-morning`)
   - Explicit lifecycle documentation (Created → Execute → Report → Terminate)
 - **Context Compaction**: Automatic summarization triggers at 80% context usage
-  - Program Manager, Product Manager, and Tech Lead Orchestrator equipped with compaction strategies
+  - Program Manager, Product Manager, and Chief Operations Orchestrator equipped with compaction strategies
   - Information hierarchy: Critical → Important → Archivable
   - Before/after compaction examples with quantifiable token savings (47% reduction)
 - **File System Context Engineering**: New comprehensive guide (CONTEXT_ENGINEERING.md)
@@ -701,7 +701,7 @@ Users can choose to adopt plugin installation at their convenience.
   - Recognized as cross-cutting coordination role
   - Division 05: 7 agents → 6 agents
   - Division 07: 2 agents → 3 agents (Tech Lead, Team Configurator, Integration Specialist)
-- **Tech Lead Orchestrator**: Enhanced with subagent coordination and context compaction capabilities
+- **Chief Operations Orchestrator**: Enhanced with subagent coordination and context compaction capabilities
 - **Program Manager**: Added context management triggers and subagent spawning patterns
 - **Product Manager**: Added context management triggers and parallel market research patterns
 - **Visual Regression Specialist**: Expanded mission to include development-time feedback
@@ -774,4 +774,4 @@ This major release achieves **full alignment** with Anthropic's Claude Agent SDK
 
 ---
 
-**Orchestration Completed**: tech-lead-orchestrator successfully delegated agent creation and documentation updates per approved business directive.
+**Orchestration Completed**: chief-operations-orchestrator successfully delegated agent creation and documentation updates per approved business directive.

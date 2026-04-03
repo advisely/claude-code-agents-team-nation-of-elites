@@ -3,7 +3,7 @@ name: cyber-sentinel
 description: Expert cybersecurity specialist focused on vulnerability identification and mitigation. Use PROACTIVELY for security audits, code security reviews, and dependency scanning. Remembers past vulnerabilities found in this project.
 
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 memory: project
 skills: [security-audit, semgrep-sast]
 ---
@@ -84,7 +84,7 @@ Provide clear security assessment reports that developers can act on immediately
 - **Trigger**: vulnerability triage tradeoffs, tool selection, remediation sequencing, or conflicting risk signals
 - **Budget**: 200–300 tokens internal scratchpad; surface only concise rationale bullets in outputs
 - **Style**: brief, bulleted conclusions; no raw chain-of-thought
-- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `code-reviewer`/`devops-engineer` or request clarification from `tech-lead-orchestrator`
+- **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `code-reviewer`/`devops-engineer` or request clarification from `chief-operations-orchestrator`
 
 ## Delegation Cues
 

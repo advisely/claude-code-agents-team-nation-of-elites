@@ -139,9 +139,9 @@ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.g
 
 ```bash
 # Check that agents are accessible
-ls ~/.claude/agents/07_Orchestrators/Tech_Lead_Orchestrator.md
+ls ~/.claude/agents/07_Orchestrators/Chief_Operations_Orchestrator.md
 # OR (if using plugin system)
-ls ~/.claude/plugins/nation-of-elites/agents/07_Orchestrators/Tech_Lead_Orchestrator.md
+ls ~/.claude/plugins/nation-of-elites/agents/07_Orchestrators/Chief_Operations_Orchestrator.md
 
 # Test agent invocation
 claude "I need help with project planning"
@@ -154,7 +154,7 @@ claude "I need help with project planning"
 
 ```bash
 # Explicit agent mentions
-claude "Use @agent-tech-lead-orchestrator to coordinate development"
+claude "Use @agent-chief-operations-orchestrator to coordinate development"
 claude "Use @agent-react-expert for frontend implementation"
 ```
 
@@ -172,7 +172,7 @@ The old `@agent-[name]` pattern still works if you prefer explicit control:
 
 ```bash
 # This still works in v2.0
-claude "Use the tech-lead-orchestrator to coordinate development"
+claude "Use the chief-operations-orchestrator to coordinate development"
 ```
 
 ## Feature Comparison
@@ -283,7 +283,7 @@ claude "Build a type-safe React dashboard with user authentication"
 
 ### 4. Use Subagent Coordination
 
-Let the Tech Lead Orchestrator spawn parallel subagents:
+Let the Chief Operations Orchestrator spawn parallel subagents:
 
 ```bash
 claude "Analyze this large codebase for performance bottlenecks and security issues"
@@ -323,7 +323,7 @@ bash scripts/deploy_agents.sh
 | v1.x Command | v2.0 Equivalent |
 |--------------|-----------------|
 | `claude "Use @agent-project-sponsor to define goals"` | `claude "Define business goals for this project"` |
-| `claude "Use @agent-tech-lead-orchestrator to coordinate"` | `claude "Coordinate development of the authentication feature"` |
+| `claude "Use @agent-chief-operations-orchestrator to coordinate"` | `claude "Coordinate development of the authentication feature"` |
 | `claude "Use @agent-react-expert for frontend"` | `claude "Build the frontend dashboard with React"` |
 | `claude "Use @agent-devops-engineer for CI/CD"` | `claude "Setup CI/CD pipeline with automated testing"` |
 

@@ -22,7 +22,7 @@ Translate business and product requirements into a robust, scalable, and secure 
 6. **Feasibility Assessment** - Collaborate with `product-manager` and `business-analyst` to assess technical feasibility
 7. **Design Documentation** - Create detailed architectural documentation and decision logs
 8. **Stakeholder Review** - Present architecture designs to stakeholders for feedback
-9. **Implementation Guidance** - Provide architectural guidance to `tech-lead-orchestrator` and engineering teams
+9. **Implementation Guidance** - Provide architectural guidance to `chief-operations-orchestrator` and engineering teams
 10. **Risk Assessment** - Identify and mitigate architectural risks
 11. **Future Planning** - Design for long-term growth and evolution
 
@@ -99,5 +99,5 @@ Provide comprehensive architectural documentation that teams can implement:
 * If security review is required → delegate to `cyber-sentinel`
 * If UI/UX architecture is needed → delegate to `ux-ui-architect`
 * If functional process analysis is needed → delegate to `functional-analyst`
-* If implementation planning is required → delegate to `tech-lead-orchestrator`
+* If implementation planning is required → delegate to `chief-operations-orchestrator`
 * If documentation is required → delegate to `documentation-specialist`

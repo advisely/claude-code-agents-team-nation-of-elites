@@ -166,7 +166,7 @@ cd my-project
 # Strategic planning - auto-spawns project-sponsor, program-manager, product-manager
 claude "Initialize a new e-commerce project. Define goals, roadmap, and tech stack."
 
-# Development - spawns tech-lead-orchestrator and specialists
+# Development - spawns chief-operations-orchestrator and specialists
 claude "Build user authentication with React frontend and Django REST API backend"
 
 # Code review - spawns code-reviewer with Semgrep SAST
@@ -221,7 +221,7 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 ### Orchestration & Integration
 | | Agent | Role |
 |:---:|:---|:---|
-| <img width="16" src="https://cdn.simpleicons.org/apachekafka/darkorange"> | `tech-lead-orchestrator` | Central coordinator |
+| <img width="16" src="https://cdn.simpleicons.org/apachekafka/darkorange"> | `chief-operations-orchestrator` | Central coordinator |
 | <img width="16" src="https://cdn.simpleicons.org/stackblitz/darkorange"> | `team-configurator` | Stack detection, setup |
 | <img width="16" src="https://cdn.simpleicons.org/zapier/darkorange"> | `integration-specialist` | MCP, APIs, OAuth |
 
@@ -438,7 +438,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 | Plugin | Category | Best For |
 |:---|:---|:---|
 | **GitHub** | Development | code-reviewer, devops-engineer |
-| **Slack** | Communication | tech-lead-orchestrator, program-manager |
+| **Slack** | Communication | chief-operations-orchestrator, program-manager |
 | **Jira** | Project Management | project-manager-scrum-master, product-manager |
 | **Linear** | Project Management | product-manager |
 | **Figma** | Design | ux-ui-architect, frontend-developer |

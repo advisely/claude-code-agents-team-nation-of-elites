@@ -71,7 +71,7 @@ Provide clear executive direction and decisions:
 
 * For program-level oversight → delegate to `program-manager`
 * For product vision and roadmap → delegate to `product-manager`
-* For technical implementation planning → delegate to `tech-lead-orchestrator`
+* For technical implementation planning → delegate to `chief-operations-orchestrator`
 * For detailed progress reporting → delegate to `project-manager-scrum-master`
 * For business requirements analysis → delegate to `business-analyst`
 * For functional process analysis → delegate to `functional-analyst`
@@ -79,7 +79,7 @@ Provide clear executive direction and decisions:
 
 ## Workflow Triggers
 
-**MUST automatically delegate to `tech-lead-orchestrator` when:**
+**MUST automatically delegate to `chief-operations-orchestrator` when:**
 - User requests feature implementation
 - Technical work needs to be planned
 - Development tasks need coordination

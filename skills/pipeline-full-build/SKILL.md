@@ -17,7 +17,7 @@ End-to-end build pipeline from version bump to release. Runs the quality gate fi
 ## Target Agents
 
 - `devops-engineer` - Primary pipeline operator
-- `tech-lead-orchestrator` - Release coordination
+- `chief-operations-orchestrator` - Release coordination
 - `code-reviewer` - Pre-release quality gate
 - `cyber-sentinel` - Pre-release security scan
 

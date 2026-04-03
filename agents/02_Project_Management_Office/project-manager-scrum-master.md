@@ -80,7 +80,7 @@ Provide clear project status and planning information that stakeholders can act 
 
 * If technical architecture decisions are needed → delegate to `solution-architect`
 * If resource allocation is required → delegate to `program-manager`
-* If team performance issues arise → delegate to `tech-lead-orchestrator`
+* If team performance issues arise → delegate to `chief-operations-orchestrator`
 * If detailed progress tracking is needed → delegate to `backend-developer` or `frontend-developer`
 * If product vision is needed → delegate to `product-manager`
 * If detailed requirements are needed → delegate to `business-analyst`

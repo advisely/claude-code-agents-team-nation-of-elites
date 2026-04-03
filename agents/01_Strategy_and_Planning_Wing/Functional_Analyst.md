@@ -3,7 +3,7 @@ name: functional-analyst
 description: Expert functional analyst specializing in process modeling, functional specifications, and system behavior analysis.
 
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 memory: project
 ---
 

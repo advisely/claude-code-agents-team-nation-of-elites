@@ -6,7 +6,7 @@
 
 ## Mission
 
-A multi-agent AI workforce that functions like a real-world IT company: 64 specialized agents across 10 divisions, taking projects from concept to production with systematic precision.
+A multi-agent AI workforce that functions like a real-world company: 74 specialized agents across 12 divisions, taking projects from concept to production — and from lead to revenue — with systematic precision.
 
 ## Memory Layers
 
@@ -20,7 +20,7 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 
 | File | Domain | When Loaded |
 |------|--------|-------------|
-| [organization.md](docs/rules/organization.md) | 64 agents, 10 divisions, full roster | Always (project context) |
+| [organization.md](docs/rules/organization.md) | 74 agents, 12 divisions, full roster | Always (project context) |
 | [orchestration.md](docs/rules/orchestration.md) | Delegation, Agent Teams, context compaction | Orchestration & planning |
 | [thinking-policies.md](docs/rules/thinking-policies.md) | Reasoning budgets (100–800 tokens) | Agent execution |
 | [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 4.6 features, server tools, strict mode | SDK & API integration |
@@ -30,7 +30,7 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 
 ## Organizational Structure
 
-**64 agents across 10 divisions** — see [organization.md](docs/rules/organization.md) for the full roster.
+**74 agents across 12 divisions** — see [organization.md](docs/rules/organization.md) for the full roster.
 
 | Division | Agents | Focus |
 |----------|--------|-------|
@@ -44,6 +44,8 @@ A multi-agent AI workforce that functions like a real-world IT company: 64 speci
 | 07_Orchestrators | 3 | System coordination & integration |
 | 08_Mobile_Development_Wing | 3 | Native & cross-platform mobile |
 | 09_Construction_Industry | 1 | Construction industry AI orchestration |
+| 10_Content_and_Localization | 4 | Publishing, books & multilingual localization |
+| 11_Business_Development | 6 | BD pipeline, proposals, market strategy & social media |
 
 ## Skills System
 

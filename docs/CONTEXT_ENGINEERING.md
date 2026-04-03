@@ -321,7 +321,7 @@ grep -rn "\[.*\]\(.*\)" --include="*.md" | grep -v "http"
 
 ## Integration with Agent Workflow
 
-### Tech Lead Orchestrator
+### Chief Operations Orchestrator
 - Uses file structure to understand project
 - Spawns subagents for parallel analysis
 - Manages context through compaction

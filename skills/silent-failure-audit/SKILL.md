@@ -17,7 +17,7 @@ description: Detect silent failures in status, health, detection, and initializa
 
 - `code-reviewer` - Primary user during PR reviews (silent failure checklist)
 - `cyber-sentinel` - Security implications of silent failures
-- `tech-lead-orchestrator` - Quality gate enforcement (truth audit)
+- `chief-operations-orchestrator` - Quality gate enforcement (truth audit)
 - `qa-test-planner` - Environment-diversity test planning
 - `automated-test-scripter` - Implementing env-variation tests
 
@@ -297,7 +297,7 @@ async startServer(): Promise<void> {
 
 ---
 
-## Quality Gate: Truth Audit (for tech-lead-orchestrator)
+## Quality Gate: Truth Audit (for chief-operations-orchestrator)
 
 After ANY feature touching status/health/detection/initialization, require:
 

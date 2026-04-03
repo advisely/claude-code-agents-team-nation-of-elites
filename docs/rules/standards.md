@@ -85,7 +85,7 @@ Key agents automatically maintain project documentation without manual intervent
 - **Backend/Frontend Developers**: Update CLAUDE.md, PLAN.md, CHANGELOG.md after implementation
 - **Code Reviewer**: Updates quality status, security findings, and review completion
 - **DevOps Engineer**: Updates CI/CD configuration, infrastructure status, and deployment milestones
-- **Tech Lead Orchestrator**: Updates team assignments, decisions, and orchestration phases
+- **Chief Operations Orchestrator**: Updates team assignments, decisions, and orchestration phases
 
 Standard documentation files: `CLAUDE.md` (project config), `PLAN.md` (plan-of-record), `CHANGELOG.md` (version history).
 

@@ -1,6 +1,6 @@
 # Organizational Structure
 
-The Nation of Elites consists of **64 specialized agents** organized across **10 divisions**:
+The Nation of Elites consists of **74 specialized agents** organized across **12 divisions**:
 
 ## 00_Executive_Wing (2 agents)
 **Leadership and Strategic Direction**
@@ -35,7 +35,7 @@ The Nation of Elites consists of **64 specialized agents** organized across **10
 - `aiops-specialist`, `ai-strategist`, `data-engineer`, `data-scientist`, `ml-engineer`
 
 ## 07_Orchestrators (3 agents)
-- `tech-lead-orchestrator` - Central execution coordinator with subagent spawning and context compaction
+- `chief-operations-orchestrator` - Central execution coordinator with subagent spawning and context compaction
 - `team-configurator` - Tech stack detection and agent team configuration
 - `integration-specialist` - MCP server setup, external API connections, OAuth flows
 
@@ -44,3 +44,19 @@ The Nation of Elites consists of **64 specialized agents** organized across **10
 
 ## 09_Construction_Industry_Division (1 agent)
 - `construction-ai-orchestrator` - IMPARARIA Progressive Deployment Methodology
+
+## 10_Content_and_Localization_Wing (4 agents)
+**Content Creation, Publishing, and Multilingual Localization**
+- `book-author` - Draft and structure books, chapters, outlines with narrative voice and research synthesis
+- `book-editor` - Review and refine manuscripts for clarity, consistency, grammar, pacing, and narrative structure
+- `publishing-specialist` - Book formatting, platform requirements (KDP, IngramSpark), metadata, ISBNs, distribution
+- `translation-localization-specialist` - Translate documents across languages with fidelity to meaning, tone, and cultural context
+
+## 11_Business_Development_Wing (6 agents)
+**Business Growth, Sales Pipeline, and Market Strategy**
+- `business-development-manager` - Pipeline strategy, opportunity tracking, deal lifecycle, win/loss analysis
+- `lead-generation-specialist` - Prospecting, outreach sequences, lead scoring, qualification, nurture workflows
+- `proposal-architect` - RFP response, proposal workflow, document package assembly, compliance matrices
+- `client-success-manager` - Client lifecycle, onboarding, relationship management, retention, renewals
+- `market-intelligence-analyst` - Competitive intelligence, market analysis, pricing strategy, industry trends
+- `social-media-strategist` - Multi-platform social content, paid ad creative, campaigns, community management

@@ -3,7 +3,7 @@ name: business-analyst
 description: Expert business analyst specializing in translating business needs into detailed technical requirements.
 
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Business Analyst

@@ -444,7 +444,7 @@ the PDF content into context.
 
 ### Orchestrators
 - `integration-specialist` → mcp-builder (primary user)
-- `tech-lead-orchestrator` → skill-creator (for new capabilities)
+- `chief-operations-orchestrator` → skill-creator (for new capabilities)
 
 ---
 

@@ -128,8 +128,8 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 | Plugin | Best For Agents | Category |
 |--------|----------------|----------|
-| GitHub | code-reviewer, devops-engineer, tech-lead-orchestrator | Development |
-| Slack | tech-lead-orchestrator, program-manager | Communication |
+| GitHub | code-reviewer, devops-engineer, chief-operations-orchestrator | Development |
+| Slack | chief-operations-orchestrator, program-manager | Communication |
 | Jira | project-manager-scrum-master, product-manager | Project Management |
 | Figma | ux-ui-architect, frontend-developer | Design |
 | Sentry | sre-specialist, observability-engineer | Monitoring |
@@ -140,5 +140,8 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 | Linear | product-manager, project-manager-scrum-master | Project Management |
 | Confluence | functional-analyst, documentation-specialist | Documentation |
 | Asana | program-manager | Project Management |
+| Slack | client-success-manager, business-development-manager | Communication |
+| Notion | proposal-architect, client-success-manager | Documentation |
+| Linear | business-development-manager | Pipeline Tracking |
 
 Use `/plugin install <name>@claude-plugins-official` or the deploy script's interactive plugin setup.

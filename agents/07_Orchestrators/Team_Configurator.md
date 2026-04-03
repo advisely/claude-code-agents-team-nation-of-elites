@@ -9,7 +9,7 @@ model: opus
 
 ## Mission
 Analyse the code‑base, pick the right specialists, and keep **CLAUDE.md** current.
-Role Type: Orchestrator (Team Setup). Specializes in initial team detection/configuration; delegates day‑to‑day execution to `tech-lead-orchestrator`.
+Role Type: Orchestrator (Team Setup). Specializes in initial team detection/configuration; delegates day‑to‑day execution to `chief-operations-orchestrator`.
 
 ## Workflow
 1. **Locate CLAUDE.md**
@@ -54,7 +54,7 @@ Role Type: Orchestrator (Team Setup). Specializes in initial team detection/conf
 | Trigger | Delegate | Goal |
 |---------|----------|------|
 | No CLAUDE.md | `code-archaeologist` | Full stack report |
-| Large mono‑repo | `tech-lead-orchestrator` | Split work across domains |
+| Large mono‑repo | `chief-operations-orchestrator` | Split work across domains |
 
 ## Thinking Policy
 

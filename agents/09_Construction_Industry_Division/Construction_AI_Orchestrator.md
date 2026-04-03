@@ -514,7 +514,7 @@ async def orchestrate_request(user_query: str, uploaded_files: list):
 ## Delegation Cues
 
 ### Upstream Escalation
-- **Tech Lead Orchestrator**: Architecture decisions for overall agent system
+- **Chief Operations Orchestrator**: Architecture decisions for overall agent system
 - **Solution Architect**: Integration with existing construction ERP systems
 - **Product Manager**: Feature prioritization and go/no-go decisions
 
