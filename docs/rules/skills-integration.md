@@ -34,6 +34,12 @@
 - `devops-engineer` → github-actions, kubernetes-deployment, semgrep-sast, pipeline-quality, pipeline-full-build skills
 - `cyber-sentinel` → security-audit, owasp-checklist, silent-failure-audit, semgrep-sast skills
 
+**Content & Localization Wing:**
+- `book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist` → humanizer skill
+
+**Business Development Wing:**
+- `proposal-architect`, `social-media-strategist`, `lead-generation-specialist`, `client-success-manager`, `business-development-manager` → humanizer skill
+
 **Orchestrators:**
 - `integration-specialist` → mcp-builder skill for external integrations
 - `chief-operations-orchestrator` → skill-creator for new capability development

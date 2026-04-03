@@ -7,6 +7,7 @@ description: >
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
 permissionMode: acceptEdits
+skills: [humanizer]
 ---
 
 # Publishing Specialist

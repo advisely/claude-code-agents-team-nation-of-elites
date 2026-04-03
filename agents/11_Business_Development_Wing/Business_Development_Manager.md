@@ -8,6 +8,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
 memory: project
 permissionMode: acceptEdits
+skills: [humanizer]
 ---
 
 # Business Development Manager

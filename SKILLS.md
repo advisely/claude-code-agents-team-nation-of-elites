@@ -1,4 +1,4 @@
-# Agent Skills Documentation - Nation of Elites v3.0
+# Agent Skills Documentation - Nation of Elites v3.8
 
 ## What are Agent Skills?
 
@@ -276,6 +276,18 @@ See [templates/](templates/) for project scaffolding.
   - Django testing with pytest-django
   - Coverage reporting
 
+#### Writing Quality (1 skill) - NEW in v3.8.1
+- **humanizer** - Remove signs of AI-generated writing from text
+  - Based on Wikipedia's "Signs of AI writing" guide (29 patterns across 5 categories)
+  - Content patterns: significance inflation, name-dropping, vague claims
+  - Language patterns: AI vocabulary, copula avoidance, false parallelisms, rule-of-three
+  - Style patterns: em dash overuse, boldface abuse, title-case headings, emoji decoration
+  - Communication patterns: chatbot artifacts, sycophantic tone, knowledge-cutoff disclaimers
+  - Filler/hedging: redundant phrases, excessive qualifiers, generic positive conclusions
+  - Voice calibration: match a user's personal writing style from samples
+  - Multi-pass auditing: draft rewrite, AI-ism detection audit, final revision
+  - Preloaded on: Content Wing (4 agents) and Business Development Wing (5 agents)
+
 #### Quality Assurance (1 skill)
 - **silent-failure-audit** - Detect silent failures in status/health/detection code
   - 7 mandatory checks for truthfulness of status reports
@@ -442,6 +454,19 @@ the PDF content into context.
 - `cyber-sentinel` → security-audit, silent-failure-audit, semgrep-sast (primary users)
 - `cloud-architect` → cloud deployment patterns
 
+### Content & Localization Wing
+- `book-author` → humanizer (natural-sounding prose for manuscripts)
+- `book-editor` → humanizer (detect and remove AI patterns during editing)
+- `publishing-specialist` → humanizer (book descriptions, marketing copy)
+- `translation-localization-specialist` → humanizer (natural-sounding translations)
+
+### Business Development Wing
+- `proposal-architect` → humanizer (authentic-sounding RFP responses)
+- `social-media-strategist` → humanizer + adspirer (authentic social content)
+- `lead-generation-specialist` → humanizer (human-sounding outreach sequences)
+- `client-success-manager` → humanizer (genuine client communications)
+- `business-development-manager` → humanizer (authentic deal communications)
+
 ### Orchestrators
 - `integration-specialist` → mcp-builder (primary user)
 - `chief-operations-orchestrator` → skill-creator (for new capabilities)
@@ -461,7 +486,7 @@ bash scripts/deploy_agents.sh
 ```
 
 **What Gets Installed:**
-- `~/.claude/agents/` - All 64 agents
+- `~/.claude/agents/` - All 74 agents
 - `~/.claude/skills/` - Official + custom skills
 
 ### Manual Installation
@@ -689,6 +714,12 @@ Before installing a skill:
 - Universal pipeline-full-build skill: version bump through release for desktop and cloud
 - 3 new skills bringing total to 31 custom skills
 - Updated agents: cyber-sentinel, code-reviewer, qa-engineer, automated-test-scripter, devops-engineer
+
+### ✅ v3.8 (Released)
+- Content & Localization Wing (4 agents) and Business Development Wing (6 agents) added
+- Humanizer skill: removes 29 AI writing patterns, voice calibration, multi-pass auditing
+- 1 new skill bringing total to 32 custom skills
+- Updated agents: 9 agents across Content and BD wings preload humanizer
 
 ### v4.0 (Next)
 - Agent Teams integration in skill workflows (experimental: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)

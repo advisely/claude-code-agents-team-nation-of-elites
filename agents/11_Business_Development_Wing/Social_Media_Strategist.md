@@ -9,7 +9,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
 memory: project
 permissionMode: acceptEdits
-skills: [adspirer-ads-agent:campaign-performance, adspirer-ads-agent:keyword-research, adspirer-ads-agent:ad-campaign-best-practices]
+skills: [humanizer, adspirer-ads-agent:campaign-performance, adspirer-ads-agent:keyword-research, adspirer-ads-agent:ad-campaign-best-practices]
 ---
 
 # Social Media Strategist

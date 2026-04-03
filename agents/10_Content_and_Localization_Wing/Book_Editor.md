@@ -7,6 +7,7 @@ description: >
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
 permissionMode: acceptEdits
+skills: [humanizer]
 ---
 
 # Book Editor

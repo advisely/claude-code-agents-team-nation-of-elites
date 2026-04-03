@@ -5,6 +5,72 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-04-03] - Humanizer Skill Integration (v3.8.1)
+
+### Added
+
+- **`humanizer`** skill (32nd custom skill) - Remove signs of AI-generated writing from text
+  - Based on Wikipedia's "Signs of AI writing" guide maintained by WikiProject AI Cleanup
+  - Detects 29 distinct patterns across 5 categories (content, language, style, communication, filler/hedging)
+  - Voice calibration: match a user's personal writing style from samples
+  - Multi-pass auditing: draft rewrite → AI-ism detection audit → final revision
+  - Source: [blader/humanizer](https://github.com/blader/humanizer) (MIT license)
+
+- **Humanizer preloaded on 9 agents** across 2 full divisions:
+  - Content & Localization Wing (4): `book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist`
+  - Business Development Wing (5): `proposal-architect`, `social-media-strategist`, `lead-generation-specialist`, `client-success-manager`, `business-development-manager`
+
+### Changed
+
+- **skills-integration.md** - Added Content & Localization Wing and Business Development Wing agent-skill mappings
+- **SKILLS.md** - Added humanizer skill documentation, updated agent-skill mapping, updated roadmap and counts
+- **CLAUDE.md** - Added humanizer skill description and agent mappings
+- **README.md** - Updated skills badge (31→32), version badge (3.8.0→3.8.1), Content/BD agent tables with skills column, skills library section
+- **plugin.json** - Bumped to v3.8.1, updated description with 74 agents and humanizer
+
+### Stats
+
+- **Total Agents**: 74 (unchanged)
+- **Total Skills**: 31 → 32 (+1 skill)
+- **Agents with humanizer preloaded**: 0 → 9
+- **Files Changed**: 14 (1 new skill + 9 agents + 4 docs)
+
+---
+
+## [2026-03-30] - Content Wing, BD Wing, Orchestrator Rename & Opus Upgrades (v3.8.0)
+
+### Added
+
+- **Content & Localization Wing** (Division 10) - 4 new agents:
+  - `book-author` - Draft and structure books, chapters, outlines with narrative voice
+  - `book-editor` - Review and refine manuscripts for clarity, consistency, grammar, pacing
+  - `publishing-specialist` - Book formatting, platform requirements (KDP, IngramSpark), metadata, ISBNs
+  - `translation-localization-specialist` - Translate documents across languages with cultural fidelity
+
+- **Business Development Wing** (Division 11) - 6 new agents:
+  - `business-development-manager` - BD pipeline, opportunity tracking, deal lifecycle, win/loss analysis
+  - `lead-generation-specialist` - Prospecting, outreach sequences, lead scoring, nurture workflows
+  - `proposal-architect` - RFP responses, proposal workflow, compliance matrices, win themes
+  - `client-success-manager` - Client lifecycle, onboarding, retention, renewals
+  - `market-intelligence-analyst` - Competitive intelligence, market analysis, pricing strategy
+  - `social-media-strategist` - Multi-platform social content, paid ads, campaigns
+
+### Changed
+
+- **Orchestrator renamed**: `tech-lead-orchestrator` → `chief-operations-orchestrator` (canonical)
+- **Model upgrades to opus**: All BD Wing agents (6), Content Wing agents (3: book-author, book-editor, translation-localization-specialist), plus key Strategy Wing agents (business-analyst, functional-analyst, product-manager)
+- **README.md completely refreshed**: New banner image (banner_v2.jpeg), updated badges (74 agents, 12 divisions), complete agent roster tables with Simple Icons for all 12 divisions
+- **Organization rule file**: Updated with Divisions 10 and 11, full roster
+
+### Stats
+
+- **Total Agents**: 64 → 74 (+10 agents)
+- **Total Divisions**: 10 → 12 (+2 divisions)
+- **New Divisions**: Content & Localization Wing, Business Development Wing
+- **Agents upgraded to opus**: 9+
+
+---
+
 ## [2026-03-27] - Official Plugin Integrations, Agent Teams & README Overhaul (v3.7.0)
 
 ### Added

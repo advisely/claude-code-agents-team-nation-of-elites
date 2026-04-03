@@ -10,10 +10,10 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 
 [![Agents](https://img.shields.io/badge/agents-74-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
 [![Divisions](https://img.shields.io/badge/divisions-12-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
-[![Skills](https://img.shields.io/badge/skills-31-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
+[![Skills](https://img.shields.io/badge/skills-32-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.8.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.8.1-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
@@ -384,26 +384,26 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 <details>
 <summary><strong>Content & Localization Wing (4 agents)</strong></summary>
 
-| | Agent | Role | Model | Memory |
-|:---:|:---|:---|:---:|:---:|
-| <img width="16" src="https://cdn.simpleicons.org/bookstack/goldenrod"> | `book-author` | Drafting, ghostwriting, narrative voice | opus | -- |
-| <img width="16" src="https://cdn.simpleicons.org/grammarly/goldenrod"> | `book-editor` | Developmental editing, copy editing, proofread | opus | -- |
-| <img width="16" src="https://cdn.simpleicons.org/leanpub/goldenrod"> | `publishing-specialist` | KDP, IngramSpark, metadata, ISBNs | sonnet | -- |
-| <img width="16" src="https://cdn.simpleicons.org/googletranslate/goldenrod"> | `translation-localization-specialist` | Multilingual translation with cultural fidelity | opus | project |
+| | Agent | Role | Model | Skills |
+|:---:|:---|:---|:---:|:---|
+| <img width="16" src="https://cdn.simpleicons.org/bookstack/goldenrod"> | `book-author` | Drafting, ghostwriting, narrative voice | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/grammarly/goldenrod"> | `book-editor` | Developmental editing, copy editing, proofread | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/leanpub/goldenrod"> | `publishing-specialist` | KDP, IngramSpark, metadata, ISBNs | sonnet | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/googletranslate/goldenrod"> | `translation-localization-specialist` | Multilingual translation with cultural fidelity | opus | humanizer |
 
 </details>
 
 <details>
 <summary><strong>Business Development Wing (6 agents)</strong></summary>
 
-| | Agent | Role | Model | Memory |
-|:---:|:---|:---|:---:|:---:|
-| <img width="16" src="https://cdn.simpleicons.org/salesforce/deepskyblue"> | `business-development-manager` | Pipeline strategy, deal lifecycle, win/loss | opus | project |
-| <img width="16" src="https://cdn.simpleicons.org/mailchimp/deepskyblue"> | `lead-generation-specialist` | Prospecting, outreach, lead scoring | opus | project |
-| <img width="16" src="https://cdn.simpleicons.org/docusign/deepskyblue"> | `proposal-architect` | RFP response, proposals, compliance matrices | opus | project |
-| <img width="16" src="https://cdn.simpleicons.org/hubspot/deepskyblue"> | `client-success-manager` | Client lifecycle, retention, renewals | opus | project |
+| | Agent | Role | Model | Skills |
+|:---:|:---|:---|:---:|:---|
+| <img width="16" src="https://cdn.simpleicons.org/salesforce/deepskyblue"> | `business-development-manager` | Pipeline strategy, deal lifecycle, win/loss | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/mailchimp/deepskyblue"> | `lead-generation-specialist` | Prospecting, outreach, lead scoring | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/docusign/deepskyblue"> | `proposal-architect` | RFP response, proposals, compliance matrices | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/hubspot/deepskyblue"> | `client-success-manager` | Client lifecycle, retention, renewals | opus | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/statista/deepskyblue"> | `market-intelligence-analyst` | Competitive intel, market analysis, pricing | opus | -- |
-| <img width="16" src="https://cdn.simpleicons.org/buffer/deepskyblue"> | `social-media-strategist` | Social content, paid ads, campaigns | opus | project |
+| <img width="16" src="https://cdn.simpleicons.org/buffer/deepskyblue"> | `social-media-strategist` | Social content, paid ads, campaigns | opus | humanizer, adspirer |
 
 </details>
 
@@ -482,7 +482,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 ## Agent Skills System
 
-**31 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
+**32 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
 
 ### How Skills Work
 
@@ -543,10 +543,11 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 </details>
 
 <details>
-<summary><strong>More Skills (9)</strong></summary>
+<summary><strong>More Skills (10)</strong></summary>
 
 | Skill | Category |
 |:---|:---|
+| humanizer | Writing Quality (removes AI writing patterns) |
 | tailwind-patterns | UI/Styling |
 | antd-patterns | UI/Styling |
 | financial-trading-patterns | Specialized Domain |
@@ -654,7 +655,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.8.0** -- 74 Agents | 12 Divisions | 31 Skills | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v3.8.1** -- 74 Agents | 12 Divisions | 32 Skills | Humanizer | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

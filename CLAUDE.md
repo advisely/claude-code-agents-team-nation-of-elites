@@ -49,7 +49,9 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 ## Skills System
 
-**31 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
+**32 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
+
+`humanizer` skill preloads on all Content & Localization Wing agents (`book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist`) and Business Development Wing agents (`proposal-architect`, `social-media-strategist`, `lead-generation-specialist`, `client-success-manager`, `business-development-manager`) -- removes 29 AI writing patterns with voice calibration and multi-pass auditing.
 
 `silent-failure-audit` skill loads automatically on `code-reviewer`, `cyber-sentinel`, `qa-engineer`, and `automated-test-scripter` — no per-project config needed.
 
