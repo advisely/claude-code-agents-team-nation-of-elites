@@ -104,7 +104,7 @@ cd claude-code-agents-team-nation-of-elites
 bash scripts/deploy_agents.sh
 ```
 
-**Done!** All 64 agents are now in `~/.claude/agents/` and ready to use.
+**Done!** All 74 agents are now in `~/.claude/agents/` and ready to use.
 
 **WSL2 note:** The path `~/.claude` appears in Windows Explorer as `\\wsl.localhost\Ubuntu\home\<USER>\.claude`.
 
@@ -119,7 +119,7 @@ cd claude-code-agents-team-nation-of-elites
 powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 ```
 
-**Done!** All 64 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
+**Done!** All 74 agents are now in `%USERPROFILE%\.claude\agents\` and ready to use.
 
 </details>
 
@@ -196,10 +196,10 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 ### Strategy & Planning
 | | Agent | Role |
 |:---:|:---|:---|
-| <img width="16" src="https://cdn.simpleicons.org/blueprint/royalblue"> | `business-analyst` | Requirements, gap analysis |
-| <img width="16" src="https://cdn.simpleicons.org/diagramsdotnet/royalblue"> | `functional-analyst` | Process modeling, specs |
-| <img width="16" src="https://cdn.simpleicons.org/roadmapdotsh/royalblue"> | `product-manager` | Vision, roadmap, priorities |
-| <img width="16" src="https://cdn.simpleicons.org/archlinux/royalblue"> | `solution-architect` | Tech architecture, stacks |
+| <img width="16" src="https://cdn.simpleicons.org/blueprint/royalblue"> | `business-analyst` | Requirements, gap analysis (opus) |
+| <img width="16" src="https://cdn.simpleicons.org/diagramsdotnet/royalblue"> | `functional-analyst` | Process modeling, specs (opus) |
+| <img width="16" src="https://cdn.simpleicons.org/roadmapdotsh/royalblue"> | `product-manager` | Vision, roadmap, priorities (opus) |
+| <img width="16" src="https://cdn.simpleicons.org/archlinux/royalblue"> | `solution-architect` | Tech architecture, stacks (opus) |
 | <img width="16" src="https://cdn.simpleicons.org/figma/royalblue"> | `ux-ui-architect` | UX research, interfaces |
 
 </td>
@@ -300,9 +300,9 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 
 | | Agent | Role | Memory |
 |:---:|:---|:---|:---:|
-| <img width="16" src="https://cdn.simpleicons.org/codereview/green"> | `code-reviewer` | Security-aware PR reviews | project |
-| <img width="16" src="https://cdn.simpleicons.org/files/green"> | `code-archaeologist` | Legacy codebase analysis | project |
-| <img width="16" src="https://cdn.simpleicons.org/readthedocs/green"> | `documentation-specialist` | READMEs, API docs, guides | -- |
+| <img width="16" src="https://cdn.simpleicons.org/codereview/green"> | `code-reviewer` | Security-aware PR reviews (opus) | project |
+| <img width="16" src="https://cdn.simpleicons.org/files/green"> | `code-archaeologist` | Legacy codebase analysis (opus) | project |
+| <img width="16" src="https://cdn.simpleicons.org/readthedocs/green"> | `documentation-specialist` | READMEs, API docs, guides (opus) | -- |
 | <img width="16" src="https://cdn.simpleicons.org/speedtest/green"> | `performance-optimizer` | Bottleneck diagnosis | -- |
 | <img width="16" src="https://cdn.simpleicons.org/w3c/green"> | `accessibility-specialist` | WCAG 2.1 AA/AAA | -- |
 | <img width="16" src="https://cdn.simpleicons.org/visualstudiocode/green"> | `noe-general-purpose` | Versatile multi-language | -- |
@@ -328,7 +328,7 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 
 | | Agent | Role | Memory |
 |:---:|:---|:---|:---:|
-| <img width="16" src="https://cdn.simpleicons.org/snyk/orange"> | `cyber-sentinel` | Vulnerability scanning, audits | project |
+| <img width="16" src="https://cdn.simpleicons.org/snyk/orange"> | `cyber-sentinel` | Vulnerability scanning, audits (opus) | project |
 | <img width="16" src="https://cdn.simpleicons.org/bitwarden/orange"> | `storage-security-specialist` | Data protection, encryption | -- |
 
 </details>
@@ -381,24 +381,52 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 
 </details>
 
+<details>
+<summary><strong>Content & Localization Wing (4 agents)</strong></summary>
+
+| | Agent | Role | Model | Memory |
+|:---:|:---|:---|:---:|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/bookstack/goldenrod"> | `book-author` | Drafting, ghostwriting, narrative voice | opus | -- |
+| <img width="16" src="https://cdn.simpleicons.org/grammarly/goldenrod"> | `book-editor` | Developmental editing, copy editing, proofread | opus | -- |
+| <img width="16" src="https://cdn.simpleicons.org/leanpub/goldenrod"> | `publishing-specialist` | KDP, IngramSpark, metadata, ISBNs | sonnet | -- |
+| <img width="16" src="https://cdn.simpleicons.org/googletranslate/goldenrod"> | `translation-localization-specialist` | Multilingual translation with cultural fidelity | opus | project |
+
+</details>
+
+<details>
+<summary><strong>Business Development Wing (6 agents)</strong></summary>
+
+| | Agent | Role | Model | Memory |
+|:---:|:---|:---|:---:|:---:|
+| <img width="16" src="https://cdn.simpleicons.org/salesforce/deepskyblue"> | `business-development-manager` | Pipeline strategy, deal lifecycle, win/loss | opus | project |
+| <img width="16" src="https://cdn.simpleicons.org/mailchimp/deepskyblue"> | `lead-generation-specialist` | Prospecting, outreach, lead scoring | opus | project |
+| <img width="16" src="https://cdn.simpleicons.org/docusign/deepskyblue"> | `proposal-architect` | RFP response, proposals, compliance matrices | opus | project |
+| <img width="16" src="https://cdn.simpleicons.org/hubspot/deepskyblue"> | `client-success-manager` | Client lifecycle, retention, renewals | opus | project |
+| <img width="16" src="https://cdn.simpleicons.org/statista/deepskyblue"> | `market-intelligence-analyst` | Competitive intel, market analysis, pricing | opus | -- |
+| <img width="16" src="https://cdn.simpleicons.org/buffer/deepskyblue"> | `social-media-strategist` | Social content, paid ads, campaigns | opus | project |
+
+</details>
+
 ---
 
 ## Organization at a Glance
 
 ```
 agents/
-  00_Executive_Wing/           (2)   Strategic vision & portfolio management
-  01_Strategy_and_Planning/    (5)   Architecture, requirements, UX design
-  02_Project_Management/       (1)   Agile delivery & sprint management
-  03_Engineering_Division/    (31)   Core dev + 19 framework specialists + 8 code excellence
-  04_Quality_Assurance/        (4)   Testing strategy, automation, visual regression
-  05_SecOps_and_Infrastructure/(9)   Security, DevOps, cloud, SRE, observability
-  06_AI_and_ML_Division/       (5)   Data science, ML engineering, AIOps
-  07_Orchestrators/            (3)   Coordination, team config, MCP integration
-  08_Mobile_Development/       (3)   iOS, Android, cross-platform architecture
-  09_Construction_Industry/    (1)   Construction AI (IMPARARIA methodology)
-                              ----
-                               64 agents total
+  00_Executive_Wing/              (2)   Strategic vision & portfolio management
+  01_Strategy_and_Planning/       (5)   Architecture, requirements, UX design
+  02_Project_Management/          (1)   Agile delivery & sprint management
+  03_Engineering_Division/       (31)   Core dev + 19 framework specialists + 8 code excellence
+  04_Quality_Assurance/           (4)   Testing strategy, automation, visual regression
+  05_SecOps_and_Infrastructure/   (9)   Security, DevOps, cloud, SRE, observability
+  06_AI_and_ML_Division/          (5)   Data science, ML engineering, AIOps
+  07_Orchestrators/               (3)   Coordination, team config, MCP integration
+  08_Mobile_Development/          (3)   iOS, Android, cross-platform architecture
+  09_Construction_Industry/       (1)   Construction AI (IMPARARIA methodology)
+  10_Content_and_Localization/    (4)   Books, publishing, translation, localization
+  11_Business_Development/        (6)   BD pipeline, proposals, social media, market intel
+                                 ----
+                                  74 agents total
 ```
 
 ---
@@ -412,7 +440,7 @@ agents/
 | **Subagent Coordination** | Parallel processing with isolated context windows |
 | **Agent Teams** (experimental) | Multi-agent parallel work with shared task lists (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) |
 | **Context Compaction** | Automatic summarization at 80% usage (47% token reduction) |
-| **Persistent Memory** | 7 agents retain project knowledge across sessions via `memory: project` |
+| **Persistent Memory** | 13 agents retain project knowledge across sessions via `memory: project` |
 | **Skills Preloading** | 18 specialists preload matching skills at startup via `skills:` frontmatter |
 | **Permission Modes** | 16 code-writing agents use `permissionMode: acceptEdits` for frictionless flow |
 | **MCP Integration** | External services (Slack, GitHub, Jira, Figma, Sentry) via Model Context Protocol |
@@ -429,7 +457,7 @@ agents/
 | Medium | 400-600 | Business/Functional Analysts, QA Planner, AI Strategist |
 | Medium-Low | 200-300 | Framework Specialists, DevOps, Security |
 | Low | 100-200 | Backend/Frontend Devs, QA Engineer, Performance |
-| Orchestration | <=300 | Tech Lead, Team Configurator |
+| Orchestration | <=300 | Chief Operations Orchestrator, Team Configurator |
 
 ### Official Plugin Integrations
 
@@ -438,15 +466,15 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 | Plugin | Category | Best For |
 |:---|:---|:---|
 | **GitHub** | Development | code-reviewer, devops-engineer |
-| **Slack** | Communication | chief-operations-orchestrator, program-manager |
+| **Slack** | Communication | chief-operations-orchestrator, program-manager, client-success-manager |
 | **Jira** | Project Management | project-manager-scrum-master, product-manager |
-| **Linear** | Project Management | product-manager |
+| **Linear** | Project Management | product-manager, business-development-manager |
 | **Figma** | Design | ux-ui-architect, frontend-developer |
 | **Sentry** | Monitoring | sre-specialist, observability-engineer |
 | **Vercel** | Deployment | nextjs-expert, devops-engineer |
 | **Firebase** | Backend | mobile-architect, backend-developer |
 | **Supabase** | Database | database-expert, backend-developer |
-| **Notion** | Documentation | documentation-specialist, business-analyst |
+| **Notion** | Documentation | documentation-specialist, business-analyst, proposal-architect |
 | **Confluence** | Documentation | functional-analyst |
 | **Asana** | Project Management | program-manager |
 
@@ -460,7 +488,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 | Aspect | Agents | Skills |
 |:---|:---|:---|
-| **What** | Team members (64 specialists) | Training manuals & toolkits |
+| **What** | Team members (74 specialists) | Training manuals & toolkits |
 | **Where** | `~/.claude/agents/` | `~/.claude/skills/` |
 | **Loading** | Task-based spawning | Progressive disclosure |
 
@@ -579,7 +607,7 @@ bash scripts/deploy_agents.sh     # Linux/macOS/WSL2
 powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1  # Windows
 ```
 
-All 64 agents support both natural language invocation (v2+) and explicit agent mentions (v1 legacy). No breaking changes.
+All 74 agents support both natural language invocation (v2+) and explicit agent mentions (v1 legacy). No breaking changes.
 
 </details>
 
@@ -626,7 +654,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.7.0** -- 64 Agents | 10 Divisions | 31 Skills | Official Plugin Integrations | Agent Teams | Semgrep SAST | Universal Pipelines
+**Nation of Elites v3.8.0** -- 74 Agents | 12 Divisions | 31 Skills | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 
