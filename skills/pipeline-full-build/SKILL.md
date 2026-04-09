@@ -34,20 +34,27 @@ Step 7: Release
 Step 8: Post-Release
 ```
 
+## Versioning Scheme
+
+This project uses **Calendar Versioning (CalVer)**: `vYYYY.MM.DD`
+
+- Version is the release date: `v2026.04.04`
+- Multiple releases on the same day: append a suffix: `v2026.04.04.2`
+- `package.json` version field stores: `2026.04.04`
+- Git tags use: `v2026.04.04`
+
 ## Desktop Variant (Electron + Python)
 
 ### Step 1: Version Bump
 
 ```bash
-# Read current version
+# CalVer: version = today's date
 current=$(node -p "require('./package.json').version")
-echo "Current version: $current"
+new=$(date +%Y.%m.%d)
+echo "Current version: $current -> New version: $new"
 
-# Bump version (patch/minor/major)
-npm version patch --no-git-tag-version
-# Or: npm version minor --no-git-tag-version
-new=$(node -p "require('./package.json').version")
-echo "New version: $new"
+# Update package.json
+npm version "$new" --no-git-tag-version --allow-same-version
 
 # Sync Python version if hybrid
 [ -f "pyproject.toml" ] && sed -i "s/version = \".*\"/version = \"$new\"/" pyproject.toml
@@ -150,8 +157,11 @@ npm version prepatch --no-git-tag-version --preid=dev
 ### Step 1: Version Bump
 
 ```bash
-# Same as desktop, or use semantic-release
-npx semantic-release --dry-run  # Preview version
+# CalVer: version = today's date
+current=$(node -p "require('./package.json').version")
+new=$(date +%Y.%m.%d)
+echo "Current version: $current -> New version: $new"
+npm version "$new" --no-git-tag-version --allow-same-version
 ```
 
 ### Step 2: Quality Gate

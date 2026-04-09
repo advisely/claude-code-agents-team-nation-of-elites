@@ -1,6 +1,6 @@
 ---
 name: pipeline-quality
-description: Universal quality gate pipeline - lint, Semgrep SAST, tests, and dependency audit. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
+description: Universal quality gate pipeline - lint, Semgrep SAST, tests, dead code detection, and dependency audit. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
 ---
 
 # Pipeline Quality Gate
@@ -89,7 +89,30 @@ semgrep ci --supply-chain
 | PHP | `./vendor/bin/phpunit` |
 | Java | `./mvnw test` |
 
-### Step 6: Dependency Audit
+### Step 6: Dead Code Detection
+
+Find unused exports, variables, imports, and unreachable code:
+
+| Stack | Tool | Command |
+|-------|------|---------|
+| Python | Vulture | `vulture . --min-confidence 80` |
+| Python | Ruff (unused imports) | `ruff check . --select F401,F841` |
+| Node/TS | ESLint (unused vars) | `eslint . --rule '{"no-unused-vars": "error"}'` |
+| Node/TS | Knip (unused exports/files/deps) | `npx knip` |
+| Node/TS | ts-prune (unused exports) | `npx ts-prune` |
+| Rust | Dead code warnings | `cargo build 2>&1 \| grep "warning.*dead_code\|warning.*unused"` |
+| Go | Staticcheck (unused) | `staticcheck ./...` |
+| Ruby | Debride | `debride .` |
+| PHP | Psalm (unused) | `./vendor/bin/psalm --find-unused-code` |
+| Java | SpotBugs (unused) | `./mvnw spotbugs:check` |
+
+**Notes:**
+- For Python: prefer `vulture` for comprehensive dead code, `ruff --select F401,F841` for just unused imports/variables
+- For Node/TS: prefer `knip` for monorepo-aware analysis (unused files, exports, dependencies); fall back to `ts-prune` for simpler unused export detection; use ESLint `no-unused-vars` as baseline
+- For Rust: the compiler already warns on dead code by default; just check build output
+- Semgrep also catches some dead code patterns via `p/javascript` and `p/python` rulesets (already run in Step 4)
+
+### Step 7: Dependency Audit
 
 | Stack | Audit Command |
 |-------|--------------|
@@ -112,6 +135,7 @@ semgrep ci --supply-chain
 | Type Check | PASS/FAIL/SKIP | [error count] type errors |
 | Semgrep SAST | PASS/FAIL | [finding count] findings ([critical]/[high]/[medium]) |
 | Tests | PASS/FAIL | [passed]/[total] tests, [coverage]% coverage |
+| Dead Code | PASS/FAIL/SKIP | [count] unused exports/vars/imports found |
 | Dependency Audit | PASS/FAIL | [vuln count] vulnerabilities found |
 
 ### Gate Result: PASS / FAIL

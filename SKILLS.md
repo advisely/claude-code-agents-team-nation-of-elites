@@ -220,7 +220,8 @@ See [templates/](templates/) for project scaffolding.
 
 - **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0
   - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
-  - 6-step gate: lint, type check, Semgrep SAST, tests, supply chain, dependency audit
+  - 7-step gate: lint, type check, Semgrep SAST, tests, dead code detection, dependency audit
+  - Dead code tools: Vulture/Ruff (Python), Knip/ts-prune/ESLint (Node/TS), Staticcheck (Go), Debride (Ruby), Psalm (PHP), SpotBugs (Java)
   - Desktop (Electron+Python) and cloud (web/API) variants
   - CI/CD template for GitHub Actions
   - Standardized output report format
