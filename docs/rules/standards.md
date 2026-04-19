@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # sonnet (fast read-only / general) | opus (orchestration)
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-4-7, sonnet → current Sonnet, haiku → current Haiku
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -37,7 +37,7 @@ skills: [skill-name-1, skill-name-2]
 maxTurns: 20             # Cap agentic turns for cost control
 background: false        # Run as background task
 isolation: worktree      # Git worktree isolation for parallel dev
-effort: high             # Override session effort level (low/medium/high/maximum)
+effort: xhigh            # Opus 4.7 levels: low | medium | high | xhigh (default) | max
 
 # MCP servers scoped to this agent (optional)
 mcpServers:
@@ -73,11 +73,11 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
 | `model: sonnet` | Fast read-only exploration agents |
-| `model: opus` | Only orchestrators and executive agents (max 3-4) |
+| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-4-7`) |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |
-| `effort: high` | Override reasoning depth per-agent |
+| `effort: xhigh` | Recommended default for Opus 4.7 coding work (override session `xhigh` default only when needed) |
 
 ## Automatic Documentation Updates
 
@@ -97,7 +97,7 @@ Per Anthropic's latest guidance, rule files should be:
 - **Version controlled** alongside agent definitions
 - This prevents context bloat and reduces hallucination risk
 
-## Strict Tool Use (Opus 4.6+)
+## Strict Tool Use
 
 For production agents, add `strict: true` to tool definitions:
 ```json
@@ -108,3 +108,13 @@ For production agents, add `strict: true` to tool definitions:
 }
 ```
 This guarantees schema conformance — no type mismatches or missing fields.
+
+## Claude Opus 4.7 Migration Notes (SDK Users Only)
+
+The Claude Code harness handles these automatically. Only apply when calling the Messages API directly:
+
+- **Removed:** `thinking={"type":"enabled","budget_tokens":N}` — returns HTTP 400. Use `thinking={"type":"adaptive"}` + `output_config.effort`.
+- **Removed:** non-default `temperature` / `top_p` / `top_k` — return HTTP 400. Steer via prompting.
+- **Changed:** thinking content omitted from response by default. Set `thinking.display = "summarized"` to stream reasoning.
+- **Changed:** new tokenizer counts 1.0–1.35× more tokens — widen `max_tokens` and compaction triggers.
+- **Changed:** Claude Code default effort is now `xhigh`.

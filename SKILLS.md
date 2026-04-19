@@ -1,4 +1,4 @@
-# Agent Skills Documentation - Nation of Elites v3.8
+# Agent Skills Documentation - Nation of Elites v3.9
 
 ## What are Agent Skills?
 

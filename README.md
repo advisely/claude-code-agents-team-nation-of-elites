@@ -13,7 +13,8 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 [![Skills](https://img.shields.io/badge/skills-32-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.8.1-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.9.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Opus](https://img.shields.io/badge/Claude_Opus-4.7-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-opus-4-7)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
@@ -437,8 +438,10 @@ agents/
 
 | Feature | Description |
 |:---|:---|
-| **Subagent Coordination** | Parallel processing with isolated context windows |
+| **Claude Opus 4.7** | `opus` alias resolves to `claude-opus-4-7` — adaptive thinking, `xhigh` default effort, improved file-system memory, high-res vision (2576px / 3.75MP) |
+| **Subagent Coordination** | Parallel processing with isolated context windows (explicit fan-out instructions required on 4.7) |
 | **Agent Teams** (experimental) | Multi-agent parallel work with shared task lists (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) |
+| **Task Budgets** (beta) | Advisory token countdown across a full agentic loop (`task-budgets-2026-03-13` beta header) |
 | **Context Compaction** | Automatic summarization at 80% usage (47% token reduction) |
 | **Persistent Memory** | 13 agents retain project knowledge across sessions via `memory: project` |
 | **Skills Preloading** | 18 specialists preload matching skills at startup via `skills:` frontmatter |
@@ -451,13 +454,17 @@ agents/
 
 ### Thinking Policies & Budgets
 
-| Complexity | Tokens | Agents |
-|:---|:---:|:---|
-| High | 600-800 | Solution, UX/UI, API, Cloud Architects |
-| Medium | 400-600 | Business/Functional Analysts, QA Planner, AI Strategist |
-| Medium-Low | 200-300 | Framework Specialists, DevOps, Security |
-| Low | 100-200 | Backend/Frontend Devs, QA Engineer, Performance |
-| Orchestration | <=300 | Chief Operations Orchestrator, Team Configurator |
+Scratchpad token budgets (internal reasoning) mapped to Opus 4.7 effort levels:
+
+| Complexity | Tokens | Effort Level | Agents |
+|:---|:---:|:---:|:---|
+| High | 600-800 | `xhigh` / `max` | Solution, UX/UI, API, Cloud Architects |
+| Medium | 400-600 | `high` | Business/Functional Analysts, QA Planner, AI Strategist |
+| Medium-Low | 200-300 | `medium` | Framework Specialists, DevOps, Security |
+| Low | 100-200 | `low` / `medium` | Backend/Frontend Devs, QA Engineer, Performance |
+| Orchestration | <=300 | `medium` | Chief Operations Orchestrator, Team Configurator |
+
+Claude Code session default on Opus 4.7 is `xhigh`; override per-agent via `effort:` frontmatter only when warranted.
 
 ### Official Plugin Integrations
 
@@ -655,7 +662,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.8.1** -- 74 Agents | 12 Divisions | 32 Skills | Humanizer | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v3.9.0** -- Claude Opus 4.7 | 74 Agents | 12 Divisions | 32 Skills | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

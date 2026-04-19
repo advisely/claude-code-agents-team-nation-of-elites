@@ -5,6 +5,52 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-04-19] - Claude Opus 4.7 Alignment (v3.9.0)
+
+Aligns the Nation of Elites with Claude Opus 4.7 (`claude-opus-4-7`, released 2026-04-16). The `opus` model alias now resolves to Opus 4.7 automatically via the Claude Code harness — no per-agent frontmatter sweep was required because all 74 agents use model aliases rather than hard-coded IDs.
+
+### Added
+
+- **`docs/rules/sdk-compliance.md`** - Full Opus 4.7 feature section: adaptive thinking, `xhigh` effort level (new default in Claude Code), task budgets (beta), file-system memory improvements, high-resolution vision (2576px / 3.75MP, 1:1 pixel mapping), behavior-shift steering notes, SDK migration breaking-changes table.
+- **`docs/rules/orchestration.md`** - Opus 4.7 steering notes (fewer subagents by default, fewer tool calls by default, more literal instruction following). Task Budgets section for long-running agentic loops.
+- **`docs/rules/thinking-policies.md`** - Mapping table between existing scratchpad token budgets and Opus 4.7 effort levels (`low`/`medium`/`high`/`xhigh`/`max`).
+- **`docs/rules/standards.md`** - SDK migration notes for Messages API callers (removed `thinking.budget_tokens`, removed sampling parameters, new tokenizer, omitted thinking content by default).
+- **`CLAUDE.md`** - "Claude Opus 4.7 Alignment" section summarizing behavior shifts inherited by all agents.
+- **`README.md`** - Opus 4.7 badge, Opus 4.7 feature row in Claude Agent SDK Features table, Task Budgets row, effort-level column in Thinking Policies table.
+
+### Changed
+
+- **Chief Operations Orchestrator** - Updated responsibilities to reference Opus 4.7 effort levels (`low` / `medium` / `high` / `xhigh` / `max`) instead of 4.6's four-level scale. Added task budgets (beta) as a coordination lever. Removed "Opus 4.6" label from Agent Teams section.
+- **`docs/rules/sdk-compliance.md`** - Agent/division counts corrected to 74 / 12 (previously stale at 64 / 10).
+- **`docs/rules/standards.md`** - Example frontmatter now uses `effort: xhigh` (Claude Code default on 4.7); model alias comment clarifies that `opus` resolves to `claude-opus-4-7`.
+- **`.claude-plugin/plugin.json`** - Bumped to v3.9.0; description mentions Opus 4.7 alignment.
+- **`README.md` footer** - Bumped to v3.9.0 and added Claude Opus 4.7 / Task Budgets / Adaptive Thinking callouts.
+
+### Removed
+
+- All "Opus 4.6" version labels across `docs/rules/`, `CLAUDE.md`, `CHANGELOG.md` header references, and `Chief_Operations_Orchestrator.md`. Repository is version-label-neutral for the current generation.
+
+### Notes on Behavioral Shifts
+
+All agents inherit these Opus 4.7 behaviors with no frontmatter changes:
+
+- **Fewer subagents spawned by default** — orchestration prompts now say "spawn N subagents to do X, Y, Z in parallel" explicitly when fan-out is desired
+- **Fewer tool calls by default** — raise effort or prompt explicitly for more tool use
+- **More literal instruction following** — vague agent descriptions hurt more than they did on 4.6
+- **Response length calibrates to task complexity** — "be concise" scaffolding is often redundant
+- **More direct, less validation-forward tone** — partially overlaps with `humanizer` skill patterns
+- **Improved file-system memory** — `memory: project` agents benefit without changes
+- **Real-time cybersecurity safeguards** — `cyber-sentinel` should reference the Cyber Verification Program for authorized pentest work
+
+### Stats
+
+- **Total Agents**: 74 (unchanged)
+- **Total Skills**: 32 (unchanged)
+- **Files Changed**: 8 (3 rule files + CLAUDE.md + README.md + CHANGELOG.md + plugin.json + Chief_Operations_Orchestrator.md)
+- **Breaking Changes**: None for harness users. SDK users calling the Messages API directly must migrate (see `docs/rules/sdk-compliance.md`).
+
+---
+
 ## [2026-04-03] - Humanizer Skill Integration (v3.8.1)
 
 ### Added

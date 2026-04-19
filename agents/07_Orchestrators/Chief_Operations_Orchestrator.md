@@ -22,8 +22,9 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 - Always involve `functional-analyst` for FSD/ACs/traceability and change-impact analysis
 - **Manage context through compaction**: When context > 80%, summarize previous decisions and status
 - **Coordinate subagents**: Spawn isolated subagents for parallel information gathering
-- **Agent Teams (Opus 4.6)**: Assemble agent teams that work in parallel and coordinate autonomously for complex multi-component tasks
-- **Adaptive thinking**: Leverage Opus 4.6 effort levels (low/medium/high/maximum) to optimize reasoning depth per task
+- **Agent Teams**: Assemble agent teams that work in parallel and coordinate autonomously for complex multi-component tasks (explicit fan-out instructions required on Opus 4.7 — the model spawns fewer subagents by default)
+- **Adaptive thinking**: Leverage Opus 4.7 effort levels (`low` / `medium` / `high` / `xhigh` / `max`) to optimize reasoning depth per task; `xhigh` is the Claude Code default
+- **Task budgets (beta)**: For cost-bounded long runs, set an advisory `task_budget` via the `task-budgets-2026-03-13` beta header — minimum 20K tokens, advisory countdown the model can see
 
 ## Workflow
 1. Intake & Objectives
@@ -101,7 +102,7 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
    - Process files in chunks through subagents
    - **Lifecycle**: Created → Process chunk → Extract data → Terminate
 
-## Agent Teams (Opus 4.6)
+## Agent Teams
 
 ### When to Use Agent Teams
 Agent Teams extend beyond simple subagent spawning for scenarios requiring sustained parallel work:

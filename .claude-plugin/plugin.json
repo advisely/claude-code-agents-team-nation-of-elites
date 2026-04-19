@@ -1,7 +1,7 @@
 {
   "name": "nation-of-elites",
-  "description": "A complete 74-agent AI workforce organized like a real IT company. 12 divisions including executive leadership, strategic planning, engineering, QA, SecOps, AI/ML, mobile, construction AI, content & localization, and business development. Features persistent memory, skills preloading (including humanizer), official plugin integrations, and Agent Teams support.",
-  "version": "3.8.1",
+  "description": "A complete 74-agent AI workforce organized like a real IT company, aligned with Claude Opus 4.7 (adaptive thinking, xhigh effort, task budgets). 12 divisions including executive leadership, strategic planning, engineering, QA, SecOps, AI/ML, mobile, construction AI, content & localization, and business development. Features persistent memory, skills preloading (including humanizer), official plugin integrations, and Agent Teams support.",
+  "version": "3.9.0",
   "keywords": ["multi-agent", "enterprise", "orchestration", "workflow", "skills", "plugins"],
   "author": {
     "name": "Yassine Boumiza",

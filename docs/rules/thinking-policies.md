@@ -2,6 +2,17 @@
 
 The orchestrator enforces explicit, budgeted internal reasoning across roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
+**Claude Opus 4.7 alignment:** the token budgets below are scratchpad-bytes, not SDK `thinking.budget_tokens` (which was removed in 4.7). They map onto the current effort levels:
+
+| Scratchpad Budget | Effort Level | Typical Use |
+|-------------------|--------------|-------------|
+| 600–800 tokens | `xhigh` / `max` | Architects, hard design tradeoffs |
+| 400–600 tokens | `high` | Analysts, planners, AI strategy |
+| 200–300 tokens | `medium` | Framework specialists, orchestrator |
+| 100–200 tokens | `low` / `medium` | Developers, QA engineer, performance |
+
+`xhigh` is the Claude Code session default on Opus 4.7 — tune per-agent via the `effort:` frontmatter only when warranted.
+
 ## Reasoning Complexity Levels
 
 ### High Complexity (600–800 tokens)

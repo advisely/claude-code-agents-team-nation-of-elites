@@ -82,12 +82,29 @@ Subagents are **temporary, task-specific spawns** that exist only for the durati
 - **Discard**: Verbose explanations, duplicate information, resolved issues
 - **API Feature (Beta)**: Anthropic offers server-side context compaction that can supplement manual compaction
 
-## Adaptive Thinking (Opus 4.6)
+## Adaptive Thinking (Claude Opus 4.7)
 
-Opus 4.6 dynamically decides when and how much reasoning is required:
-- **Effort Levels**: Low → Medium → High → Maximum
+Opus 4.7 dynamically decides when and how much reasoning is required. Extended-thinking budgets are gone — adaptive thinking is the only thinking-on mode.
+
+- **Effort Levels**: `low` → `medium` → `high` → `xhigh` → `max`
+- **Claude Code default**: `xhigh` (new level between `high` and `max`) — recommended for API design, schema migration, large codebase review
+- **Reserve `max`** for genuinely hard, isolated problems — it can over-think and spend tokens without equivalent quality gains
 - Simple tasks get fast responses; complex tasks get deeper reasoning
-- Orchestrator can set effort levels per agent based on task complexity
+- Orchestrator can set effort levels per agent based on task complexity (see `effort:` frontmatter field)
+
+## Task Budgets (Opus 4.7, Beta)
+
+For long-running agentic loops where cost must be bounded, set a task budget via the beta header `task-budgets-2026-03-13`. This gives the model a visible countdown across thinking, tool calls, tool results, and final output — advisory, not a hard cap (`max_tokens` remains the ceiling). Minimum 20K tokens. Natural fit for `pipeline-full-build`, `pipeline-quality`, and orchestrator-driven loops. Skip when quality matters more than speed.
+
+## Opus 4.7 Steering Notes
+
+Apply these when writing orchestration prompts or agent instructions:
+
+- **Fewer subagents by default** — say "spawn N subagents to do X, Y, Z in parallel" when you want fan-out
+- **Fewer tool calls by default** — raise effort or request more tool use explicitly
+- **More literal instruction following** — state requirements explicitly; don't rely on implicit generalization from one example to another
+- **Response length calibrates to complexity** — most "be concise" scaffolding is redundant
+- **Direct, less validation-forward tone** — the `humanizer` skill's core patterns are partially baked in natively
 
 ## Subagent Advanced Features
 
