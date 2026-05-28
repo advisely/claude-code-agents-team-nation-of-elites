@@ -1,12 +1,12 @@
 # Claude Agent SDK Alignment (v2.0.0+)
 
-The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices and tracks the current flagship model, **Claude Opus 4.7** (`claude-opus-4-7`, released 2026-04-16).
+The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices and tracks the current flagship model, **Claude Opus 4.8** (`claude-opus-4-8`, released 2026-05-28).
 
 ## Current Model Targets
 
 | Alias | Resolves To | Use |
 |-------|-------------|-----|
-| `opus` | `claude-opus-4-7` | Orchestration, complex reasoning, long-horizon agentic work |
+| `opus` | `claude-opus-4-8` | Orchestration, complex reasoning, long-horizon agentic work |
 | `sonnet` | Current Sonnet generation | Fast read-only, framework specialists |
 | `haiku` | Current Haiku generation | Lightweight support tasks |
 
@@ -54,7 +54,7 @@ Agents use aliases — never hard-coded model IDs — so the harness tracks Anth
 - Orchestrator can assemble agent teams that work in parallel and coordinate autonomously
 - Flexible WIP limits for team scenarios (beyond the default 2-agent limit)
 - Isolated context windows per team member with synthesized output
-- **Note (Opus 4.7 behavior):** the model spawns fewer subagents by default. Be explicit when fan-out is desired (e.g. "spawn N subagents to analyze modules A, B, C in parallel").
+- **Note (Opus 4.8 behavior):** the model still spawns fewer subagents by default, so be explicit when fan-out is desired (e.g. "spawn N subagents to analyze modules A, B, C in parallel"). For large, decomposable tasks, **Dynamic Workflows** (research preview) lets Claude plan a task and spin up hundreds of parallel subagents in one session, with each output verified before it is reported back.
 
 ## ✅ Strict Tool Use
 - Tool definitions support `strict: true` for guaranteed schema conformance
@@ -66,19 +66,19 @@ Agents use aliases — never hard-coded model IDs — so the harness tracks Anth
 - `web_fetch_20250305` - URL content fetching on Anthropic's servers
 - Handle `pause_turn` for long-running server tool operations
 
-## ✅ Claude Opus 4.7 Features (SDK-Level)
+## ✅ Claude Opus 4.8 Features (SDK-Level)
 
-These apply when calling the Messages API directly (e.g. `claude-api` skill, programmatic SDK usage). The Claude Code harness handles them automatically.
+These apply when calling the Messages API directly (e.g. `claude-api` skill, programmatic SDK usage). The Claude Code harness handles them automatically. Opus 4.8 builds on 4.7 with **no breaking API changes** — code already running on 4.7 needs no changes.
 
 ### Adaptive Thinking (replaces extended-thinking budgets)
 ```python
 thinking = {"type": "adaptive"}
-output_config = {"effort": "high"}  # or "xhigh" (recommended default for coding)
+output_config = {"effort": "high"}  # default; raise to "xhigh" for harder tasks
 ```
-**Breaking change:** `thinking={"type":"enabled","budget_tokens":N}` returns HTTP 400 on Opus 4.7. Adaptive thinking is off by default; set `"display":"summarized"` if you need thinking to stream to users.
+**Breaking change (unchanged from 4.7):** `thinking={"type":"enabled","budget_tokens":N}` returns HTTP 400 on Opus 4.8. Adaptive thinking is off by default; set `"display":"summarized"` if you need thinking to stream to users. On 4.8 the model decides per turn whether to think, so there are fewer wasted thinking tokens at the same effort level.
 
-### Effort Levels (Opus 4.7)
-Five levels: `low` / `medium` / `high` / `xhigh` / `max`. Claude Code's default is `xhigh` (new level between `high` and `max`). Use `xhigh` for API design, schema migration, large codebase review. Reserve `max` for genuinely hard, isolated problems — it can over-think.
+### Effort Levels (Opus 4.8)
+Five levels: `low` / `medium` / `high` / `xhigh` / `max`. The default is now **`high` on all surfaces** (Claude API + Claude Code) — a change from 4.7, where Claude Code defaulted to `xhigh`. `xhigh` (between `high` and `max`) is still available and recommended for API design, schema migration, and large codebase review, but is no longer the default. Reserve `max` for genuinely hard, isolated problems — it can over-think. Effort calibration is more reliable per level on 4.8.
 
 ### Task Budgets (Beta)
 Advisory token countdown the model sees across a full agentic loop.
@@ -103,12 +103,29 @@ Max image resolution raised to 2576px / 3.75MP (from 1568px / 1.15MP); coordinat
 New tokenizer produces 1.0–1.35× more tokens for identical inputs vs Opus 4.6. Widen `max_tokens` and compaction triggers accordingly. Pricing is unchanged ($5 in / $25 out per M tokens); 1M context available at standard pricing with no long-context premium.
 
 ### Behavior Shifts (Steering Notes)
+- **Sharper judgment & honesty** — Opus 4.8 is ~4× less likely to let flaws in its own code pass unremarked, and flags uncertainty instead of over-claiming. Benchmarks: agentic coding 64.3% → 69.2%; multidisciplinary reasoning with tools 54.7% → 57.9%.
+- **Better tool triggering** — 4.8 is less likely to skip a tool call the task required (a 4.7 pain point), so you rarely need to raise effort just to get tool use
+- **Better long-horizon coding** — improved long-context handling, fewer compactions, and better compaction recovery on long agentic traces
 - **More literal instruction following** — agent prompts must state requirements explicitly; don't rely on implicit generalization
-- **Fewer tool calls by default** — raise effort or prompt explicitly for more tool use
-- **Fewer subagents by default** — explicit parallelization required
+- **Fewer subagents by default** — explicit parallelization required (or use Dynamic Workflows for large fan-out)
 - **Response length calibrates to task complexity** — verbosity scaffolding often redundant
 - **More direct, less validation-forward tone** — some `humanizer` patterns now baked in natively
 - **Real-time cybersecurity safeguards** — `cyber-sentinel` should reference the [Cyber Verification Program](https://claude.com/form/cyber-use-case) for authorized pentest work
+
+### Dynamic Workflows (Research Preview)
+A Claude Code research-preview capability: Claude plans a task, then spins up **hundreds of parallel subagents in a single session**, with each subagent's output verified before being reported back. Suited to very large, decomposable tasks — large-scale migrations, repo-wide audits, broad multi-file refactors. The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build` skills are natural beneficiaries.
+
+### Mid-Conversation System Messages
+Opus 4.8 accepts `role: "system"` messages immediately after a user turn (no beta header required). This appends updated instructions later in a long-running conversation without restating the full system prompt, preserving prompt-cache hits on earlier turns and reducing input cost on agentic loops.
+
+### Refusal Stop Details
+The `stop_details` object on refusal responses (present since 4.7) is now publicly documented. It describes the **category** of refusal alongside the `refusal` stop reason, making it easier to route a declined request to the right next step.
+
+### Fast Mode (Research Preview)
+Set `speed: "fast"` on the Claude API for up to **2.5× higher output tokens/sec** from the same model, at premium pricing ($10 in / $50 out per M tokens). Research preview at launch.
+
+### Lower Prompt-Cache Minimum
+The minimum cacheable prompt length on Opus 4.8 is **1,024 tokens** (lower than 4.7), so short prompts that couldn't cache before can now create cache entries with no code changes.
 
 ## Quality Metrics
 
@@ -117,5 +134,5 @@ New tokenizer produces 1.0–1.35× more tokens for identical inputs vs Opus 4.6
 - **Hierarchical Structure** - Clear command and coordination patterns
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
-- **Complexity-Based Reasoning** - Tailored thinking budgets aligned with Opus 4.7 effort levels
-- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 4.7)
+- **Complexity-Based Reasoning** - Tailored thinking budgets aligned with Opus 4.8 effort levels
+- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 4.8)

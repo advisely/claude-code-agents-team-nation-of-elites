@@ -5,6 +5,38 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-05-28] - Claude Opus 4.8 Alignment (v3.10.0)
+
+Aligns the Nation of Elites with Claude Opus 4.8 (`claude-opus-4-8`, released 2026-05-28). The `opus` model alias now resolves to Opus 4.8 automatically via the Claude Code harness — no per-agent frontmatter sweep was required because all 74 agents use model aliases rather than hard-coded IDs. Opus 4.8 builds on 4.7 with **no breaking API changes**; the main behavioral shift to absorb is the new effort default.
+
+### Added
+
+- **`docs/rules/sdk-compliance.md`** - New Opus 4.8 feature subsections: Dynamic Workflows (research preview), mid-conversation system messages, refusal `stop_details`, fast mode (`speed: "fast"`), and the lower 1,024-token prompt-cache minimum. Steering notes updated for sharper judgment/honesty (~4× fewer unremarked code flaws), better tool triggering, and better long-context/compaction recovery.
+- **`docs/rules/orchestration.md`** - New "Dynamic Workflows (Opus 4.8, Research Preview)" section (plan a task → hundreds of parallel verified subagents in one session) and a "sharper self-checking" steering note.
+- **`README.md`** - New SDK feature rows for Dynamic Workflows and mid-conversation system messages.
+- **`CLAUDE.md`** - "Claude Opus 4.8 Alignment" section expanded with judgment/honesty, tool-triggering, long-horizon coding, and dynamic-workflow shifts.
+
+### Changed
+
+- **Effort default is now `high`** (was `xhigh` in Claude Code on 4.7) — applied across `docs/rules/sdk-compliance.md`, `orchestration.md`, `thinking-policies.md`, `standards.md`, `README.md`, and `Chief_Operations_Orchestrator.md`. `xhigh` remains available for hard design/architecture/large-codebase work but is no longer the default.
+- **Model alias resolution** updated to `claude-opus-4-8` everywhere it was documented as `claude-opus-4-7` (`sdk-compliance.md`, `standards.md`, `CLAUDE.md`).
+- **Section headings & labels** moved from "Opus 4.7" to "Opus 4.8" across `docs/rules/` and `Chief_Operations_Orchestrator.md`.
+- **`docs/rules/standards.md`** - Migration notes refreshed for 4.8: new effort default plus the new features; example frontmatter now uses `effort: high` with `high (default)` annotation.
+- **`docs/rules/orchestration.md`** - "Fewer tool calls by default" steering note replaced with "Better tool triggering" (4.8 is less likely to skip a required tool call).
+- **`.claude-plugin/plugin.json`** - Bumped to v3.10.0; description mentions Opus 4.8 alignment, high default effort, and dynamic workflows.
+- **`README.md`** - Opus 4.8 badge + link, version badge v3.10.0, and footer updated with Claude Opus 4.8 / Dynamic Workflows.
+- **`SKILLS.md`** - Header bumped to v3.10.
+
+### Notes on Behavioral Shifts
+
+All agents inherit these Opus 4.8 behaviors with no frontmatter changes:
+
+- **Effort defaults to `high`** on all surfaces (API + Claude Code) — agents tuned for `xhigh` on 4.7 keep that via explicit `effort:` frontmatter; everything else now runs at `high` by default
+- **Sharper judgment & honesty** — ~4× less likely to let flaws in its own code pass unremarked; flags uncertainty instead of over-claiming; works independently longer
+- **Better tool triggering** — less likely to skip a required tool call than 4.7
+- **Stronger long-horizon coding** — better long-context handling, fewer compactions, better compaction recovery
+- **Adaptive thinking decides per turn** — fewer wasted thinking tokens at the same effort level
+
 ## [2026-04-19] - Claude Opus 4.7 Alignment (v3.9.0)
 
 Aligns the Nation of Elites with Claude Opus 4.7 (`claude-opus-4-7`, released 2026-04-16). The `opus` model alias now resolves to Opus 4.7 automatically via the Claude Code harness — no per-agent frontmatter sweep was required because all 74 agents use model aliases rather than hard-coded IDs.

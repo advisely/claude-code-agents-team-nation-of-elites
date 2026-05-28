@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # alias — resolves to current generation. opus → claude-opus-4-7, sonnet → current Sonnet, haiku → current Haiku
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-4-8, sonnet → current Sonnet, haiku → current Haiku
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -37,7 +37,7 @@ skills: [skill-name-1, skill-name-2]
 maxTurns: 20             # Cap agentic turns for cost control
 background: false        # Run as background task
 isolation: worktree      # Git worktree isolation for parallel dev
-effort: xhigh            # Opus 4.7 levels: low | medium | high | xhigh (default) | max
+effort: high             # Opus 4.8 levels: low | medium | high (default) | xhigh | max
 
 # MCP servers scoped to this agent (optional)
 mcpServers:
@@ -73,11 +73,11 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
 | `model: sonnet` | Fast read-only exploration agents |
-| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-4-7`) |
+| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-4-8`) |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |
-| `effort: xhigh` | Recommended default for Opus 4.7 coding work (override session `xhigh` default only when needed) |
+| `effort: high` | Default effort on Opus 4.8 (all surfaces); raise to `xhigh` only for hard design/architecture or large-codebase work |
 
 ## Automatic Documentation Updates
 
@@ -109,12 +109,13 @@ For production agents, add `strict: true` to tool definitions:
 ```
 This guarantees schema conformance — no type mismatches or missing fields.
 
-## Claude Opus 4.7 Migration Notes (SDK Users Only)
+## Claude Opus 4.8 Migration Notes (SDK Users Only)
 
-The Claude Code harness handles these automatically. Only apply when calling the Messages API directly:
+The Claude Code harness handles these automatically. Only apply when calling the Messages API directly. Opus 4.8 has **no breaking API changes** vs 4.7 — these are the constraints that carry over, plus the new effort default:
 
+- **Changed (4.8):** effort now defaults to `high` on all surfaces (API + Claude Code); `xhigh` remains available for harder tasks.
+- **New (4.8):** mid-conversation `role: "system"` messages (no beta header) preserve prompt cache on long loops; prompt-cache minimum lowered to 1,024 tokens; refusal `stop_details` category now documented; optional fast mode via `speed: "fast"`.
 - **Removed:** `thinking={"type":"enabled","budget_tokens":N}` — returns HTTP 400. Use `thinking={"type":"adaptive"}` + `output_config.effort`.
 - **Removed:** non-default `temperature` / `top_p` / `top_k` — return HTTP 400. Steer via prompting.
 - **Changed:** thinking content omitted from response by default. Set `thinking.display = "summarized"` to stream reasoning.
 - **Changed:** new tokenizer counts 1.0–1.35× more tokens — widen `max_tokens` and compaction triggers.
-- **Changed:** Claude Code default effort is now `xhigh`.

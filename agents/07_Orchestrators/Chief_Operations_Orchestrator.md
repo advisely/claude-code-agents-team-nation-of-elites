@@ -22,8 +22,8 @@ Own end-to-end orchestration: clarify objectives, plan and delegate work across 
 - Always involve `functional-analyst` for FSD/ACs/traceability and change-impact analysis
 - **Manage context through compaction**: When context > 80%, summarize previous decisions and status
 - **Coordinate subagents**: Spawn isolated subagents for parallel information gathering
-- **Agent Teams**: Assemble agent teams that work in parallel and coordinate autonomously for complex multi-component tasks (explicit fan-out instructions required on Opus 4.7 — the model spawns fewer subagents by default)
-- **Adaptive thinking**: Leverage Opus 4.7 effort levels (`low` / `medium` / `high` / `xhigh` / `max`) to optimize reasoning depth per task; `xhigh` is the Claude Code default
+- **Agent Teams**: Assemble agent teams that work in parallel and coordinate autonomously for complex multi-component tasks (on Opus 4.8 use explicit fan-out instructions, or Dynamic Workflows (research preview) to spin up hundreds of verified subagents in one session)
+- **Adaptive thinking**: Leverage Opus 4.8 effort levels (`low` / `medium` / `high` / `xhigh` / `max`) to optimize reasoning depth per task; `high` is the default on Opus 4.8, raise to `xhigh` for hard, isolated problems
 - **Task budgets (beta)**: For cost-bounded long runs, set an advisory `task_budget` via the `task-budgets-2026-03-13` beta header — minimum 20K tokens, advisory countdown the model can see
 
 ## Workflow

@@ -23,7 +23,7 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 | [organization.md](docs/rules/organization.md) | 74 agents, 12 divisions, full roster | Always (project context) |
 | [orchestration.md](docs/rules/orchestration.md) | Delegation, Agent Teams, context compaction | Orchestration & planning |
 | [thinking-policies.md](docs/rules/thinking-policies.md) | Reasoning budgets (100–800 tokens) | Agent execution |
-| [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 4.7 features, task budgets, adaptive thinking, server tools, strict mode | SDK & API integration |
+| [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 4.8 features, task budgets, adaptive thinking, server tools, strict mode | SDK & API integration |
 | [agent-selection.md](docs/rules/agent-selection.md) | Division guide, invocation patterns, v3.7 features | Task delegation |
 | [skills-integration.md](docs/rules/skills-integration.md) | Skills vs agents, progressive disclosure, agent-skill map | Skills usage |
 | [standards.md](docs/rules/standards.md) | Agent frontmatter spec, doc standards, tool use | Agent development |
@@ -75,17 +75,21 @@ Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Parallel multi-agent coord
 - Hook `if` field (v2.1.85+): Permission-rule syntax for fine-grained filtering
 - LSP servers in plugins: `.lsp.json` for language server protocol integrations
 
-## Claude Opus 4.7 Alignment (v3.9.0)
+## Claude Opus 4.8 Alignment (v3.10.0)
 
-The `opus` model alias resolves to `claude-opus-4-7` (released 2026-04-16). Key shifts all agents inherit:
+The `opus` model alias resolves to `claude-opus-4-8` (released 2026-05-28). Key shifts all agents inherit:
 
-- **Adaptive thinking only** — extended-thinking budgets removed at SDK level
-- **New `xhigh` effort level** — Claude Code default; between `high` and `max`
+- **Adaptive thinking only** — extended-thinking budgets removed at SDK level; the model decides per turn whether to think (fewer wasted thinking tokens)
+- **Effort defaults to `high`** — on all surfaces (Claude API + Claude Code); `xhigh` (between `high` and `max`) stays available for hard design/architecture/large-codebase work but is no longer the default
+- **Dynamic Workflows (research preview)** — plan a task, then spin up hundreds of parallel, verified subagents in a single Claude Code session
+- **Sharper judgment & honesty** — ~4× less likely to let flaws in its own code pass unremarked; flags uncertainty instead of over-claiming; works independently longer
+- **Better tool triggering** — less likely to skip a required tool call (a 4.7 pain point)
+- **Stronger long-horizon coding** — better long-context handling, fewer compactions, better compaction recovery
 - **Task budgets (beta)** — advisory token countdown across an agentic loop
-- **Fewer subagents / tool calls by default** — be explicit about parallelization
 - **More literal instruction following** — state requirements directly
 - **Improved file-system memory** — `memory: project` agents benefit without changes
 - **High-resolution vision** — 2576px / 3.75MP, 1:1 coordinate mapping
+- **Cheaper long loops** — mid-conversation system messages + 1,024-token prompt-cache minimum
 
 See [sdk-compliance.md](docs/rules/sdk-compliance.md) for SDK migration details and [orchestration.md](docs/rules/orchestration.md) for steering notes.
 

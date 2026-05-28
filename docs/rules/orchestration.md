@@ -82,29 +82,34 @@ Subagents are **temporary, task-specific spawns** that exist only for the durati
 - **Discard**: Verbose explanations, duplicate information, resolved issues
 - **API Feature (Beta)**: Anthropic offers server-side context compaction that can supplement manual compaction
 
-## Adaptive Thinking (Claude Opus 4.7)
+## Adaptive Thinking (Claude Opus 4.8)
 
-Opus 4.7 dynamically decides when and how much reasoning is required. Extended-thinking budgets are gone — adaptive thinking is the only thinking-on mode.
+Opus 4.8 dynamically decides when and how much reasoning is required. Extended-thinking budgets are gone — adaptive thinking is the only thinking-on mode. The model now decides per turn whether to think, so fewer thinking tokens are wasted at the same effort level.
 
 - **Effort Levels**: `low` → `medium` → `high` → `xhigh` → `max`
-- **Claude Code default**: `xhigh` (new level between `high` and `max`) — recommended for API design, schema migration, large codebase review
+- **Default effort**: `high` on all surfaces (API + Claude Code). `xhigh` (between `high` and `max`) is available — recommended for API design, schema migration, large codebase review — but is no longer the default
 - **Reserve `max`** for genuinely hard, isolated problems — it can over-think and spend tokens without equivalent quality gains
 - Simple tasks get fast responses; complex tasks get deeper reasoning
 - Orchestrator can set effort levels per agent based on task complexity (see `effort:` frontmatter field)
 
-## Task Budgets (Opus 4.7, Beta)
+## Task Budgets (Opus 4.8, Beta)
 
 For long-running agentic loops where cost must be bounded, set a task budget via the beta header `task-budgets-2026-03-13`. This gives the model a visible countdown across thinking, tool calls, tool results, and final output — advisory, not a hard cap (`max_tokens` remains the ceiling). Minimum 20K tokens. Natural fit for `pipeline-full-build`, `pipeline-quality`, and orchestrator-driven loops. Skip when quality matters more than speed.
 
-## Opus 4.7 Steering Notes
+## Opus 4.8 Steering Notes
 
 Apply these when writing orchestration prompts or agent instructions:
 
-- **Fewer subagents by default** — say "spawn N subagents to do X, Y, Z in parallel" when you want fan-out
-- **Fewer tool calls by default** — raise effort or request more tool use explicitly
+- **Fewer subagents by default** — say "spawn N subagents to do X, Y, Z in parallel" when you want fan-out, or use Dynamic Workflows (research preview) to plan a task and fan out to hundreds of verified subagents in one session
+- **Better tool triggering** — 4.8 is less likely to skip a required tool call than 4.7; you rarely need to raise effort just to get tool use
 - **More literal instruction following** — state requirements explicitly; don't rely on implicit generalization from one example to another
 - **Response length calibrates to complexity** — most "be concise" scaffolding is redundant
 - **Direct, less validation-forward tone** — the `humanizer` skill's core patterns are partially baked in natively
+- **Sharper self-checking** — 4.8 flags uncertainty and catches its own mistakes more readily; trust but verify its surfaced caveats rather than suppressing them
+
+## Dynamic Workflows (Opus 4.8, Research Preview)
+
+A Claude Code research-preview capability: Claude plans a task, then spins up hundreds of parallel subagents in a single session, with each subagent's output verified before it is reported back. This scales the orchestrator pattern far beyond the default 2-agent WIP limit for large, decomposable tasks — repo-wide audits, large-scale migrations, broad multi-file refactors. The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build` skills are natural beneficiaries. Decompose explicitly, keep subagent tasks independent, and rely on the built-in verification of returned outputs.
 
 ## Subagent Advanced Features
 
