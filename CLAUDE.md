@@ -61,7 +61,7 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 ## Official Plugin Integrations (v3.7.0)
 
-Deploy scripts auto-detect and offer to configure official Anthropic plugins: GitHub, Slack, Jira, Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Confluence, Asana. See [orchestration.md](docs/rules/orchestration.md) for agent-plugin mapping.
+Deploy scripts auto-detect and offer to configure official Anthropic plugins from the auto-available `claude-plugins-official` marketplace: GitHub, GitLab, Slack, Atlassian (Jira & Confluence ship as one `atlassian` plugin), Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Asana. See [orchestration.md](docs/rules/orchestration.md) for agent-plugin mapping.
 
 ## Agent Teams (Experimental)
 

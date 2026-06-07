@@ -13,7 +13,7 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 [![Skills](https://img.shields.io/badge/skills-32-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.10.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.10.1-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-4.8-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-opus-4-8)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
@@ -126,12 +126,23 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy_agents.ps1
 
 #### Plugin Installation (Alternative)
 
-```bash
-# Install as a Claude Code plugin
-/plugin install nation-of-elites@claude-plugins-official
+Nation of Elites is a third-party plugin, so you add its marketplace first, then install from it (two steps):
 
-# Or clone directly to plugins directory
-git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git ~/.claude/plugins/nation-of-elites
+```bash
+# 1. Register this repo as a marketplace
+/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites
+
+# 2. Install the plugin from it
+/plugin install nation-of-elites@nation-of-elites
+```
+
+All 74 agents become available as scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`), plus the 32 skills.
+
+To hack on the plugin locally without installing, load it straight from a clone:
+
+```bash
+git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
+claude --plugin-dir ./claude-code-agents-team-nation-of-elites
 ```
 
 #### Manual Installation
@@ -664,7 +675,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.10.0** -- Claude Opus 4.8 | 74 Agents | 12 Divisions | 32 Skills | Dynamic Workflows | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v3.10.1** -- Claude Opus 4.8 | 74 Agents | 12 Divisions | 32 Skills | Dynamic Workflows | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

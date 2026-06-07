@@ -165,10 +165,13 @@ configure_official_plugins() {
   echo ""
 
   # List of official plugins with descriptions
+  # Names below are the actual official plugin ids in claude-plugins-official.
+  # Note: Jira AND Confluence ship together in the single "atlassian" plugin.
   local -a PLUGINS=(
     "github:GitHub (issues, PRs, code search, actions)"
+    "gitlab:GitLab (issues, MRs, pipelines)"
     "slack:Slack (messaging, channels, notifications)"
-    "jira:Jira (tickets, sprints, boards)"
+    "atlassian:Atlassian — Jira & Confluence (tickets, sprints, wiki)"
     "linear:Linear (issues, projects, cycles)"
     "figma:Figma (design files, components)"
     "sentry:Sentry (error tracking, performance)"
@@ -176,7 +179,6 @@ configure_official_plugins() {
     "firebase:Firebase (auth, Firestore, hosting)"
     "supabase:Supabase (Postgres, auth, storage)"
     "notion:Notion (docs, databases, wikis)"
-    "confluence:Confluence (wiki, knowledge base)"
     "asana:Asana (tasks, timelines, portfolios)"
   )
 

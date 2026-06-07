@@ -167,19 +167,21 @@ if ($claudeCmd) {
     Write-Info "These plugins connect your agents to external services via MCP."
     Write-Host ""
 
+    # Names below are the actual official plugin ids in claude-plugins-official.
+    # Note: Jira AND Confluence ship together in the single "atlassian" plugin.
     $plugins = @(
-        @{ Name = "github";     Desc = "GitHub (issues, PRs, code search, actions)" },
-        @{ Name = "slack";      Desc = "Slack (messaging, channels, notifications)" },
-        @{ Name = "jira";       Desc = "Jira (tickets, sprints, boards)" },
-        @{ Name = "linear";     Desc = "Linear (issues, projects, cycles)" },
-        @{ Name = "figma";      Desc = "Figma (design files, components)" },
-        @{ Name = "sentry";     Desc = "Sentry (error tracking, performance)" },
-        @{ Name = "vercel";     Desc = "Vercel (deployments, preview URLs)" },
-        @{ Name = "firebase";   Desc = "Firebase (auth, Firestore, hosting)" },
-        @{ Name = "supabase";   Desc = "Supabase (Postgres, auth, storage)" },
-        @{ Name = "notion";     Desc = "Notion (docs, databases, wikis)" },
-        @{ Name = "confluence"; Desc = "Confluence (wiki, knowledge base)" },
-        @{ Name = "asana";      Desc = "Asana (tasks, timelines, portfolios)" }
+        @{ Name = "github";    Desc = "GitHub (issues, PRs, code search, actions)" },
+        @{ Name = "gitlab";    Desc = "GitLab (issues, MRs, pipelines)" },
+        @{ Name = "slack";     Desc = "Slack (messaging, channels, notifications)" },
+        @{ Name = "atlassian"; Desc = "Atlassian - Jira & Confluence (tickets, sprints, wiki)" },
+        @{ Name = "linear";    Desc = "Linear (issues, projects, cycles)" },
+        @{ Name = "figma";     Desc = "Figma (design files, components)" },
+        @{ Name = "sentry";    Desc = "Sentry (error tracking, performance)" },
+        @{ Name = "vercel";    Desc = "Vercel (deployments, preview URLs)" },
+        @{ Name = "firebase";  Desc = "Firebase (auth, Firestore, hosting)" },
+        @{ Name = "supabase";  Desc = "Supabase (Postgres, auth, storage)" },
+        @{ Name = "notion";    Desc = "Notion (docs, databases, wikis)" },
+        @{ Name = "asana";     Desc = "Asana (tasks, timelines, portfolios)" }
     )
 
     Write-Host "  Available plugins:" -ForegroundColor White

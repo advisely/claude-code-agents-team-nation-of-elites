@@ -5,6 +5,25 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-06-07] - Marketplace Installability Fix (v3.10.1)
+
+Restores the plugin marketplace catalog that makes Nation of Elites installable via `/plugin`, and corrects install instructions that referenced a reserved marketplace name and non-existent plugin ids. Verified against the current Claude Code plugin spec (v2.1.168): all 74 agents load as recursively-discovered scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`) and all 32 skills validate.
+
+### Added
+
+- **`.claude-plugin/marketplace.json`** - Marketplace catalog (name `nation-of-elites`) with a single self-referential plugin entry (`source: "./"`). This is the missing piece that lets users run `/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites` then `/plugin install nation-of-elites@nation-of-elites`. `plugin.json` alone never made the repo installable — it describes a plugin; the marketplace file is the catalog that points to it. (An earlier changelog claimed `marketplace.json` was "no longer needed with proper `plugin.json`" — that was incorrect; the two files serve different purposes.) `version` is intentionally omitted from the marketplace entry so `plugin.json` remains the single source of truth.
+
+### Fixed
+
+- **`README.md`** - "Plugin Installation" rewritten to the correct two-step marketplace flow (`marketplace add` → `install nation-of-elites@nation-of-elites`). Removed the broken `/plugin install nation-of-elites@claude-plugins-official` line (that marketplace is reserved for official Anthropic plugins) and the non-functional `git clone … ~/.claude/plugins/nation-of-elites` line (not a supported load mechanism); added `claude --plugin-dir` for local development.
+- **`scripts/deploy_agents.sh`**, **`scripts/deploy_agents.ps1`** - Official-plugin menu corrected: `jira` and `confluence` are not plugin ids — both ship in the single **`atlassian`** plugin. Added `gitlab`. The `@claude-plugins-official` references were already correct (that marketplace is auto-available) and were kept.
+- **`docs/rules/orchestration.md`**, **`CLAUDE.md`** - Agent-plugin mapping and integration list updated to reflect the `atlassian` plugin (Jira + Confluence) and `gitlab`; noted that `claude-plugins-official` needs no `marketplace add`.
+
+### Changed
+
+- **`.claude-plugin/plugin.json`** - Bumped to v3.10.1.
+- **`README.md`** - Version badge and footer bumped to v3.10.1.
+
 ## [2026-05-28] - Claude Opus 4.8 Alignment (v3.10.0)
 
 Aligns the Nation of Elites with Claude Opus 4.8 (`claude-opus-4-8`, released 2026-05-28). The `opus` model alias now resolves to Opus 4.8 automatically via the Claude Code harness — no per-agent frontmatter sweep was required because all 74 agents use model aliases rather than hard-coded IDs. Opus 4.8 builds on 4.7 with **no breaking API changes**; the main behavioral shift to absorb is the new effort default.

@@ -152,7 +152,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 |--------|----------------|----------|
 | GitHub | code-reviewer, devops-engineer, chief-operations-orchestrator | Development |
 | Slack | chief-operations-orchestrator, program-manager | Communication |
-| Jira | project-manager-scrum-master, product-manager | Project Management |
+| Atlassian (Jira) | project-manager-scrum-master, product-manager | Project Management |
 | Figma | ux-ui-architect, frontend-developer | Design |
 | Sentry | sre-specialist, observability-engineer | Monitoring |
 | Vercel | nextjs-expert, devops-engineer | Deployment |
@@ -160,10 +160,10 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 | Supabase | database-expert, backend-developer | Database |
 | Notion | documentation-specialist, business-analyst | Documentation |
 | Linear | product-manager, project-manager-scrum-master | Project Management |
-| Confluence | functional-analyst, documentation-specialist | Documentation |
+| Atlassian (Confluence) | functional-analyst, documentation-specialist | Documentation |
 | Asana | program-manager | Project Management |
 | Slack | client-success-manager, business-development-manager | Communication |
 | Notion | proposal-architect, client-success-manager | Documentation |
 | Linear | business-development-manager | Pipeline Tracking |
 
-Use `/plugin install <name>@claude-plugins-official` or the deploy script's interactive plugin setup.
+Use `/plugin install <name>@claude-plugins-official` or the deploy script's interactive plugin setup. The `claude-plugins-official` marketplace is available by default — no `marketplace add` needed. Jira and Confluence both ship in the single `atlassian` plugin (`/plugin install atlassian@claude-plugins-official`).
