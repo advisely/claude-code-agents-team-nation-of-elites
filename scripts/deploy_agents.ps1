@@ -13,8 +13,10 @@
     Local cache directory for the cloned repo. Default: $env:TEMP\nation-of-elites
 
 .PARAMETER ForceWipe
-    Remove the entire ~/.claude directory before deploying (DANGEROUS).
-    By default, only agents/ and projects/ are removed.
+    Force-refresh deployed content: removes only ~/.claude/agents and
+    ~/.claude/skills before redeploying. Never touches projects/ (Claude Code
+    memory + session transcripts), settings.json, or credentials.
+    The default deploy is non-destructive and mirrors agents/ in place.
 
 .EXAMPLE
     .\deploy_agents.ps1
@@ -34,9 +36,10 @@ $ErrorActionPreference = "Stop"
 $ClaudeDir  = Join-Path $env:USERPROFILE ".claude"
 $AgentsSrc  = Join-Path $RepoDir "agents"
 $AgentsDst  = Join-Path $ClaudeDir "agents"
-$ProjectsDst = Join-Path $ClaudeDir "projects"
 $SkillsSrc  = Join-Path $RepoDir "skills"
 $SkillsDst  = Join-Path $ClaudeDir "skills"
+# Note: ~/.claude/projects (memory + session transcripts) is intentionally NOT
+# referenced — the deploy never touches user data.
 
 # --- Helpers ---
 function Write-Banner($Title) {
@@ -78,22 +81,22 @@ if (Test-Path (Join-Path $RepoDir ".git")) {
 }
 Write-Ok "Repository synced"
 
-# --- 2. Sanitize ---
-Write-Banner "Sanitizing Workspace"
+# --- 2. Sanitize (data-safe) ---
+Write-Banner "Sanitizing Workspace (data-safe)"
+
+if (-not (Test-Path $ClaudeDir)) {
+    New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
+}
 
 if ($ForceWipe) {
-    Write-Warn "Full wipe: removing entire $ClaudeDir"
-    if (Test-Path $ClaudeDir) { Remove-Item $ClaudeDir -Recurse -Force }
-    New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
-    Write-Ok "Fresh directory created: $ClaudeDir"
+    Write-Warn "Force refresh: clearing deployed content only (agents/ + skills/)"
+    Write-Info "Preserving projects/ (memory + session history), settings.json, and credentials"
+    if (Test-Path $AgentsDst) { Remove-Item $AgentsDst -Recurse -Force }
+    if (Test-Path $SkillsDst) { Remove-Item $SkillsDst -Recurse -Force }
+    Write-Ok "Deployed content cleared - user data untouched"
 } else {
-    Write-Info "Removing old agents/ and projects/ directories"
-    if (Test-Path $AgentsDst)   { Remove-Item $AgentsDst -Recurse -Force }
-    if (Test-Path $ProjectsDst) { Remove-Item $ProjectsDst -Recurse -Force }
-    if (-not (Test-Path $ClaudeDir)) {
-        New-Item -ItemType Directory -Force -Path $ClaudeDir | Out-Null
-    }
-    Write-Ok "Workspace clean"
+    Write-Info "Non-destructive deploy: agents/ mirrored in place; projects/ & settings preserved"
+    Write-Ok "No destructive cleanup needed"
 }
 
 # --- 3. Deploy Agents ---
@@ -104,8 +107,13 @@ if (-not (Test-Path $AgentsSrc)) {
     exit 1
 }
 
-Write-Info "Copying agents to $AgentsDst"
-Copy-Item -Path $AgentsSrc -Destination $AgentsDst -Recurse -Force
+Write-Info "Mirroring agents to $AgentsDst (purges stale agents, like rsync --delete)"
+# robocopy /MIR mirrors src CONTENTS into dest and removes extras in dest.
+# Purge is scoped to the agents/ folder only — projects/ and settings are never in scope.
+robocopy $AgentsSrc $AgentsDst /MIR /NJH /NJS /NDL /NP /NFL | Out-Null
+# robocopy exit codes 0-7 are success (8+ = failure); reset so later logic isn't confused.
+if ($LASTEXITCODE -ge 8) { Write-Error "robocopy failed mirroring agents (code $LASTEXITCODE)"; exit 1 }
+$global:LASTEXITCODE = 0
 Write-Ok "Agents deployed"
 
 # --- 4. Deploy Skills ---

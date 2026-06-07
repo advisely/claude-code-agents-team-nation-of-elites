@@ -5,6 +5,19 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-06-07] - Data-Safe Deploy Scripts (v3.10.2)
+
+Removes a data-loss footgun from the deploy scripts. The old "sanitize" step ran `rm -rf ~/.claude/projects`, which deletes Claude Code's file-system memory and every session transcript on each deploy (and `--force-wipe` deleted the entire `~/.claude`, including credentials and settings). The scripts now never touch user data.
+
+### Fixed
+
+- **`scripts/deploy_agents.sh`**, **`scripts/deploy_agents.ps1`** - `sanitize` no longer removes `~/.claude/projects`. The default deploy is now non-destructive: agents are mirrored in place (`rsync --delete` on bash; `robocopy /MIR` on PowerShell — which also fixes a folder-nesting bug from `Copy-Item` into an existing directory), and `projects/` (memory + transcripts), `settings.json`, and credentials are never read or written. `--force-wipe` / `-ForceWipe` now means "force-refresh deployed content" — it removes only `agents/` and `skills/`, not the whole `~/.claude`. Verified via an extracted-function test: in both default and force-wipe modes, `projects/`, credentials, and settings are preserved.
+
+### Changed
+
+- **`.claude-plugin/plugin.json`** - Bumped to v3.10.2.
+- **`README.md`** - Version badge and footer bumped to v3.10.2.
+
 ## [2026-06-07] - Marketplace Installability Fix (v3.10.1)
 
 Restores the plugin marketplace catalog that makes Nation of Elites installable via `/plugin`, and corrects install instructions that referenced a reserved marketplace name and non-existent plugin ids. Verified against the current Claude Code plugin spec (v2.1.168): all 74 agents load as recursively-discovered scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`) and all 32 skills validate.

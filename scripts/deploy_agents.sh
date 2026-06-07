@@ -12,8 +12,13 @@ set -euo pipefail
 #   --repo-dir  "$HOME/.cache/nation-of-elites"
 #
 # Notes:
-# - By default, we ONLY wipe ~/.claude/agents and ~/.claude/projects (safer).
-# - Use --force-wipe to remove the entire ~/.claude directory (DANGEROUS), then recreate minimal structure.
+# - Data-safe by design: ~/.claude/projects (Claude Code memory + session
+#   transcripts), settings.json, and credentials are NEVER touched.
+# - Default deploy is non-destructive: agents/ is mirrored in place via
+#   `rsync --delete` (stale agents removed automatically); skills/ are copied.
+# - Use --force-wipe to force-refresh deployed content only: it removes
+#   ~/.claude/agents and ~/.claude/skills, then redeploys. It does NOT remove
+#   projects/, settings.json, or credentials.
 # - WSL2 Windows Explorer path to validate: \\wsl.localhost\Ubuntu\home\<USER>\.claude
 
 REPO_URL_DEFAULT="https://github.com/advisely/claude-code-agents-team-nation-of-elites.git"
@@ -45,9 +50,10 @@ require rsync
 CLAUDE_DIR="$HOME/.claude"
 AGENTS_SRC="${REPO_DIR}/agents"
 AGENTS_DST="$CLAUDE_DIR/agents"
-PROJECTS_DST="$CLAUDE_DIR/projects"
 SKILLS_SRC="${REPO_DIR}/skills"
 SKILLS_DST="$CLAUDE_DIR/skills"
+# Note: ~/.claude/projects (memory + session transcripts) is intentionally NOT
+# referenced here — the deploy never touches user data.
 
 # Fancy colors (fallback to plain if not a TTY)
 if [[ -t 1 ]]; then
@@ -83,17 +89,16 @@ clone_or_update_repo() {
 }
 
 sanitize_target() {
-  banner "🧽 Kitchen Cleanup — Sanitizing Workspace"
+  banner "🧽 Kitchen Cleanup — Sanitizing Workspace (data-safe)"
+  mkdir -p "$CLAUDE_DIR"
   if [[ "$FORCE_WIPE" == true ]]; then
-    warn "🔥 Full kitchen reset: tossing the pantry ($CLAUDE_DIR)"
-    rm -rf "$CLAUDE_DIR"
-    mkdir -p "$CLAUDE_DIR"
-    success "Fresh kitchen ready: $CLAUDE_DIR"
+    warn "🔄 Force refresh: clearing deployed content only (agents/ + skills/)"
+    info "Preserving projects/ (memory + session history), settings.json, and credentials"
+    rm -rf "$AGENTS_DST" "$SKILLS_DST"
+    success "Deployed content cleared — user data untouched"
   else
-    info "Wiping old dishes: removing agents/ and projects/ to avoid flavor conflicts"
-    rm -rf "$AGENTS_DST" "$PROJECTS_DST"
-    mkdir -p "$CLAUDE_DIR"
-    success "Counters clean (agents/projects sanitized)"
+    info "Non-destructive deploy: agents/ mirrored in place; projects/ & settings preserved"
+    success "No destructive cleanup needed (rsync --delete keeps agents/ in sync)"
   fi
 }
 
