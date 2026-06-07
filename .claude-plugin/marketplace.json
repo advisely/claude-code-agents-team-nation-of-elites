@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "nation-of-elites",
+  "description": "Nation of Elites — a complete 74-agent AI workforce organized like a real IT company, aligned with Claude Opus 4.8.",
+  "owner": {
+    "name": "Yassine Boumiza",
+    "url": "https://boumiza.com"
+  },
+  "plugins": [
+    {
+      "name": "nation-of-elites",
+      "source": "./",
+      "description": "A complete 74-agent AI workforce organized like a real IT company, aligned with Claude Opus 4.8 (adaptive thinking, high default effort, dynamic workflows, task budgets). 12 divisions including executive leadership, strategic planning, engineering, QA, SecOps, AI/ML, mobile, construction AI, content & localization, and business development. Persistent memory, skills preloading, official plugin integrations, and Agent Teams support."
+    }
+  ]
+}
