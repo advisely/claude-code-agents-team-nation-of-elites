@@ -38,20 +38,21 @@ After user confirms the plan:
 4. Validate input boundaries
 5. **OUTPUT**: Edge cases covered and any issues found
 
-### Phase 5: Code Simplification
-1. Review implemented code for clarity
-2. Remove unnecessary complexity
-3. Consolidate duplicate logic
-4. Improve naming and readability
-5. Ensure functionality is preserved
-6. **OUTPUT**: Simplification changes made
+### Phase 5–6: Simplification + Review
 
-### Phase 6: Code Review
-1. Check security (input validation, SQL injection, XSS)
-2. Check performance (N+1 queries, memory leaks)
-3. Check maintainability (SOLID, DRY, KISS)
-4. Check test coverage adequacy
-5. **OUTPUT**: Review report with severity ratings
+Delegate both the simplification pass and the severity-rated review to the dedicated reasoning skill — do not inline the checklist here, so the logic stays in one place:
+
+```
+/pipeline-review
+```
+
+`pipeline-review` runs:
+- **Pass 1 — Simplification** (behavior-preserving): reuse, simplification, efficiency, altitude, naming — tests must still pass after.
+- **Pass 2 — Review** (severity-rated): correctness, security, error handling, performance, maintainability, test adequacy — delegated to the `code-reviewer` agent. Any 🔴 Critical / 🟠 High finding blocks the phase.
+
+**OUTPUT**: Simplification changes applied + Pipeline Review Report (PASS/FAIL with severity-rated findings).
+
+> Pair with `/pipeline-quality` (deterministic gate: lint, SAST, tests, audit) for the full pre-merge check — `pipeline-quality` first, then `pipeline-review`.
 
 ### Phase 7: Documentation
 1. Update code comments where needed

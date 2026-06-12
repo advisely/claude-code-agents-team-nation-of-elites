@@ -226,6 +226,14 @@ See [templates/](templates/) for project scaffolding.
   - CI/CD template for GitHub Actions
   - Standardized output report format
 
+- **pipeline-review** - Universal reasoning-based review pipeline - NEW in v3.11.0
+  - Judgment counterpart to `pipeline-quality` (which runs deterministic CI gates)
+  - Pass 1 — Simplification (behavior-preserving): reuse, simplification, efficiency, altitude, naming
+  - Pass 2 — Review (severity-rated 🔴/🟠/🟡/🟢): correctness, security, error handling, performance, maintainability, test adequacy
+  - Delegates the review pass to the `code-reviewer` agent; 🔴 Critical / 🟠 High findings block merge
+  - Invoked by `/feature-workflow` (Phases 5–6) and `/pr-ready` instead of inline checklists
+  - Stack-adaptive scope detection (branch diff by default); standardized report format
+
 - **pipeline-full-build** - Universal full build pipeline - NEW in v3.6.0
   - 8-step pipeline: version bump, quality gate, build, compile, package, CI, release, post-release
   - Desktop variant: Electron packaging (Windows/macOS/Linux)
@@ -442,7 +450,7 @@ the PDF content into context.
 
 **Code Excellence Guild:**
 - `documentation-specialist` → pdf, docx, pptx, xlsx
-- `code-reviewer` → security-audit, silent-failure-audit, semgrep-sast, pipeline-quality
+- `code-reviewer` → security-audit, silent-failure-audit, semgrep-sast, pipeline-quality, pipeline-review
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion

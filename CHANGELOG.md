@@ -5,6 +5,24 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-06-12] - pipeline-review Skill + Workflow Delegation (v3.11.0)
+
+Closes a logic gap in the skills marketplace. Review and simplification existed only as **inline checklists** duplicated inside `feature-workflow` (Phases 5–6) and `pr-ready` (Step 5) — they never delegated to the existing `code-reviewer` agent or any shared skill, so the review logic was duplicated and free to drift. There was also no reasoning-based counterpart to `pipeline-quality` (which only runs deterministic CI gates). This release adds a single `pipeline-review` skill and makes both workflows delegate to it, so review/simplify logic lives in one place.
+
+### Added
+
+- **`skills/pipeline-review/SKILL.md`** - New reasoning-based review pipeline; the judgment counterpart to `pipeline-quality` (deterministic gates) and a sibling of `pipeline-full-build` (release automation). Two passes: **Pass 1 — Simplification** (behavior-preserving: reuse, simplification, efficiency, altitude, naming; tests must still pass) and **Pass 2 — Review** (severity-rated 🔴/🟠/🟡/🟢 across correctness, security, error handling, performance, maintainability, test adequacy). The review pass delegates to the `code-reviewer` agent; any 🔴 Critical / 🟠 High finding blocks merge. Stack-adaptive scope detection (branch diff by default) and a standardized report format.
+
+### Changed
+
+- **`skills/feature-workflow/SKILL.md`** - Phases 5 (Simplification) and 6 (Code Review) replaced with a single **Phase 5–6** that delegates to `/pipeline-review` instead of inlining the checklist.
+- **`skills/pr-ready/SKILL.md`** - Step 5 ("Code Simplification Pass") now delegates to `/pipeline-review` for both the simplification and the severity-rated review; output report row updated accordingly.
+- **`agents/03_Engineering_Division/Code_Excellence_Guild/Code_Reviewer.md`** - `skills:` frontmatter adds `pipeline-review` (now `[semgrep-sast, pipeline-quality, pipeline-review]`).
+- **`CLAUDE.md`** - Skills section documents the three-way split (deterministic gate / reasoning review / release automation) and the workflow delegation; custom skill count 32 → 33.
+- **`SKILLS.md`** - Added the `pipeline-review` catalog entry and updated the `code-reviewer` agent-skill map.
+- **`.claude-plugin/plugin.json`** - Bumped to v3.11.0.
+- **`README.md`** - Version badge and footer bumped to v3.11.0; skill count 32 → 33.
+
 ## [2026-06-07] - Data-Safe Deploy Scripts (v3.10.2)
 
 Removes a data-loss footgun from the deploy scripts. The old "sanitize" step ran `rm -rf ~/.claude/projects`, which deletes Claude Code's file-system memory and every session transcript on each deploy (and `--force-wipe` deleted the entire `~/.claude`, including credentials and settings). The scripts now never touch user data.

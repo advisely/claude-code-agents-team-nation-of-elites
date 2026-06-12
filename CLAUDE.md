@@ -49,7 +49,7 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 ## Skills System
 
-**32 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
+**33 custom skills** + 9 official Anthropic skills with progressive disclosure (3-level loading). Framework specialists preload matching skills via `skills:` frontmatter. See [skills-integration.md](docs/rules/skills-integration.md) and [SKILLS.md](SKILLS.md).
 
 `humanizer` skill preloads on all Content & Localization Wing agents (`book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist`) and Business Development Wing agents (`proposal-architect`, `social-media-strategist`, `lead-generation-specialist`, `client-success-manager`, `business-development-manager`) -- removes 29 AI writing patterns with voice calibration and multi-pass auditing.
 
@@ -57,7 +57,7 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 `semgrep-sast` skill integrates with the Semgrep MCP plugin for automated SAST scanning. Preloaded on `cyber-sentinel`, `code-reviewer`, `qa-engineer`, `automated-test-scripter`, and `devops-engineer`.
 
-`pipeline-quality` and `pipeline-full-build` skills provide universal, stack-adaptive quality gates and full build pipelines (desktop + cloud variants). Preloaded on `code-reviewer`, `qa-engineer`, and `devops-engineer`.
+`pipeline-quality`, `pipeline-review`, and `pipeline-full-build` skills provide universal, stack-adaptive pre-merge checks. `pipeline-quality` is the **deterministic CI gate** (lint, Semgrep SAST, tests, dead-code, dep audit); `pipeline-review` is its **reasoning counterpart** (behavior-preserving simplification pass + severity-rated correctness/security review, delegated to the `code-reviewer` agent); `pipeline-full-build` runs version-bump-through-release (desktop + cloud variants). `/feature-workflow` (Phases 5–6) and `/pr-ready` delegate their simplify+review step to `/pipeline-review` rather than inlining checklists, so review logic lives in one place. Preloaded on `code-reviewer` (all three review skills), `qa-engineer`, and `devops-engineer`.
 
 ## Official Plugin Integrations (v3.7.0)
 

@@ -47,13 +47,14 @@ Check for:
 - [ ] Insecure dependencies (`npm audit` / `pip-audit`)
 - [ ] Sensitive files in .gitignore
 
-#### Step 5: Code Simplification Pass
-Review changes for:
-- Unnecessary complexity
-- Redundant code
-- Unclear naming
-- Missing error handling
-Apply minimal fixes while preserving functionality.
+#### Step 5: Simplification + Review Pass
+Delegate the behavior-preserving cleanup and the severity-rated review to the dedicated reasoning skill instead of inlining the checklist:
+
+```
+/pipeline-review
+```
+
+This runs Pass 1 (simplification: reuse, redundancy, naming, efficiency — tests still pass) and Pass 2 (review: correctness, security, error handling, performance, maintainability via the `code-reviewer` agent). Any 🔴 Critical / 🟠 High finding blocks the PR until resolved.
 
 ### Phase 2: Documentation
 
@@ -178,7 +179,7 @@ EOF
 | Lint | ✅ PASS | 0 errors, 2 warnings (ignored) |
 | Types | ✅ PASS | No type errors |
 | Security | ✅ PASS | No vulnerabilities |
-| Simplification | ✅ Done | Removed 12 lines of dead code |
+| Simplify + Review | ✅ PASS | Removed 12 lines; 0 blocking findings (/pipeline-review) |
 
 ### Documentation
 - [x] Comments adequate
