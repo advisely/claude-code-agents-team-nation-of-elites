@@ -59,9 +59,19 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 `pipeline-quality`, `pipeline-review`, and `pipeline-full-build` skills provide universal, stack-adaptive pre-merge checks. `pipeline-quality` is the **deterministic CI gate** (lint, Semgrep SAST, tests, dead-code, dep audit); `pipeline-review` is its **reasoning counterpart** (behavior-preserving simplification pass + severity-rated correctness/security review, delegated to the `code-reviewer` agent); `pipeline-full-build` runs version-bump-through-release (desktop + cloud variants). `/feature-workflow` (Phases 5–6) and `/pr-ready` delegate their simplify+review step to `/pipeline-review` rather than inlining checklists, so review logic lives in one place. Preloaded on `code-reviewer` (all three review skills), `qa-engineer`, and `devops-engineer`.
 
-## Official Plugin Integrations (v3.7.0)
+## Official Plugin Integrations
 
-Deploy scripts auto-detect and offer to configure official Anthropic plugins from the auto-available `claude-plugins-official` marketplace: GitHub, GitLab, Slack, Atlassian (Jira & Confluence ship as one `atlassian` plugin), Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Asana. See [orchestration.md](docs/rules/orchestration.md) for agent-plugin mapping.
+**MCP connectors (v3.7.0).** Deploy scripts auto-detect and offer to configure official Anthropic connector plugins from the auto-available `claude-plugins-official` marketplace: GitHub, GitLab, Slack, Atlassian (Jira & Confluence ship as one `atlassian` plugin), Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Asana. See [orchestration.md](docs/rules/orchestration.md) for agent-plugin mapping.
+
+**First-party dev-workflow & tooling plugins (v3.12.0).** The official marketplace has since grown well beyond connectors; these complement the workforce and are recommended alongside it:
+
+- **Code workflow** — `feature-dev` (guided feature development), `code-review`, `code-simplifier`, `pr-review-toolkit`, `code-modernization`, `commit-commands`.
+- **Security & quality** — `security-guidance` (secure-by-default library guidance), `hookify` (turn repeated instructions into hooks).
+- **Authoring & extensibility** — `skill-creator`, `plugin-dev`, `agent-sdk-dev`, `mcp-server-dev`, `claude-md-management`, `frontend-design`, `playground`, `session-report`, `claude-code-setup`.
+- **Language servers (LSP)** — first-party LSP plugins ship for TypeScript, Pyright, gopls, rust-analyzer, clangd, jdtls, kotlin, swift, php, ruby, lua, and C# — load via a plugin's `.lsp.json` (see "New Subagent Features").
+- **Output styles** — `learning-output-style`, `explanatory-output-style`.
+
+These overlap intentionally with Nation of Elites' own skills (e.g. `code-review`/`code-simplifier` vs. the `pipeline-review` skill, `feature-dev` vs. `feature-workflow`): the marketplace skills stay the curated, division-aware path; the official plugins are drop-in alternatives when a lighter, single-purpose tool is preferred.
 
 ## Agent Teams (Experimental)
 

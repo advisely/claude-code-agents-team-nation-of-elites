@@ -5,6 +5,15 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-06-13] - Refresh Official Plugin Integrations (v3.12.0)
+
+The "Official Plugin Integrations" doc was frozen at v3.7.0 — it listed only the MCP connector plugins (GitHub, Slack, Atlassian, …). Since then the official `claude-plugins-official` marketplace has grown a whole class of first-party **dev-workflow, tooling, and LSP plugins**. This release documents them so the workforce's plugin story reflects the current ecosystem; no agent or skill behavior changes.
+
+### Changed
+
+- **`CLAUDE.md`** — "Official Plugin Integrations" split into **MCP connectors (v3.7.0)** and a new **first-party dev-workflow & tooling plugins (v3.12.0)** subsection: Code workflow (`feature-dev`, `code-review`, `code-simplifier`, `pr-review-toolkit`, `code-modernization`, `commit-commands`), Security & quality (`security-guidance`, `hookify`), Authoring & extensibility (`skill-creator`, `plugin-dev`, `agent-sdk-dev`, `mcp-server-dev`, `claude-md-management`, `frontend-design`, `playground`, `session-report`, `claude-code-setup`), Language servers (TypeScript, Pyright, gopls, rust-analyzer, clangd, jdtls, kotlin, swift, php, ruby, lua, C#), and Output styles (`learning-output-style`, `explanatory-output-style`). Notes the intentional overlap with the marketplace's own skills (curated, division-aware) vs. the official plugins (drop-in single-purpose).
+- **`.claude-plugin/plugin.json`**, **`README.md`** — bumped to v3.12.0.
+
 ## [2026-06-12] - pipeline-review Skill + Workflow Delegation (v3.11.0)
 
 Closes a logic gap in the skills marketplace. Review and simplification existed only as **inline checklists** duplicated inside `feature-workflow` (Phases 5–6) and `pr-ready` (Step 5) — they never delegated to the existing `code-reviewer` agent or any shared skill, so the review logic was duplicated and free to drift. There was also no reasoning-based counterpart to `pipeline-quality` (which only runs deterministic CI gates). This release adds a single `pipeline-review` skill and makes both workflows delegate to it, so review/simplify logic lives in one place.
