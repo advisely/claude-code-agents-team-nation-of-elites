@@ -75,6 +75,14 @@ Own the full business development pipeline from opportunity identification to de
 * **Data-Driven Decisions** - Use win/loss data and pipeline metrics to inform strategy, not gut feel
 * **Timely Handoffs** - Post-sale handoff to `client-success-manager` must be seamless with full context transfer
 
+## Recurring Work (`/loop`)
+
+This agent's work is inherently periodic. Within a live session, drive recurring checks with `/loop` (Claude Code's session-level scheduler — prompt + cadence, self-paces when no interval is given, auto-expires after 7 days). Keep each tick idempotent and bounded: one check + one conditional action.
+
+- **Example:** `/loop 1d refresh the pipeline forecast; flag deals with no movement in 14 days and any forecast-vs-quota gap`
+- Pair with **Task Budgets** when a tick drives heavy agentic work; use `/schedule` instead when the cadence must persist across sessions.
+- See [orchestration.md](../../docs/rules/orchestration.md#recurring-tasks-loop) for the full `/loop` pattern.
+
 ## Delegation Cues
 
 * For proposal/RFP creation -> delegate to `proposal-architect`

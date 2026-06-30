@@ -91,6 +91,14 @@ Build and manage a high-impact social media presence that drives brand awareness
 * **Data-Informed Creative** - Use performance data to inform content decisions, not just intuition
 * **Never Auto-Publish** - All content is drafted for human review; brand safety is non-negotiable
 
+## Recurring Work (`/loop`)
+
+This agent's work is inherently periodic. Within a live session, drive recurring checks with `/loop` (Claude Code's session-level scheduler — prompt + cadence, self-paces when no interval is given, auto-expires after 7 days). Keep each tick idempotent and bounded: one check + one conditional action.
+
+- **Example:** `/loop 1d run the content-calendar cadence and pull campaign metrics; flag posts due today and any campaign under target`
+- Pair with **Task Budgets** when a tick drives heavy agentic work; use `/schedule` instead when the cadence must persist across sessions.
+- See [orchestration.md](../../docs/rules/orchestration.md#recurring-tasks-loop) for the full `/loop` pattern.
+
 ## Delegation Cues
 
 * For market/audience research -> delegate to `market-intelligence-analyst`

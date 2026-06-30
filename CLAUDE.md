@@ -85,6 +85,10 @@ Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Parallel multi-agent coord
 - Hook `if` field (v2.1.85+): Permission-rule syntax for fine-grained filtering
 - LSP servers in plugins: `.lsp.json` for language server protocol integrations
 
+## Recurring Tasks — `/loop` (v3.13.0)
+
+`/loop` is a Claude Code session-level scheduler: a prompt + cadence that re-fires on each tick against current project context. Self-paces when the interval is omitted, is session-scoped, and auto-expires after 7 days. A distinct axis from Agent Teams / Dynamic Workflows (which parallelize *within* a task) — `/loop` repeats one task *across time*. The orchestrator uses it for monitoring/polling briefs; the nine inherently-recurring agents (`aiops-specialist`, `sre-specialist`, `observability-engineer`, `devops-engineer`, `client-success-manager`, `business-development-manager`, `lead-generation-specialist`, `market-intelligence-analyst`, `social-media-strategist`) each carry a `Recurring Work (/loop)` note. Use `/schedule` instead when the cadence must survive across sessions. See [orchestration.md](docs/rules/orchestration.md).
+
 ## Claude Opus 4.8 Alignment (v3.10.0)
 
 The `opus` model alias resolves to `claude-opus-4-8` (released 2026-05-28). Key shifts all agents inherit:
@@ -102,6 +106,20 @@ The `opus` model alias resolves to `claude-opus-4-8` (released 2026-05-28). Key 
 - **Cheaper long loops** — mid-conversation system messages + 1,024-token prompt-cache minimum
 
 See [sdk-compliance.md](docs/rules/sdk-compliance.md) for SDK migration details and [orchestration.md](docs/rules/orchestration.md) for steering notes.
+
+## Claude Sonnet 5 Alignment (v3.13.0)
+
+The `sonnet` model alias resolves to `claude-sonnet-5` (released 2026-06-30) — the default workhorse for the ~51 `sonnet` agents. No frontmatter sweep was needed; the alias-based policy means agents inherit it automatically. What the roster gains:
+
+- **1M-token context window** — matches Opus 4.8; `sonnet` agents can hold large codebases / many documents in one request
+- **Near-Opus-4.8 quality at lower cost** — close to Opus on reasoning, tool use, coding, and knowledge work; prefer `sonnet` as default, reserve `opus` for orchestration and the hardest reasoning
+- **Most agentic Sonnet yet** — stronger autonomous planning, browser/terminal tool use, sustained multi-step completion
+- **Context awareness** — tracks remaining context window during long agentic loops
+- **Stronger safety defaults** — lower hallucination/sycophancy, better prompt-injection resistance, cyber safeguards on by default
+- **Same effort scale** — `low → medium → high (default) → xhigh → max`, identical to Opus 4.8
+- **Pricing** — introductory $2/$10 per Mtok through 2026-08-31, then standard $3/$15
+
+**Haiku is not used.** Every agent runs on `opus` or `sonnet`. With Sonnet 5 closing the gap to Opus 4.8 at lower cost, `sonnet` is the floor for lightweight work — never `haiku`.
 
 ## Setup & Usage
 

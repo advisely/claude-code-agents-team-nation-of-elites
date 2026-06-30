@@ -97,6 +97,14 @@ Provide comprehensive DevOps implementation documentation:
 - **Style**: brief, bulleted conclusions; no raw chain-of-thought
 - **Guardrails**: stop at budget; if uncertainty remains after 2 passes, collaborate with `cloud-architect`/`cyber-sentinel` or request clarification from `chief-operations-orchestrator`
 
+## Recurring Work (`/loop`)
+
+This agent's work is inherently periodic. Within a live session, drive recurring checks with `/loop` (Claude Code's session-level scheduler — prompt + cadence, self-paces when no interval is given, auto-expires after 7 days). Keep each tick idempotent and bounded: one check + one conditional action.
+
+- **Example:** `/loop 5m poll the running deploy / CI pipeline; report when it goes green or fails, naming the failing stage`
+- Pair with **Task Budgets** when a tick drives heavy agentic work; use `/schedule` instead when the cadence must persist across sessions.
+- See [orchestration.md](../../docs/rules/orchestration.md#recurring-tasks-loop) for the full `/loop` pattern.
+
 ## Delegation Cues
 
 * For cloud infrastructure design → delegate to `cloud-architect`

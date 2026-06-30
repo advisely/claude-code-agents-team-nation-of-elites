@@ -1,0 +1,19 @@
+# Playwright / browser-automation artifacts (defensive — this repo generates none today)
+test-results/
+playwright-report/
+playwright/.cache/
+**/*-snapshots/
+**/__screenshots__/
+*.screenshot.png
+trace.zip
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local tooling
+.venv/
+node_modules/
+__pycache__/

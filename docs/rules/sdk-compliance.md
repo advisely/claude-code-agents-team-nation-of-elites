@@ -1,16 +1,17 @@
 # Claude Agent SDK Alignment (v2.0.0+)
 
-The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices and tracks the current flagship model, **Claude Opus 4.8** (`claude-opus-4-8`, released 2026-05-28).
+The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices. It tracks the current flagship model, **Claude Opus 4.8** (`claude-opus-4-8`, released 2026-05-28), for orchestration and hard reasoning, and the default workhorse, **Claude Sonnet 5** (`claude-sonnet-5`, released 2026-06-30), for everything else.
 
 ## Current Model Targets
 
 | Alias | Resolves To | Use |
 |-------|-------------|-----|
 | `opus` | `claude-opus-4-8` | Orchestration, complex reasoning, long-horizon agentic work |
-| `sonnet` | Current Sonnet generation | Fast read-only, framework specialists |
-| `haiku` | Current Haiku generation | Lightweight support tasks |
+| `sonnet` | `claude-sonnet-5` | Default workhorse — agentic coding, tool use, framework specialists, fast read-only. 1M context, near-Opus-4.8 quality at lower cost |
 
 Agents use aliases — never hard-coded model IDs — so the harness tracks Anthropic releases automatically.
+
+**Haiku is not used in the Nation of Elites.** There is no `haiku` tier in the roster: every agent runs on `opus` or `sonnet`. With Sonnet 5 closing most of the quality gap to Opus 4.8 at a lower price, `sonnet` is the correct floor for "lightweight" work — never drop to Haiku for cost. Do not add `model: haiku` to any agent.
 
 ## ✅ Subagent Coordination
 - Chief Operations Orchestrator spawns 3-5 temporary, task-specific subagents for parallel information gathering
@@ -126,6 +127,18 @@ Set `speed: "fast"` on the Claude API for up to **2.5× higher output tokens/sec
 
 ### Lower Prompt-Cache Minimum
 The minimum cacheable prompt length on Opus 4.8 is **1,024 tokens** (lower than 4.7), so short prompts that couldn't cache before can now create cache entries with no code changes.
+
+## ✅ Claude Sonnet 5 Alignment (`sonnet` alias)
+
+Sonnet 5 (released 2026-06-30) is the most agentic Sonnet to date and is now what the `sonnet` alias resolves to. The ~51 `sonnet` agents inherit it automatically — no frontmatter sweep needed (alias-based policy). What changed, and how to exploit it:
+
+- **1M-token context window** — matches Opus 4.8. `sonnet` agents can now hold a large codebase or many long documents in a single request; widen file-handling expectations accordingly (a `sonnet` framework specialist no longer needs heavy pre-chunking for big repos).
+- **Near-Opus-4.8 quality at lower cost** — performance is close to Opus 4.8 on reasoning, tool use, coding, and knowledge work. Prefer `sonnet` as the default; reserve `opus` for orchestration, hardest reasoning, and long-horizon agentic loops. This widens the set of tasks that no longer need an `opus` upgrade.
+- **Context awareness** — Sonnet 5 tracks its remaining context window during a run, managing long agentic loops and compaction more effectively. Complements the 80% compaction trigger in orchestration.
+- **Adjustable effort levels** — same `low → medium → high → xhigh → max` scale and `high` default as Opus 4.8; the `effort:` frontmatter field applies identically to `sonnet` agents.
+- **Updated tokenizer** — same 1.0–1.35× token expansion as Opus 4.8 vs. the prior generation; `max_tokens` / compaction-trigger widening already documented above applies to `sonnet` too.
+- **Stronger safety defaults** — lower hallucination and sycophancy than its predecessor, better at refusing malicious requests and resisting prompt injection, with cyber safeguards on by default. Relevant to `cyber-sentinel`, `code-reviewer`, and any agent processing untrusted input.
+- **Pricing** — introductory $2/$10 per Mtok through 2026-08-31, then standard $3/$15.
 
 ## Quality Metrics
 
