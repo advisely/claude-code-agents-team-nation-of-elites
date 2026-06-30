@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # alias — resolves to current generation. opus → claude-opus-4-8, sonnet → current Sonnet, haiku → current Haiku
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-4-8, sonnet → claude-sonnet-5. (Haiku is not used — see note below.)
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -72,8 +72,9 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `skills: [...]` | Framework specialists with matching skills |
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
-| `model: sonnet` | Fast read-only exploration agents |
+| `model: sonnet` | Default for specialists, developers, and fast read-only work (resolves to `claude-sonnet-5` — 1M context, near-Opus quality) |
 | `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-4-8`) |
+| `model: haiku` | **Never.** Haiku is not used in this roster — use `sonnet` as the floor for lightweight work. |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |

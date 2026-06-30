@@ -96,6 +96,43 @@ Opus 4.8 dynamically decides when and how much reasoning is required. Extended-t
 
 For long-running agentic loops where cost must be bounded, set a task budget via the beta header `task-budgets-2026-03-13`. This gives the model a visible countdown across thinking, tool calls, tool results, and final output — advisory, not a hard cap (`max_tokens` remains the ceiling). Minimum 20K tokens. Natural fit for `pipeline-full-build`, `pipeline-quality`, and orchestrator-driven loops. Skip when quality matters more than speed.
 
+## Recurring Tasks (`/loop`)
+
+`/loop` is a Claude Code **session-level scheduler**: give it a prompt and a cadence, and it re-fires that prompt on every tick as if you had typed it, against the current project context. It is a different axis from Agent Teams and Dynamic Workflows — those parallelize work *within* one task; `/loop` repeats one task *across time*.
+
+**Syntax & behavior**
+- `/loop 5m <prompt-or-slash-command>` — run every 5 minutes (interval may lead or trail; e.g. `<prompt> every 2h`).
+- `/loop <prompt>` with **no interval** — Claude **self-paces**, deciding when to run again based on what it's watching.
+- **Session-scoped** — the loop lives in the current conversation and stops when you start a new one.
+- **Auto-expiry** — recurring tasks run up to 7 days, fire one final time, then delete themselves (a safety bound so a forgotten loop can't burn credits indefinitely).
+
+**When to reach for `/loop` vs. alternatives**
+| Need | Use |
+|------|-----|
+| Repeat one task on a cadence within a live session | `/loop` |
+| Run something on a cron schedule across sessions / when you're away | `/schedule` (cloud routines) |
+| Parallelize independent subtasks of one job | Subagents / Agent Teams |
+| Fan out a large decomposable task once | Dynamic Workflows |
+
+**Orchestrator guidance**
+- The Chief Operations Orchestrator can hand a monitoring brief to `/loop` (e.g. *"every 15m, check SLO burn and page sre-specialist if error budget < 20%"*) instead of holding an agent open.
+- Keep loop prompts **idempotent and bounded** — each tick should do one check + one conditional action, not open-ended work, so cost stays predictable across the 7-day window.
+- Pair with **Task Budgets** when a loop drives heavy agentic work per tick.
+
+**Agents whose work is inherently recurring** (each carries a `Recurring Work (/loop)` note):
+
+| Agent | Division | Example loop |
+|-------|----------|--------------|
+| `aiops-specialist` | 06 AI/ML | Poll model drift / inference health; alert on threshold breach |
+| `sre-specialist` | 05 SecOps | Watch SLO burn rate, error budgets, open incidents |
+| `observability-engineer` | 05 SecOps | Re-check dashboards / alert rules; surface anomalies |
+| `devops-engineer` | 05 SecOps | Watch a deploy or CI run to green, then report |
+| `client-success-manager` | 11 BD | Re-score account health on a cadence; flag churn risk |
+| `business-development-manager` | 11 BD | Refresh pipeline forecast; flag stalled deals |
+| `lead-generation-specialist` | 11 BD | Advance nurture sequences; re-score new leads |
+| `market-intelligence-analyst` | 11 BD | Monitor competitor moves / market news |
+| `social-media-strategist` | 11 BD | Run content-calendar cadence; check campaign metrics |
+
 ## Opus 4.8 Steering Notes
 
 Apply these when writing orchestration prompts or agent instructions:

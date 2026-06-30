@@ -78,6 +78,14 @@ Build and maintain a healthy lead pipeline by defining ideal customer profiles, 
 * **Data Hygiene** - Keep contact data clean and current; bad data wastes everyone's time
 * **Continuous Optimization** - A/B test everything; what worked last quarter may not work now
 
+## Recurring Work (`/loop`)
+
+This agent's work is inherently periodic. Within a live session, drive recurring checks with `/loop` (Claude Code's session-level scheduler — prompt + cadence, self-paces when no interval is given, auto-expires after 7 days). Keep each tick idempotent and bounded: one check + one conditional action.
+
+- **Example:** `/loop 1d advance active nurture sequences and re-score new leads against the ICP; surface MQLs ready to hand off`
+- Pair with **Task Budgets** when a tick drives heavy agentic work; use `/schedule` instead when the cadence must persist across sessions.
+- See [orchestration.md](../../docs/rules/orchestration.md#recurring-tasks-loop) for the full `/loop` pattern.
+
 ## Delegation Cues
 
 * For qualified lead handoff -> delegate to `business-development-manager`

@@ -5,6 +5,36 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-06-30] - Claude Sonnet 5 Alignment, Haiku Removal & `/loop` Integration (v3.13.0)
+
+Two model-ecosystem shifts landed: **Claude Sonnet 5** (`claude-sonnet-5`, released 2026-06-30) — the most agentic Sonnet yet, with a 1M-token context window and near-Opus-4.8 quality at lower cost — and Claude Code's **`/loop`** session-level recurring scheduler. This release aligns the workforce with both, and codifies a standing policy that **Haiku is never used**. No frontmatter sweep was needed for Sonnet 5 because all agents use model aliases (`sonnet` → `claude-sonnet-5` automatically).
+
+### Added — Claude Sonnet 5
+
+- **`docs/rules/sdk-compliance.md`** — new "Claude Sonnet 5 Alignment" section (1M context, near-Opus quality, context awareness, adjustable effort, updated tokenizer, stronger safety defaults, pricing). Header and model-targets table updated; `sonnet` now resolves to `claude-sonnet-5`.
+- **`CLAUDE.md`** — new "Claude Sonnet 5 Alignment (v3.13.0)" section.
+- **`README.md`** — Sonnet 5 badge, "Claude Sonnet 5" capability row, footer line.
+- **`docs/rules/standards.md`** — alias comment + field-priority table note that `sonnet` → `claude-sonnet-5`.
+
+### Added — `/loop` Recurring Tasks
+
+- **`docs/rules/orchestration.md`** — new "Recurring Tasks (`/loop`)" section: syntax/behavior, a `/loop` vs `/schedule` vs subagents vs Dynamic Workflows decision table, orchestrator guidance, and a map of the nine inherently-recurring agents.
+- **`CLAUDE.md`** — "Recurring Tasks — `/loop` (v3.13.0)" subsection.
+- **`README.md`** — "Recurring Tasks (`/loop`)" capability row.
+- **9 agent files** — `aiops-specialist`, `sre-specialist`, `observability-engineer`, `devops-engineer`, `client-success-manager`, `business-development-manager`, `lead-generation-specialist`, `market-intelligence-analyst`, `social-media-strategist` each gained a `Recurring Work (/loop)` section with a concrete example loop.
+
+### Changed — Haiku Removal
+
+- **`docs/rules/sdk-compliance.md`**, **`docs/rules/standards.md`** — removed `haiku` from the usable-model tables; added explicit policy that Haiku is not used (use `sonnet` as the floor for lightweight work). No agent ever used `model: haiku`; this makes the prohibition explicit.
+
+### Fixed
+
+- **`agents/09_Construction_Industry_Division/Construction_AI_Orchestrator.md`** — replaced a stale hard-coded `claude-3-5-sonnet-20241022` in a code sample with `claude-sonnet-5`.
+
+### Bumped
+
+- **`.claude-plugin/plugin.json`**, **`README.md`** — to v3.13.0.
+
 ## [2026-06-13] - Refresh Official Plugin Integrations (v3.12.0)
 
 The "Official Plugin Integrations" doc was frozen at v3.7.0 — it listed only the MCP connector plugins (GitHub, Slack, Atlassian, …). Since then the official `claude-plugins-official` marketplace has grown a whole class of first-party **dev-workflow, tooling, and LSP plugins**. This release documents them so the workforce's plugin story reflects the current ecosystem; no agent or skill behavior changes.

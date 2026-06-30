@@ -13,8 +13,9 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 [![Skills](https://img.shields.io/badge/skills-32-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.12.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.13.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-4.8-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-opus-4-8)
+[![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-sonnet-5)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
@@ -450,8 +451,10 @@ agents/
 | Feature | Description |
 |:---|:---|
 | **Claude Opus 4.8** | `opus` alias resolves to `claude-opus-4-8` — adaptive thinking, `high` default effort (all surfaces), sharper judgment (~4× fewer unremarked code flaws), better long-context & compaction recovery, high-res vision (2576px / 3.75MP) |
+| **Claude Sonnet 5** | `sonnet` alias resolves to `claude-sonnet-5` — the default workhorse: 1M context, near-Opus-4.8 quality at lower cost, most agentic Sonnet yet, context awareness, lower hallucination/sycophancy. **Haiku is not used** — `sonnet` is the floor for lightweight work |
 | **Subagent Coordination** | Parallel processing with isolated context windows (4.8 has better tool triggering; Dynamic Workflows can fan out to hundreds of verified subagents) |
 | **Dynamic Workflows** (research preview) | Plan a task, then spin up hundreds of parallel verified subagents in a single Claude Code session |
+| **Recurring Tasks (`/loop`)** | Session-level scheduler — repeat a prompt on a cadence (or self-paced), auto-expires after 7 days. Nine recurring agents (aiops, sre, observability, devops, BD wing) carry `Recurring Work (/loop)` notes |
 | **Agent Teams** (experimental) | Multi-agent parallel work with shared task lists (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) |
 | **Mid-conversation system messages** | `role: "system"` after a user turn (no beta header) — preserves prompt cache on long agentic loops |
 | **Task Budgets** (beta) | Advisory token countdown across a full agentic loop (`task-budgets-2026-03-13` beta header) |
@@ -675,7 +678,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.12.0** -- Claude Opus 4.8 | 74 Agents | 12 Divisions | 33 Skills | Dynamic Workflows | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v3.13.0** -- Claude Opus 4.8 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 
