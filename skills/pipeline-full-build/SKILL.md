@@ -1,6 +1,6 @@
 ---
 name: pipeline-full-build
-description: Universal end-to-end release pipeline - failsafe backup, quality gate, simplify/review/commit, merge, push, build, package, release, deploy to prod, doc updates, and junk/dangling-image reclamation. Desktop and cloud variants.
+description: Universal end-to-end release pipeline - failsafe backup, quality gate, simplify/review/commit, merge, push, build, release, deploy to prod, doc updates, and junk/dangling-image reclamation. Owns the shared spine and routes Phase 3 and Step 12 to pipeline-full-build-desktop or pipeline-full-build-cloud.
 ---
 
 # Pipeline Full Build
@@ -44,14 +44,14 @@ Phase 2 — INTEGRATE
   Step 6:  Merge to main
   Step 7:  Push to GitHub
 
-Phase 3 — BUILD
-  Step 8:  Build
-  Step 9:  Compile / Package  (desktop)  |  Docker Build (cloud)
-  Step 10: CI Validation
+Phase 3 — BUILD                        → /pipeline-full-build-{desktop,cloud}
+  Step 8:  Local Compile / Build
+  Step 9:  Package + Sign (desktop)  |  Container + SBOM + CVE (cloud)
+  Step 10: Artifact Validation (desktop)  |  Staging Validation (cloud)
 
 Phase 4 — SHIP
   Step 11: Release Version (tag + GitHub release)
-  Step 12: Deploy to Production
+  Step 12: Deploy to Production        → /pipeline-full-build-{desktop,cloud}
   Step 13: Post-Deploy Verification & Rollback Gate
 
 Phase 5 — DOCUMENT
@@ -233,76 +233,23 @@ git fetch origin
 
 ---
 
-# Phase 3 — BUILD
+# Phase 3 — BUILD  →  delegated to the variant skill
 
-## Step 8: Build
+Steps 8–10 are where desktop and cloud genuinely diverge — different compilation, different tests, different validations — so they live in the variant skills rather than as branches here.
 
-### Desktop Variant (Electron + Python)
+| Target | Skill | Steps 8–10 cover |
+|--------|-------|------------------|
+| Electron / desktop | **`/pipeline-full-build-desktop`** | Local compilation incl. native-module rebuild against the Electron ABI and frozen Python sidecars; packaging + code signing + notarization; installer integrity, packaged-binary launch smoke, first-run/offline, cross-platform matrix |
+| Web / API / container | **`/pipeline-full-build-cloud`** | Reproducible build; container build + SBOM + CVE gate + image signing; container smoke incl. SIGTERM handling, migration dry-run against a restored production schema, staging deploy with contract and load validation |
 
-```bash
-npx tsc                                    # TypeScript compilation
-npm run build                              # Electron main + renderer
-# Or: npx electron-vite build
-[ -f "pyproject.toml" ] && python -m build # Python backend (if hybrid)
+```
+/pipeline-full-build-desktop      # or
+/pipeline-full-build-cloud
 ```
 
-### Cloud Variant (Web/API)
+**Why they are separate skills, not branches.** The desktop chain compiles locally against a runtime ABI and validates an artifact that will run on machines you do not control — so its gates are signing, packaging integrity, and launch behavior on a clean machine. The cloud chain builds one image for infrastructure you do operate — so its gates are CVEs, schema migrations, client contract compatibility, and behavior under load. Almost nothing in Steps 8–10 is shared beyond the step numbers.
 
-```bash
-npm run build || npx vite build            # Frontend
-[ -f "pyproject.toml" ] && python -m build
-[ -f "go.mod" ]        && go build ./...
-[ -f "Cargo.toml" ]    && cargo build --release
-```
-
-## Step 9: Compile / Package (desktop) | Docker Build (cloud)
-
-### Desktop Variant
-
-```bash
-# Bundle
-npx electron-builder --config electron-builder.yml
-
-# Platform-specific packaging
-npx electron-builder --win   --config electron-builder.yml   # NSIS installer
-npx electron-builder --mac   --config electron-builder.yml   # DMG
-npx electron-builder --linux --config electron-builder.yml   # AppImage/deb
-
-ls -la dist/
-```
-
-### Cloud Variant
-
-```bash
-docker build -t "app:$new" .
-docker images "app:$new" --format "{{.Size}}"
-
-# Security-scan the image before it can reach a registry
-docker scout cves "app:$new" || trivy image --exit-code 1 --severity HIGH,CRITICAL "app:$new"
-```
-
-**Gate rule (cloud):** a HIGH or CRITICAL CVE in the built image blocks the release. Scanning after deploy is not a gate, it is a notification.
-
-## Step 10: CI Validation
-
-### Desktop Variant
-
-```bash
-ls dist/*.exe      >/dev/null 2>&1 && echo "Windows package: OK"
-ls dist/*.dmg      >/dev/null 2>&1 && echo "macOS package: OK"
-ls dist/*.AppImage >/dev/null 2>&1 && echo "Linux package: OK"
-
-# Checksums travel with the release so users can verify downloads
-( cd dist && sha256sum * > SHA256SUMS )
-```
-
-### Cloud Variant
-
-```bash
-gh run watch "$(gh run list --branch main --limit 1 --json databaseId -q '.[0].databaseId')" --exit-status
-curl -f http://localhost:8080/health || exit 1
-npm run test:smoke || pytest tests/smoke/
-```
+**Why the rest of the pipeline is shared.** Backup, verify, integrate, release, document, and reclaim are identical for both targets. Those stay here so the safety contract lives in one place.
 
 ---
 
@@ -338,42 +285,14 @@ The first irreversible step. Step 0's backup is its safety net — confirm it be
 echo "$(cat .last-deployed-version 2>/dev/null || echo none)" > .previous-deployed-version
 ```
 
-### Cloud Variant
+The deploy mechanics themselves live in the variant skill, because what "production" *means* differs:
 
-```bash
-docker tag  "app:$new" "registry.example.com/app:$new"
-docker push "registry.example.com/app:$new"
+| Target | Skill | "Production" is | Rollback |
+|--------|-------|-----------------|----------|
+| Desktop | `/pipeline-full-build-desktop` | The **distribution channel** — publish, update feed, staged rollout, store submissions | Revert the update feed; previous artifacts must stay published |
+| Cloud | `/pipeline-full-build-cloud` | The **running fleet** — registry push, expand-only migrations, canary then rolling | `kubectl rollout undo` — one command |
 
-# Kubernetes — rolling deploy, wait for it, roll back automatically on failure
-if [ -d "k8s/" ]; then
-  kubectl set image deployment/app "app=registry.example.com/app:$new"
-  kubectl rollout status deployment/app --timeout=5m \
-    || { kubectl rollout undo deployment/app; echo "ROLLED BACK"; exit 1; }
-fi
-
-# Terraform — plan is reviewed, never blind-applied
-if [ -d "terraform/" ]; then
-  ( cd terraform && terraform plan -out=tfplan && terraform apply tfplan )
-fi
-
-# VPS / systemd
-# ssh "$VPS" "cd /srv/app && docker compose pull && docker compose up -d --remove-orphans"
-
-echo "$new" > .last-deployed-version
-```
-
-### Desktop Variant
-
-"Production" is the distribution channel: publish the release, push the auto-update feed, and stage the store submissions.
-
-```bash
-npx electron-builder --publish always
-# Verify the update feed actually serves the new version
-curl -fsSL "https://updates.example.com/latest.yml" | grep -q "$new" \
-  || echo "WARNING: update feed has not picked up v$new yet"
-```
-
-**Gate rule:** deploy behind a rollout that can be reversed by a single command (`kubectl rollout undo`, previous image tag, prior release channel). If rollback requires a rebuild, the deploy is not production-ready.
+**Gate rule:** deploy behind a rollout that can be reversed by a single command. If rollback requires a rebuild or a migration reversal, the deploy is not production-ready. Note the asymmetry — cloud can be rolled back server-side in seconds; desktop cannot be rolled back at all, only superseded by the next update, which is why it uses a staged percentage rollout instead.
 
 ## Step 13: Post-Deploy Verification & Rollback Gate
 
@@ -578,7 +497,7 @@ fi
 | 2 Integrate | Merge to main | PASS | 30s | --no-ff; gate re-run post-rebase |
 | 2 Integrate | Push to GitHub | DONE | 5s | origin/main == HEAD verified |
 | 3 Build | Build | PASS | 30s | TypeScript + Vite compiled |
-| 3 Build | Package / Docker | PASS | 120s | NSIS 85MB; image scan 0 HIGH/CRITICAL |
+| 3 Build | Package + Validate | PASS | 120s | via variant skill — see its report for step detail |
 | 3 Build | CI Validation | PASS | 15s | SHA256SUMS written; CI green |
 | 4 Ship | Release Version | DONE | 10s | GitHub release v2026.07.26 |
 | 4 Ship | Deploy to Prod | DONE | 90s | rollout complete; rollback target app:2026.07.25 |
@@ -670,7 +589,11 @@ jobs:
 
 | Skill | Role in this pipeline |
 |-------|----------------------|
+| **`/pipeline-full-build-desktop`** | **Phase 3 + Step 12 for Electron/desktop** — local compile, sign, packaged-artifact validation, update feed |
+| **`/pipeline-full-build-cloud`** | **Phase 3 + Step 12 for web/API** — container, SBOM/CVE, staging validation, canary deploy |
 | `/pipeline-quality` | Step 1 — the deterministic gate, including the test case matrix |
 | `/pipeline-review` | Steps 2, 3, 5 — simplify, review, commit |
 | `/feature-workflow` | Upstream: produces the branch this pipeline releases |
 | `/pr-ready` | Lighter alternative when merging a PR without a release |
+
+Run this skill to get the whole chain with automatic routing, or run a variant directly when the target is already known.
