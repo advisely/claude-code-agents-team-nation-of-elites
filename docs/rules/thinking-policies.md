@@ -2,7 +2,7 @@
 
 The orchestrator enforces explicit, budgeted internal reasoning across roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
-**Claude Opus 4.8 alignment:** the token budgets below are scratchpad-bytes, not SDK `thinking.budget_tokens` (which was removed in 4.7 and remains removed in 4.8). They map onto the current effort levels:
+**Claude Opus 5 alignment:** the token budgets below are scratchpad-bytes, not SDK `thinking.budget_tokens` (removed in 4.7 and still removed on Opus 5 — it returns HTTP 400). They map onto the current effort levels:
 
 | Scratchpad Budget | Effort Level | Typical Use |
 |-------------------|--------------|-------------|
@@ -11,7 +11,11 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles. Ag
 | 200–300 tokens | `medium` | Framework specialists, orchestrator |
 | 100–200 tokens | `low` / `medium` | Developers, QA engineer, performance |
 
-On Opus 4.8 the default effort is `high` on all surfaces (API + Claude Code); reserve `xhigh` for architects and hard design tradeoffs, and tune per-agent via the `effort:` frontmatter only when warranted.
+Default effort is `high` on all surfaces (API + Claude Code). Two Opus 5 changes affect how to read this table:
+
+- **Thinking is on by default.** Omitting `thinking` now runs adaptive, reversing Opus 4.8. Agents that previously ran thinking-off by omission now think — and since `max_tokens` caps thinking *plus* output, check that any tight budget still fits.
+- **`low` and `medium` punch above their weight.** Opus 5 holds quality at low effort far better than 4.8, so the lower rows of this table are cheaper than the mapping implies. Treat the effort column as a **starting point to sweep down from**, not a floor. Raise to `xhigh` for agentic coding and hard architecture work; tune per-agent via `effort:` frontmatter only when warranted.
+- **Disabling thinking is capped at `high` effort.** `thinking: disabled` paired with `xhigh`/`max` returns HTTP 400. Prefer low effort with thinking on over disabling it.
 
 ## Reasoning Complexity Levels
 

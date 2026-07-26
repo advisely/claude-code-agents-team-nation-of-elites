@@ -5,6 +5,55 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-07-25] - Claude Opus 5 Alignment, Delegation Discipline & Claude Cowork Support (v3.14.0)
+
+**Claude Opus 5** (`claude-opus-5`) shipped 2026-07-24 — near-frontier intelligence at Opus 4.8's price ($5/$25 per Mtok, 1M context, 128K output), now the default model on Claude Max. As with Sonnet 5, no frontmatter sweep was needed: all 25 `opus` agents inherited it via the alias-based policy.
+
+The substantive work in this release is **not** the model-ID refresh. Opus 5 reverses two behaviors this repo had spent two releases documenting for Opus 4.8, so guidance that was correct in v3.13.0 is now actively counterproductive. Separately, **Claude Cowork** began loading plugins — which means the full agent roster now runs on a surface aimed at non-technical knowledge work.
+
+### Changed — Two Behavioral Reversals (the load-bearing edits)
+
+- **Subagent delegation inverted.** Opus 4.8 *under*-reached for subagents, so `orchestration.md`, `sdk-compliance.md`, and the Chief Operations Orchestrator all told the model to "spawn N subagents in parallel" explicitly. Opus 5 delegates freely and needs a **cap, not a nudge**. Replaced the fan-out prompting with a new **Delegation Discipline** section: delegate only independent sizeable tracks, prefer one subagent over several, never delegate verification, launch parallel agents in a single message.
+- **Verification scaffolding removed as an anti-pattern.** Opus 5 verifies its own work unprompted; instructions to verify ("add a final verification step", "double-check before responding") now cause over-verification with no capability gain. This **inverts a standard prompting best practice**, so `standards.md` gained a *Prompt-Authoring Notes* section warning against it, and the orchestrator was told not to add verification stages on top of subagent output. The agent and skill bodies were audited — none carried such scaffolding, so no deletions were needed there.
+
+### Added — Claude Opus 5
+
+- **`docs/rules/sdk-compliance.md`** — "Claude Opus 5 Features (SDK-Level)" replaces the Opus 4.8 section. Documents both breaking changes (thinking on by default; `thinking: disabled` capped at `high` effort, validated per request), the new beta features (mid-conversation tool changes, automatic refusal fallbacks via `fallbacks="default"`), the 512-token prompt-cache minimum, Claude-API-only fast mode, the separate rate-limit bucket, and a nine-row behavior-shift table.
+- **`CLAUDE.md`** — "Claude Opus 5 Alignment (v3.14.0)" section, leading with the two breaking changes and two behavioral reversals.
+- **`docs/rules/orchestration.md`** — Adaptive Thinking and Steering Notes rewritten for Opus 5; the two reversed items flagged ⚠️ so a reader who knows the 4.8 guidance sees the contradiction.
+- **`docs/rules/thinking-policies.md`** — effort mapping annotated: thinking-on-by-default, the `low`/`medium` strength that makes effort the primary cost lever, and the disabled-thinking effort cap.
+- **`docs/rules/standards.md`** — Opus 5 migration notes replace the 4.8 set; `opus` alias resolution and `effort:` guidance refreshed.
+
+### Added — Claude Cowork Support
+
+- **`docs/rules/orchestration.md`** — new "Claude Cowork" section: component-support matrix by surface, install path (*Customize → Plugins → Add marketplace*), and the four Cowork-specific constraints (cloud egress for connectors, per-machine local install, enterprise admin controls, built-in `pdf`/`docx`/`pptx`/`xlsx`/`canvas-design` skills not to duplicate). Maps the BD, Content, PMO, and Strategy wings onto Cowork's audience.
+- **`CLAUDE.md`** — "Surface Coverage — Claude Cowork" section with the same matrix.
+- **`docs/rules/sdk-compliance.md`** — "Surface Coverage" table: agents and hooks run in Claude Code and Cowork only; skills, slash commands, and connectors also run in plain chat.
+- **`docs/rules/skills-integration.md`** — cross-surface availability table explaining why skills are the right home for portable knowledge, plus the relaxed `SKILL.md` frontmatter parsing (kebab/snake/camelCase, malformed files load with empty metadata).
+
+### Added — Claude Code Harness Changes (2.1.181 – 2.1.219)
+
+- **`docs/rules/orchestration.md`** — new harness-changes table covering background-by-default subagents, nested subagents to depth 3 (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`), the 200-per-session and 20-concurrent subagent caps, `/subtask` and the repurposed `/fork`, `/code-review` as a background subagent, the `claude agents` view and `Notification` hook, the new sandbox settings, and the "default" → "Manual" permission-mode rename.
+- **Dynamic Workflows** — documented the new **medium size guideline (<15 agents)** default and `workflowSizeGuideline` setting, framed as complementary to Opus 5's delegation eagerness rather than a limit to raise.
+
+### Changed — Server Tools
+
+- **`docs/rules/sdk-compliance.md`** — server-tool versions bumped to `web_search_20260209` / `web_fetch_20260209` (dynamic filtering, in-sandbox result filtering before results reach context), with the warning not to separately declare `code_execution` alongside them.
+
+### Changed — Metadata
+
+- **`.claude-plugin/plugin.json`** — version `3.13.0` → `3.14.0`; description updated for Opus 5 + Cowork; keywords gained `cowork`, `opus-5`, `agents`.
+- **`.claude-plugin/marketplace.json`** — marketplace and plugin descriptions updated for Opus 5 and Cowork.
+- **`README.md`** — Opus 5 badge, Opus 5 / Subagent Coordination / Dynamic Workflows capability rows rewritten, new Claude Cowork row, thinking-policy effort note, footer bumped to v3.14.0.
+- **`agents/07_Orchestrators/Chief_Operations_Orchestrator.md`** — Agent Teams and adaptive-thinking bullets rewritten for Opus 5; new delegation-discipline responsibility.
+
+### Notes
+
+- **No agent frontmatter changed.** The alias-based model policy (`model: opus` / `model: sonnet`, never a pinned ID) means the roster tracked Opus 5 on release day. This is the second consecutive release where that design paid off.
+- **Rate limits are a separate bucket.** Opus 5 does not draw from the combined Opus 4.x pool — moving heavy orchestration volume neither frees nor inherits headroom. Check tier limits before shifting.
+
+---
+
 ## [2026-06-30] - Claude Sonnet 5 Alignment, Haiku Removal & `/loop` Integration (v3.13.0)
 
 Two model-ecosystem shifts landed: **Claude Sonnet 5** (`claude-sonnet-5`, released 2026-06-30) — the most agentic Sonnet yet, with a 1M-token context window and near-Opus-4.8 quality at lower cost — and Claude Code's **`/loop`** session-level recurring scheduler. This release aligns the workforce with both, and codifies a standing policy that **Haiku is never used**. No frontmatter sweep was needed for Sonnet 5 because all agents use model aliases (`sonnet` → `claude-sonnet-5` automatically).

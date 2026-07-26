@@ -23,7 +23,7 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 | [organization.md](docs/rules/organization.md) | 74 agents, 12 divisions, full roster | Always (project context) |
 | [orchestration.md](docs/rules/orchestration.md) | Delegation, Agent Teams, context compaction | Orchestration & planning |
 | [thinking-policies.md](docs/rules/thinking-policies.md) | Reasoning budgets (100–800 tokens) | Agent execution |
-| [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 4.8 features, task budgets, adaptive thinking, server tools, strict mode | SDK & API integration |
+| [sdk-compliance.md](docs/rules/sdk-compliance.md) | Opus 5 features, surface coverage, task budgets, adaptive thinking, server tools, strict mode | SDK & API integration |
 | [agent-selection.md](docs/rules/agent-selection.md) | Division guide, invocation patterns, v3.7 features | Task delegation |
 | [skills-integration.md](docs/rules/skills-integration.md) | Skills vs agents, progressive disclosure, agent-skill map | Skills usage |
 | [standards.md](docs/rules/standards.md) | Agent frontmatter spec, doc standards, tool use | Agent development |
@@ -89,37 +89,65 @@ Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Parallel multi-agent coord
 
 `/loop` is a Claude Code session-level scheduler: a prompt + cadence that re-fires on each tick against current project context. Self-paces when the interval is omitted, is session-scoped, and auto-expires after 7 days. A distinct axis from Agent Teams / Dynamic Workflows (which parallelize *within* a task) — `/loop` repeats one task *across time*. The orchestrator uses it for monitoring/polling briefs; the nine inherently-recurring agents (`aiops-specialist`, `sre-specialist`, `observability-engineer`, `devops-engineer`, `client-success-manager`, `business-development-manager`, `lead-generation-specialist`, `market-intelligence-analyst`, `social-media-strategist`) each carry a `Recurring Work (/loop)` note. Use `/schedule` instead when the cadence must survive across sessions. See [orchestration.md](docs/rules/orchestration.md).
 
-## Claude Opus 4.8 Alignment (v3.10.0)
+## Claude Opus 5 Alignment (v3.14.0)
 
-The `opus` model alias resolves to `claude-opus-4-8` (released 2026-05-28). Key shifts all agents inherit:
+The `opus` model alias resolves to `claude-opus-5` (released 2026-07-24) — a drop-in upgrade at Opus 4.8's price ($5/$25 per Mtok, 1M context, 128K output), and the default model on Claude Max. No frontmatter sweep was needed; the alias-based policy means all 25 `opus` agents inherited it on release day.
 
-- **Adaptive thinking only** — extended-thinking budgets removed at SDK level; the model decides per turn whether to think (fewer wasted thinking tokens)
-- **Effort defaults to `high`** — on all surfaces (Claude API + Claude Code); `xhigh` (between `high` and `max`) stays available for hard design/architecture/large-codebase work but is no longer the default
-- **Dynamic Workflows (research preview)** — plan a task, then spin up hundreds of parallel, verified subagents in a single Claude Code session
-- **Sharper judgment & honesty** — ~4× less likely to let flaws in its own code pass unremarked; flags uncertainty instead of over-claiming; works independently longer
-- **Better tool triggering** — less likely to skip a required tool call (a 4.7 pain point)
-- **Stronger long-horizon coding** — better long-context handling, fewer compactions, better compaction recovery
-- **Task budgets (beta)** — advisory token countdown across an agentic loop
-- **More literal instruction following** — state requirements directly
-- **Improved file-system memory** — `memory: project` agents benefit without changes
-- **High-resolution vision** — 2576px / 3.75MP, 1:1 coordinate mapping
-- **Cheaper long loops** — mid-conversation system messages + 1,024-token prompt-cache minimum
+**Two breaking changes, both about thinking:**
 
-See [sdk-compliance.md](docs/rules/sdk-compliance.md) for SDK migration details and [orchestration.md](docs/rules/orchestration.md) for steering notes.
+- **Thinking is ON by default** — omitting `thinking` runs adaptive, reversing Opus 4.8. Since `max_tokens` caps thinking *plus* output, budgets sized for a thinking-off 4.8 call can truncate mid-answer
+- **Disabling thinking is capped at `high` effort** — `thinking: disabled` with `xhigh`/`max` returns HTTP 400, validated per request
+
+**Two behavioral reversals the roster had to correct:**
+
+- **⚠️ Delegates to subagents *more* readily** — Opus 4.8 under-reached and needed "spawn N subagents" prompting; Opus 5 needs a **cap, not a nudge**
+- **⚠️ Verifies its own work unprompted** — "add a verification step" / "double-check" now cause over-verification with no capability gain. This inverts a standard prompting best practice
+
+**What else agents inherit:**
+
+- **Full effort ladder** `low → medium → high (default) → xhigh → max`. Start `xhigh` for coding/agentic, then sweep *down* — `low`/`medium` are unusually strong and are the primary cost lever
+- **Mid-conversation tool changes (beta)** — add/remove tools between turns without invalidating the prompt cache
+- **Automatic refusal fallbacks (beta)** — safety-flagged requests route to a fallback model by refusal category instead of stopping
+- **512-token prompt-cache minimum** (halved from 1,024) — short agent prompts now cache with no code change
+- **Runs long by default** — user-facing responses, written deliverables, and task scope all need explicit bounds; `effort` does *not* shorten visible output
+- **Separate rate-limit bucket** from the combined Opus 4.x pool
+- **Fast mode** — `/fast` in Claude Code now applies to Opus 5 and Opus 4.8
+
+See [sdk-compliance.md](docs/rules/sdk-compliance.md) for SDK migration details and [orchestration.md](docs/rules/orchestration.md) for steering notes and delegation discipline.
 
 ## Claude Sonnet 5 Alignment (v3.13.0)
 
 The `sonnet` model alias resolves to `claude-sonnet-5` (released 2026-06-30) — the default workhorse for the ~51 `sonnet` agents. No frontmatter sweep was needed; the alias-based policy means agents inherit it automatically. What the roster gains:
 
-- **1M-token context window** — matches Opus 4.8; `sonnet` agents can hold large codebases / many documents in one request
-- **Near-Opus-4.8 quality at lower cost** — close to Opus on reasoning, tool use, coding, and knowledge work; prefer `sonnet` as default, reserve `opus` for orchestration and the hardest reasoning
+- **1M-token context window** — matches Opus 5; `sonnet` agents can hold large codebases / many documents in one request
+- **Near-Opus quality at lower cost** — close to the Opus tier on reasoning, tool use, coding, and knowledge work; prefer `sonnet` as default, reserve `opus` for orchestration and the hardest reasoning
 - **Most agentic Sonnet yet** — stronger autonomous planning, browser/terminal tool use, sustained multi-step completion
 - **Context awareness** — tracks remaining context window during long agentic loops
 - **Stronger safety defaults** — lower hallucination/sycophancy, better prompt-injection resistance, cyber safeguards on by default
-- **Same effort scale** — `low → medium → high (default) → xhigh → max`, identical to Opus 4.8
+- **Same effort scale** — `low → medium → high (default) → xhigh → max`, identical to Opus 5
 - **Pricing** — introductory $2/$10 per Mtok through 2026-08-31, then standard $3/$15
 
-**Haiku is not used.** Every agent runs on `opus` or `sonnet`. With Sonnet 5 closing the gap to Opus 4.8 at lower cost, `sonnet` is the floor for lightweight work — never `haiku`.
+**Haiku is not used.** Every agent runs on `opus` or `sonnet`. With Sonnet 5 closing the gap to the Opus tier at lower cost, `sonnet` is the floor for lightweight work — never `haiku`. Opus 5 does widen the gap on genuinely hard agentic coding, so `opus` is now more clearly worth it for multi-file features and large refactors.
+
+## Surface Coverage — Claude Cowork (v3.14.0)
+
+**Claude Cowork** — Anthropic's agentic surface for non-technical knowledge work, built on the Claude Code engine — now loads plugins as a research preview for all paid Claude users. Cowork went web + mobile for Max subscribers in July 2026, running in an isolated cloud environment so work survives closing your laptop.
+
+**Nation of Elites installs into Cowork unchanged** — same marketplace entry, same `plugin.json`. Component support by surface:
+
+| Component | Claude Code (CLI / Desktop / IDE) | Cowork | Claude Desktop & web chat |
+|-----------|------|--------|---------------------------|
+| Skills (33) | ✅ | ✅ | ✅ |
+| Slash commands | ✅ | ✅ | ✅ |
+| MCP connectors | ✅ | ✅ (via Anthropic cloud) | ✅ |
+| **Agents (74)** | ✅ | ✅ | ❌ greyed out |
+| **Hooks** | ✅ | ✅ | ❌ greyed out |
+
+Agents and hooks run **only in Claude Code and Cowork**. In plain chat the skills and slash commands still work — which is why skills are the right home for portable knowledge.
+
+**Cowork constraints:** connectors egress through Anthropic's cloud (internal-only MCP servers won't reach), plugins save locally per machine (org-wide marketplaces announced, not shipped), and Cowork's built-in `pdf`/`docx`/`pptx`/`xlsx`/`canvas-design` skills load automatically — don't duplicate them.
+
+The **11_Business_Development**, **10_Content_and_Localization**, **02_Project_Management_Office**, and **01_Strategy_and_Planning** wings map most directly onto Cowork's audience. See [orchestration.md](docs/rules/orchestration.md) → *Claude Cowork*.
 
 ## Setup & Usage
 

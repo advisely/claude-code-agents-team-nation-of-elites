@@ -44,6 +44,21 @@
 - `integration-specialist` → mcp-builder skill for external integrations
 - `chief-operations-orchestrator` → skill-creator for new capability development
 
+## Cross-Surface Availability
+
+Skills are the **most portable** component of the plugin — they run everywhere plugins load, including plain chat where agents and hooks do not:
+
+| Surface | Skills | Agents |
+|---------|--------|--------|
+| Claude Code (CLI / Desktop / IDE) | ✅ | ✅ |
+| Claude Cowork | ✅ | ✅ |
+| Claude Desktop & web chat | ✅ | ❌ greyed out |
+
+This makes skills the right home for knowledge that must survive outside an agentic session. Two consequences:
+
+- **Don't duplicate Cowork's built-ins.** Cowork ships `pdf`, `docx`, `pptx`, `xlsx`, and `canvas-design` skills that load automatically for those file types. Custom skills should carry judgment (`humanizer`, `pipeline-review`, `silent-failure-audit`), not file-format mechanics.
+- **Frontmatter parsing is now tolerant** (Claude Code 2.1.186+): `display-name`, `default-enabled`, `fallback`, and `metadata.*` accept kebab-case, snake_case, and camelCase, and a malformed `SKILL.md` loads with empty metadata instead of failing. Existing skills need no changes.
+
 ## Security Considerations
 
 - **Risk**: Malicious skills could introduce vulnerabilities or exfiltrate data
