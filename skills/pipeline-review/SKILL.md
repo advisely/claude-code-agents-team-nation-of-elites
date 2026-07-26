@@ -1,19 +1,19 @@
 ---
 name: pipeline-review
-description: Universal reasoning-based review pipeline - code simplification pass plus a severity-rated correctness/security/performance review. The judgment counterpart to pipeline-quality (which runs deterministic CI gates). Delegates to the code-reviewer agent.
+description: Universal reasoning-based review pipeline - code simplification pass, a severity-rated correctness/security/performance review, then a clean conventional commit. The judgment counterpart to pipeline-quality (which runs deterministic CI gates). Delegates to the code-reviewer agent.
 ---
 
 # Pipeline Review
 
-The **judgment-based** counterpart to `/pipeline-quality`. Where `pipeline-quality` runs deterministic shell gates (lint, SAST, tests, audit) with binary pass/fail, `pipeline-review` performs the two **reasoning passes** an agent does over a diff: a **simplification pass** (quality-only, behavior-preserving) followed by a **review pass** (correctness, security, performance, maintainability) with severity-rated findings.
+The **judgment-based** counterpart to `/pipeline-quality`. Where `pipeline-quality` runs deterministic shell gates (lint, SAST, tests, audit) with binary pass/fail, `pipeline-review` performs the **reasoning passes** an agent does over a diff — a **simplification pass** (quality-only, behavior-preserving), then a **review pass** (correctness, security, performance, maintainability) with severity-rated findings — and closes by **committing** the result once both passes are clean.
 
 ## Division of Labor
 
 | Skill | Nature | Steps |
 |-------|--------|-------|
-| `pipeline-quality` | Deterministic CI gate | lint, type check, Semgrep SAST, tests, dead code, dep audit |
-| **`pipeline-review`** (this) | **Reasoning passes** | **simplify pass, then review pass (severity-rated)** |
-| `pipeline-full-build` | Release automation | version bump → quality gate → build → package → release |
+| `pipeline-quality` | Deterministic CI gate | lint, type check, Semgrep SAST, tests, test case matrix, dead code, dep audit |
+| **`pipeline-review`** (this) | **Reasoning passes + commit** | **simplify → review (severity-rated) → commit** |
+| `pipeline-full-build` | Release automation | backup → verify → integrate → build → ship → document → reclaim |
 
 Run `pipeline-quality` for the automated gate; run `pipeline-review` for the human-grade judgment. They are complementary — a full pre-merge check runs both.
 
@@ -44,6 +44,15 @@ git diff --stat && git diff --cached --stat
 ```
 
 If there is no diff (e.g. reviewing an existing file set), review the explicitly named files only.
+
+## Chain of Passes
+
+```
+Scope Detection → Pass 1: Simplify → Pass 2: Review → Pass 3: Commit
+                       (#1)              (#2)            (#3)
+```
+
+Each pass gates the next. A failed review pass stops the chain **before** the commit — the point is that nothing blocking ever reaches history.
 
 ## Pass 1: Simplification (behavior-preserving)
 
@@ -87,6 +96,49 @@ The judgment pass. Delegate to the **`code-reviewer` agent** for a rigorous, sec
 
 **Gate rule:** any 🔴 Critical or 🟠 High finding fails the review.
 
+## Pass 3: Commit
+
+Runs **only** when Pass 1 left tests green and Pass 2 returned zero 🔴/🟠 findings. Otherwise stop and report — do not commit over blocking findings.
+
+```bash
+# Never `git add -A` blind: inspect what is about to enter history
+git status --short
+git diff --stat
+
+# Stage deliberately — exclude build output, local config, and secrets
+git add <paths>
+
+# Refuse to commit if a secret slipped into the staged set
+git diff --cached | grep -nEi '(api[_-]?key|secret|password|token|BEGIN [A-Z ]*PRIVATE KEY)\s*[=:]' \
+  && { echo "BLOCKED: possible secret staged"; exit 1; }
+```
+
+**Message format** — Conventional Commits, imperative mood, *why* over *what*:
+
+```
+<type>(<scope>): <subject>
+
+<body: the problem this solves and any non-obvious decision>
+
+<footer: Refs #123 / BREAKING CHANGE: ...>
+```
+
+`type` ∈ `feat` · `fix` · `refactor` · `perf` · `docs` · `test` · `build` · `ci` · `chore`. A simplification-only pass commits as `refactor`, never `feat`.
+
+**Gate rule:** commit on a feature branch, never directly on `main`/`master`. If `git branch --show-current` returns the default branch, branch first:
+
+```bash
+[ "$(git branch --show-current)" = "main" ] && git checkout -b "feat/<slug>"
+git commit -m "$(cat <<'EOF'
+<type>(<scope>): <subject>
+
+<body>
+EOF
+)"
+```
+
+**Output:** the commit SHA and subject, or the reason the commit was withheld.
+
 ## Output Format
 
 ```markdown
@@ -111,12 +163,22 @@ Tests after simplification: PASS / FAIL
 - Blocking (🔴/🟠): [count]
 - Non-blocking (🟡/🟢): [count]
 
+### Pass 3: Commit
+- Branch: `feat/<slug>` (not default branch)
+- Commit: `abc1234` — `refactor(auth): replace manual lookup with findUser()`
+- Withheld because: [reason, if not committed]
+
 ### Recommendations
 - [Non-blocking suggestions and follow-ups]
 ```
 
+## Position in the Release Chain
+
+This skill is **Step 2 of the Verify phase plus the head of the Integrate phase** in `/pipeline-full-build`: it runs after `/pipeline-quality` passes, and its commit is what the subsequent merge → push → release steps carry forward.
+
 ## Relationship to Other Skills
 
 - Pair with **`/pipeline-quality`** for a complete pre-merge check (deterministic gate + reasoning passes). A common pattern: `pipeline-quality` first (cheap, fails fast), then `pipeline-review`.
+- The official `code-simplifier` and `code-review` plugins from `claude-plugins-official` are lighter, single-purpose drop-in alternatives to Pass 1 and Pass 2 respectively. This skill stays the division-aware path that chains both and commits.
 - Invoked by **`/feature-workflow`** (Phases 5–6) and **`/pr-ready`** (simplification + review step) — those workflows delegate here instead of inlining checklists, so the review logic lives in one place.
 - The review pass loads **`silent-failure-audit`** and **`semgrep-sast`** patterns where relevant; the `code-reviewer` agent preloads these.

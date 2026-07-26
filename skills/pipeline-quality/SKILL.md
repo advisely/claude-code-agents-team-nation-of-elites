@@ -1,6 +1,6 @@
 ---
 name: pipeline-quality
-description: Universal quality gate pipeline - lint, Semgrep SAST, tests, dead code detection, and dependency audit. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
+description: Universal quality gate pipeline - lint, type check, Semgrep SAST, tests, happy/non-happy/edge case coverage matrix, dead code detection, and dependency audit. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
 ---
 
 # Pipeline Quality Gate
@@ -89,7 +89,42 @@ semgrep ci --supply-chain
 | PHP | `./vendor/bin/phpunit` |
 | Java | `./mvnw test` |
 
-### Step 6: Dead Code Detection
+### Step 6: Test Case Coverage Matrix (happy / non-happy / edge)
+
+Step 5 proves the tests that exist **pass**. This step proves the tests that *should* exist **are there**. A green suite that only covers the happy path is the single most common blind spot this gate is designed to catch.
+
+For every behavior changed in the diff, require all three classes:
+
+| Class | What must be covered | Typical blind spot |
+|-------|---------------------|-------------------|
+| **Happy path** | The intended flow with valid, in-range input; the documented success contract | Asserted loosely — status checked, payload never inspected |
+| **Non-happy path** | Invalid input, auth failure, missing/malformed data, dependency down, timeout, permission denied, conflicting state | Error *raised* but not asserted on type/message/code; retries untested |
+| **Edge cases** | Empty, single-element, and maximum-size inputs; 0 / -1 / off-by-one bounds; null vs. undefined vs. absent; unicode & very long strings; duplicate keys; concurrent/repeat invocation (idempotency); timezone & DST boundaries; float precision; pagination first/last page | Boundaries tested at "typical" values only; concurrency never exercised |
+
+```bash
+# Enumerate changed behaviors from the diff, then confirm each has all three classes
+base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null)
+git diff --name-only "$base"...HEAD | grep -Ev '(test|spec)' 
+
+# Coverage signal per stack (a floor, not proof of adequacy)
+pytest --cov --cov-report=term-missing --cov-branch   # Python: branch coverage exposes untaken paths
+npx vitest run --coverage                              # Node/TS
+go test ./... -cover                                   # Go
+cargo tarpaulin --out Stdout                           # Rust
+```
+
+**Assertion quality check** — a test that runs but asserts nothing is worse than no test, because it reads as coverage:
+
+```bash
+# Tests with no assertion at all
+grep -rLE 'assert|expect|should|require\.' --include='*test*' --include='*spec*' . 
+# Assertions that can never fail
+grep -rnE 'assert\s*\(\s*(True|true|1)\s*\)|expect\(true\)\.toBe\(true\)' --include='*test*' .
+```
+
+**Gate rule:** any behavior changed in the diff that lacks a non-happy-path **or** an edge case test fails this step. Record each gap explicitly — "no edge cases apply" is a claim that must be justified in the report, not a default.
+
+### Step 7: Dead Code Detection
 
 Find unused exports, variables, imports, and unreachable code:
 
@@ -112,7 +147,7 @@ Find unused exports, variables, imports, and unreachable code:
 - For Rust: the compiler already warns on dead code by default; just check build output
 - Semgrep also catches some dead code patterns via `p/javascript` and `p/python` rulesets (already run in Step 4)
 
-### Step 7: Dependency Audit
+### Step 8: Dependency Audit
 
 | Stack | Audit Command |
 |-------|--------------|
@@ -135,8 +170,15 @@ Find unused exports, variables, imports, and unreachable code:
 | Type Check | PASS/FAIL/SKIP | [error count] type errors |
 | Semgrep SAST | PASS/FAIL | [finding count] findings ([critical]/[high]/[medium]) |
 | Tests | PASS/FAIL | [passed]/[total] tests, [coverage]% coverage |
+| Test Case Matrix | PASS/FAIL | [n] behaviors changed: [n] happy, [n] non-happy, [n] edge — [n] gaps |
 | Dead Code | PASS/FAIL/SKIP | [count] unused exports/vars/imports found |
 | Dependency Audit | PASS/FAIL | [vuln count] vulnerabilities found |
+
+### Test Case Matrix Detail
+
+| Changed Behavior | Happy | Non-Happy | Edge | Gap |
+|------------------|-------|-----------|------|-----|
+| [function/endpoint] | ✅ | ✅ | ❌ | Missing empty-input and max-length cases |
 
 ### Gate Result: PASS / FAIL
 
@@ -200,6 +242,13 @@ jobs:
       - name: Tests
         run: |  # Stack-specific test command
 
+      - name: Test Case Matrix (branch coverage)
+        run: |  # e.g. pytest --cov --cov-branch --cov-fail-under=80
+
       - name: Dependency Audit
         run: |  # Stack-specific audit command
 ```
+
+## Position in the Release Chain
+
+This skill is **Step 1 of the Verify phase** in `/pipeline-full-build`. It runs before `/pipeline-review` because it is cheap and fails fast — no reason to spend reasoning passes on a diff that does not lint or compile.

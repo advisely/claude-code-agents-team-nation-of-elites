@@ -220,7 +220,8 @@ See [templates/](templates/) for project scaffolding.
 
 - **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0
   - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
-  - 7-step gate: lint, type check, Semgrep SAST, tests, dead code detection, dependency audit
+  - 8-step gate: lint, type check, Semgrep SAST, tests, **test case matrix**, dead code detection, dependency audit
+  - Test case matrix enforces happy path, non-happy path, and edge case coverage per changed behavior — plus an assertion-quality check that catches tests which run but assert nothing
   - Dead code tools: Vulture/Ruff (Python), Knip/ts-prune/ESLint (Node/TS), Staticcheck (Go), Debride (Ruby), Psalm (PHP), SpotBugs (Java)
   - Desktop (Electron+Python) and cloud (web/API) variants
   - CI/CD template for GitHub Actions
@@ -230,16 +231,23 @@ See [templates/](templates/) for project scaffolding.
   - Judgment counterpart to `pipeline-quality` (which runs deterministic CI gates)
   - Pass 1 — Simplification (behavior-preserving): reuse, simplification, efficiency, altitude, naming
   - Pass 2 — Review (severity-rated 🔴/🟠/🟡/🟢): correctness, security, error handling, performance, maintainability, test adequacy
+  - Pass 3 — Commit: Conventional Commits, deliberate staging, staged-secret scan, never commits to the default branch or over blocking findings
   - Delegates the review pass to the `code-reviewer` agent; 🔴 Critical / 🟠 High findings block merge
   - Invoked by `/feature-workflow` (Phases 5–6) and `/pr-ready` instead of inline checklists
   - Stack-adaptive scope detection (branch diff by default); standardized report format
 
-- **pipeline-full-build** - Universal full build pipeline - NEW in v3.6.0
-  - 8-step pipeline: version bump, quality gate, build, compile, package, CI, release, post-release
-  - Desktop variant: Electron packaging (Windows/macOS/Linux)
-  - Cloud variant: Docker build, registry push, Kubernetes deploy
-  - GitHub Release creation with artifact upload
-  - Standardized build report format
+- **pipeline-full-build** - Universal end-to-end release pipeline - NEW in v3.6.0
+  - 7 phases / 17 steps: Safeguard → Verify → Integrate → Build → Ship → Document → Reclaim
+  - **Safeguard**: verified `git bundle` failsafe backup + DB dump + rollback image, with a retention invariant that never leaves zero backups
+  - **Verify**: `/pipeline-quality`, then `/pipeline-review` simplify + review passes
+  - **Integrate**: version bump (CalVer), commit, merge to main (gate re-run post-rebase to catch semantic conflicts), push with landing verification
+  - **Build**: build, package/Docker with image CVE gate, CI validation + SHA256SUMS
+  - **Ship**: tag + GitHub release, production deploy with one-command rollback, post-deploy health/version/smoke gate
+  - **Document**: project docs (CHANGELOG, README, API, MIGRATION) then Claude docs (`CLAUDE.md`, `docs/rules/*.md`, agents, skills) with a broken-reference check and an always-loaded-budget optimization pass
+  - **Reclaim**: local + VPS junk, dangling Docker images, log rotation, backup pruning — keeps the current release, the rollback target, and volumes; never runs after a failed deploy
+  - Desktop variant: Electron packaging (Windows/macOS/Linux) + update feed
+  - Cloud variant: Docker build, registry push, Kubernetes/Terraform deploy
+  - Standardized build report format with failsafe status
 
 - **github-actions** - CI/CD pipeline templates
   - Node.js CI/CD pipelines
