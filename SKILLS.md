@@ -245,9 +245,24 @@ See [templates/](templates/) for project scaffolding.
   - **Ship**: tag + GitHub release, production deploy with one-command rollback, post-deploy health/version/smoke gate
   - **Document**: project docs (CHANGELOG, README, API, MIGRATION) then Claude docs (`CLAUDE.md`, `docs/rules/*.md`, agents, skills) with a broken-reference check and an always-loaded-budget optimization pass
   - **Reclaim**: local + VPS junk, dangling Docker images, log rotation, backup pruning — keeps the current release, the rollback target, and volumes; never runs after a failed deploy
-  - Desktop variant: Electron packaging (Windows/macOS/Linux) + update feed
-  - Cloud variant: Docker build, registry push, Kubernetes/Terraform deploy
+  - Owns the shared spine; routes Phase 3 and Step 12 to the desktop or cloud variant on stack detection
   - Standardized build report format with failsafe status
+
+- **pipeline-full-build-desktop** - Desktop release variant (Electron + Python) - NEW in v3.16.0
+  - **Step 8 local compilation**: TypeScript main + renderer, native module rebuild against the **Electron ABI** (not system Node), per-module load verification under the Electron runtime, frozen Python sidecar via PyInstaller
+  - **Step 9 package + sign**: electron-builder per platform, then Windows signtool verification, macOS codesign + hardened runtime + notarization staple check, Linux GPG detached signature, signed SHA256SUMS
+  - **Step 10 artifact validation** (no cloud equivalent): installer size/asar hygiene, **launch smoke test of the packaged binary**, clean-profile first-run, offline start, cross-platform matrix (universal binary check, deb dependency graph)
+  - **Step 12 distribution**: update feed version + checksum verification, staged percentage rollout, store submissions, feed-revert rollback
+  - Adds Electron security gates to Step 1: blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false`
+  - Post-deploy verification is telemetry-based (crash-free sessions, update adoption) — desktop cannot be rolled back server-side
+
+- **pipeline-full-build-cloud** - Cloud release variant (web/API/container) - NEW in v3.16.0
+  - **Step 8 build**: reproducible build with `SOURCE_DATE_EPOCH`, trimmed Go/Rust release binaries
+  - **Step 9 container**: provenance labels, credential-in-layer check, **SBOM** via syft, Trivy CVE gate (HIGH/CRITICAL, `--ignore-unfixed`), cosign image signing
+  - **Step 10 staging validation**: container smoke incl. **SIGTERM handling**, migration dry-run up/down/up against a **restored production schema** with lock inspection, staging deploy, Pact contract tests, k6 load thresholds
+  - **Step 12 production deploy**: expand-only migrations, canary at 10% with error-rate query, then rolling with automatic `rollout undo`
+  - Adds infra gates to Step 1: `kubectl --dry-run=server`, hadolint, non-root user check, secret-in-Dockerfile check, `oasdiff` breaking-change detection
+  - Rollback is one command and stays real because migrations only ever expand
 
 - **github-actions** - CI/CD pipeline templates
   - Node.js CI/CD pipelines

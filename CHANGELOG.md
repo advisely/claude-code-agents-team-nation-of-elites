@@ -5,6 +5,36 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-07-26] - Desktop/Cloud Variant Split (v3.16.0)
+
+`pipeline-full-build` carried both targets as inline branches under Steps 8–10 and 12. That framing understated the divergence: desktop and cloud differ in **compilation, tests, and validation** — not just packaging — so the branches were extracted into two sibling skills. Skill count is now **35**.
+
+### Added — `pipeline-full-build-desktop`
+
+The Electron (and Electron + Python hybrid) release path. What has no cloud equivalent:
+
+- **Local compilation against the Electron ABI.** Native modules compile against Electron's V8 ABI, not the system Node's — the most common cause of "works in dev, crashes when packaged." Adds `electron-rebuild` plus a per-module load check *under the Electron runtime*, and PyInstaller freezing with a standalone-execution check for hybrid apps. Both failure modes are invisible in dev, where a system Node and system Python are on PATH.
+- **Signing as a gate, not a step.** Windows `signtool verify`, macOS `codesign --deep --strict` + hardened-runtime check + `stapler validate` for the notarization ticket, Linux GPG detached signature, signed `SHA256SUMS`. An unsigned artifact is blocked by SmartScreen/Gatekeeper on the user's machine — by which point the release is already public.
+- **Packaged-artifact validation (Step 10).** Everything prior validates *source*; this validates what a user downloads. Installer size sanity, asar hygiene (no `.env`/`.pem`/sourcemaps bundled), **launch smoke test of the built binary**, clean-profile first run, offline start, and a cross-platform matrix (universal-binary `lipo` check, deb dependency graph).
+- **Distribution with feed verification.** Update-feed version *and* checksum must match the published artifact before announcing — a feed/artifact mismatch makes every client download then reject the update. Staged percentage rollout, because desktop has no server-side rollback: a bad build can only be superseded by the next one, and only for users who still receive updates.
+- **Electron security gates added to Step 1.** Blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false` — the top three Electron RCE vectors, none of which any packaging step catches.
+
+### Added — `pipeline-full-build-cloud`
+
+The containerized web/API path. What desktop never faces:
+
+- **Supply chain provenance.** SBOM via syft, Trivy CVE gate on HIGH/CRITICAL with `--ignore-unfixed` (blocking on unpatchable CVEs stalls releases without improving security), cosign image signing, and a credential-in-layer scan of `docker history`.
+- **Migration dry-run against a restored production schema**, not a synthetic one — drift between the two is exactly what breaks deploys. Runs up/down/up to prove reversibility, then inspects `pg_locks` for exclusive locks that would take the service down.
+- **Staging validation.** Container smoke including **SIGTERM handling** (a container that ignores it drops in-flight requests on every rolling deploy, forever), Pact contract tests so existing clients keep working, and k6 load thresholds on p95 latency and error rate.
+- **Canary → rolling deploy with a real rollback.** Expand-only migrations are the precondition that makes `kubectl rollout undo` actually safe; the canary holds at 10% for a telemetry cycle with an error-rate query before the fleet moves.
+- **Infra gates added to Step 1.** `kubectl apply --dry-run=server` (catches admission failures the client-side check misses), hadolint, non-root `USER` check, secret-in-Dockerfile check, and `oasdiff` breaking-change detection against the base spec.
+
+### Changed
+
+- **`pipeline-full-build`** now owns the shared spine — Steps 0–7, 11, 13–16 — and routes Phase 3 and Step 12 to the variant skill on stack detection. The safety contract stays in one place; the divergent build/test/validate work lives with the target it belongs to. Run the parent for automatic routing, or a variant directly when the target is known.
+- **`CLAUDE.md`, `README.md`, `SKILLS.md`, `docs/rules/orchestration.md`, plugin + marketplace manifests** — skill count 33 → 35, and the pipeline paragraph rewritten around the parent/variant split.
+- **`.gitignore`** — ignores `.claude/` (local `settings.local.json` and `agent-memory/`), which had been showing as permanent untracked noise.
+
 ## [2026-07-26] - End-to-End Release Chain & Data-Safe Deploy Scripts (v3.15.0)
 
 Two independent bodies of work: the **pipeline skills** grew from a pre-merge gate into a complete concept-to-production release chain, and the **deploy scripts** were rebuilt around manifest-scoped deletion after an audit found they could delete user-authored content.

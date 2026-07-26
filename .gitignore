@@ -17,3 +17,6 @@ Thumbs.db
 .venv/
 node_modules/
 __pycache__/
+
+# Local Claude Code state (settings.local.json, agent-memory) — machine-specific
+.claude/

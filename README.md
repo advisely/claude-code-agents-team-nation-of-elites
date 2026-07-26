@@ -137,7 +137,7 @@ Nation of Elites is a third-party plugin, so you add its marketplace first, then
 /plugin install nation-of-elites@nation-of-elites
 ```
 
-All 74 agents become available as scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`), plus the 33 skills.
+All 74 agents become available as scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`), plus the 35 skills.
 
 To hack on the plugin locally without installing, load it straight from a clone:
 
@@ -467,7 +467,7 @@ agents/
 | **Official Plugins** | Auto-detection and setup of Anthropic official plugins (GitHub, Slack, Jira, etc.) |
 | **Semgrep SAST** | Automated security scanning via CLI and MCP plugin integration |
 | **Universal Pipelines** | Stack-adaptive quality gates and full build pipelines |
-| **Claude Cowork** (research preview) | Full 74-agent roster + 33 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
+| **Claude Cowork** (research preview) | Full 74-agent roster + 35 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
 
 ### Thinking Policies & Budgets
 
@@ -506,7 +506,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 ## Agent Skills System
 
-**33 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
+**35 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
 
 ### How Skills Work
 
