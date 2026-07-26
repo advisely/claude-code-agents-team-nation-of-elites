@@ -32,17 +32,17 @@ All minor improvements implemented successfully.
 - Updated agent count: Division 05 (6 agents), Division 07 (3 agents)
 
 **Documentation Updates:**
-- [README.md](README.md#L111) - Updated organizational structure
+- [README.md](../README.md#L111) - Updated organizational structure
 - [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md#L43) - Added "(cross-cutting orchestrator)" clarification
-- [CLAUDE.md](CLAUDE.md#L97-L101) - Added 07_Orchestrators section with Integration Specialist
-- [SDK_ALIGNMENT_SUMMARY.md](SDK_ALIGNMENT_SUMMARY.md#L63) - Updated file path reference
+- [CLAUDE.md](../CLAUDE.md#L97-L101) - Added 07_Orchestrators section with Integration Specialist
+- [CHANGELOG.md](../CHANGELOG.md) - Updated file path reference (tracked in release history)
 
 ---
 
 ### 2. Subagent Nature Clarified ✅
 **Change**: Enhanced Chief Operations Orchestrator with explicit subagent lifecycle and naming conventions
 
-**Added Section**: "Nature of Subagents" in [Chief_Operations_Orchestrator.md](agents/07_Orchestrators/Chief_Operations_Orchestrator.md#L63-L68)
+**Added Section**: "Nature of Subagents" in [Chief_Operations_Orchestrator.md](../agents/07_Orchestrators/Chief_Operations_Orchestrator.md#L63-L68)
 
 **Key Clarifications:**
 - **Temporary, task-specific spawns** - NOT permanent agents
@@ -108,23 +108,22 @@ All minor improvements implemented successfully.
 ## Documentation Coverage
 
 ### Core Documentation ✅
-- [README.md](README.md) - SDK features highlighted, agent counts updated
+- [README.md](../README.md) - SDK features highlighted, agent counts updated
 - [AGENT_WORKFLOW.md](AGENT_WORKFLOW.md) - SDK alignment section added
-- [CLAUDE.md](CLAUDE.md) - Orchestrators division documented
+- [CLAUDE.md](../CLAUDE.md) - Orchestrators division documented
 - [CONTEXT_ENGINEERING.md](CONTEXT_ENGINEERING.md) - Comprehensive compaction examples
 
 ### Agent Definitions ✅
-- [Chief_Operations_Orchestrator.md](agents/07_Orchestrators/Chief_Operations_Orchestrator.md) - Subagent coordination, context compaction
-- [Integration_Specialist.md](agents/07_Orchestrators/Integration_Specialist.md) - MCP integration (relocated)
-- [Program_Manager.md](agents/00_Executive_Wing/Program_Manager.md) - Context compaction triggers
-- [Product_Manager.md](agents/01_Strategy_and_Planning_Wing/Product_Manager.md) - Context compaction triggers
-- [Backend_Developer.md](agents/03_Engineering_Division/Core_Development_Team/Backend_Developer.md) - Code generation first
-- [Visual_Regression_Specialist.md](agents/04_Quality_Assurance_Battalion/Visual_Regression_Specialist.md) - Visual feedback loops
+- [Chief_Operations_Orchestrator.md](../agents/07_Orchestrators/Chief_Operations_Orchestrator.md) - Subagent coordination, context compaction
+- [Integration_Specialist.md](../agents/07_Orchestrators/Integration_Specialist.md) - MCP integration (relocated)
+- [Program_Manager.md](../agents/00_Executive_Wing/Program_Manager.md) - Context compaction triggers
+- [Product_Manager.md](../agents/01_Strategy_and_Planning_Wing/Product_Manager.md) - Context compaction triggers
+- [Backend_Developer.md](../agents/03_Engineering_Division/Core_Development_Team/Backend_Developer.md) - Code generation first
+- [Visual_Regression_Specialist.md](../agents/04_Quality_Assurance_Battalion/Visual_Regression_Specialist.md) - Visual feedback loops
 
 ### Implementation Tracking ✅
-- [SDK_ALIGNMENT_SUMMARY.md](SDK_ALIGNMENT_SUMMARY.md) - Complete implementation summary
-- [SDK_ALIGNMENT_TODO.md](SDK_ALIGNMENT_TODO.md) - All items completed
 - [SDK_COMPLIANCE_REPORT.md](SDK_COMPLIANCE_REPORT.md) - This document
+- [CHANGELOG.md](../CHANGELOG.md) - Full release history, including per-model alignment work
 
 ---
 
