@@ -5,6 +5,47 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-07-26] - End-to-End Release Chain & Data-Safe Deploy Scripts (v3.15.0)
+
+Two independent bodies of work: the **pipeline skills** grew from a pre-merge gate into a complete concept-to-production release chain, and the **deploy scripts** were rebuilt around manifest-scoped deletion after an audit found they could delete user-authored content.
+
+### Added — Pipeline Release Chain
+
+`pipeline-full-build` went from a linear 8-step build to **7 phases / 17 steps**: Safeguard → Verify → Integrate → Build → Ship → Document → Reclaim.
+
+- **Phase 0 — Safeguard (new).** Verified `git bundle` failsafe backup, untracked local state, production DB dump, and the currently-deployed image saved as a rollback target. Enforces a **retention invariant**: at least one verified backup must exist at all times; if exactly one exists it is never pruned, regardless of age. A failed `git bundle verify` halts the pipeline.
+- **Phase 2 — Integrate (new).** Version bump → commit → **merge to main** → **push to GitHub**. The merge step re-runs the quality gate *after* the rebase to catch semantic conflicts — two independently-correct changes that pass `git merge` and fail the build. The push step verifies the commit actually landed on `origin/main` rather than trusting a log line that scrolled past.
+- **Phase 4 — Ship (expanded).** Release tagging now gated on the commit already being on `origin/main` and green in CI. **Deploy to production (new)** records the previous version as an explicit rollback target and requires a one-command reversal path. **Post-deploy verification (new)** checks health, asserts the live version matches what was shipped, runs production smoke tests over happy *and* critical non-happy paths, and rolls back on failure.
+- **Phase 5 — Document (new).** Step 14 updates project docs (CHANGELOG, README, `docs/**`, API/OpenAPI, MIGRATION, PLAN). Step 15 updates **and optimizes** the Claude memory layer — deduplicate facts split across `CLAUDE.md` and rule files, demote detail out of always-loaded `CLAUDE.md` into on-demand rule files, prune retired guidance, sharpen `description:` fields (the routing signal), and verify every referenced path, agent, and skill still resolves.
+- **Phase 6 — Reclaim (new).** Local build/cache junk, git housekeeping, **dangling Docker images**, VPS log rotation and release-directory pruning, and backup retention. Keeps the current release, the rollback target, and all volumes. Explicitly forbids `docker system prune -a --volumes`. Never runs after a failed deploy.
+
+### Added — Test Case Coverage Matrix
+
+- **`pipeline-quality` Step 6 (new).** Step 5 proves the tests that exist pass; Step 6 proves the tests that *should* exist are there. Requires **happy path, non-happy path, and edge case** coverage for every behavior changed in the diff, with a per-class blind-spot table (boundaries, empty/max inputs, null vs. undefined vs. absent, unicode, idempotency, timezone/DST, float precision, pagination edges). Includes an **assertion-quality check** that flags tests which run but assert nothing — coverage theater being worse than no test, because it reads as covered. Gate: any changed behavior lacking a non-happy-path or edge case test fails the step; "no edge cases apply" must be justified, not defaulted.
+- The gate is now **8 steps** (was 7) and the report carries a per-behavior matrix table.
+
+### Added — Commit Pass
+
+- **`pipeline-review` Pass 3 (new).** Runs only when Pass 1 left tests green and Pass 2 returned zero 🔴/🟠 findings. Conventional Commits format, deliberate staging (never blind `git add -A`), a secret scan over the *staged* set, and a hard rule against committing to the default branch. A simplification-only pass commits as `refactor`, never `feat`.
+
+### Fixed — Deploy Scripts: Data-Loss Vectors (both platforms)
+
+An audit of `deploy_agents.sh` / `deploy_agents.ps1` found three ways an install or update could destroy user data. All three are fixed and verified end-to-end on WSL2 and Windows PowerShell 5.1.
+
+- **Agent mirroring deleted user-authored agents.** `rsync -a --delete` and `robocopy /MIR` mirrored `agents/`, silently removing any agent the user wrote. Deletion is now **manifest-scoped**: the deploy records what it installs in `~/.claude/.noe-manifest-agents` / `.noe-manifest-skills` and only ever removes paths it installed itself. Unrecognized content is assumed to be the user's and left alone. `/MIR` became `/E`; `--delete` is gone.
+- **`--force-wipe` / `-ForceWipe` destroyed the skills tree.** It ran `rm -rf ~/.claude/skills`, taking Anthropic's official skills *and* any user-authored skill with it; only the Anthropic set was re-fetched. It now removes just the manifest-listed skills this deploy owns.
+- **The cache-path guard missed subdirectories.** `--repo-dir ~/.claude/projects` passed validation and would have been `rm -rf`'d, taking Claude Code session transcripts and memory. The guard now rejects anything under `~/.claude`, and reports the refusal — previously the warning was swallowed by a command substitution, so the script aborted with an exit code and no message.
+- **Backups before every destructive step.** Timestamped copies land in `~/.claude/backups`; an unwritable backup path aborts rather than deleting unbacked data.
+- **First-run adoption is conservative.** With no manifest present, the deploy adopts only files the repo currently ships — never the whole existing tree. A short explicit list handles agents retired before manifest tracking existed (currently `Tech_Lead_Orchestrator.md`), so stale-agent purging still works without putting user files at risk.
+- **PowerShell BOM bug.** PS 5.1's `-Encoding UTF8` writes a byte-order mark, which rode along on the first manifest entry and stopped it from ever matching a real path. Manifests are now written BOM-less, with a defensive strip on read.
+
+### Changed
+
+- **`CLAUDE.md`** — pipeline skills paragraph rewritten around the 7-phase chain and its safety contract: nothing deleted before it is backed up, nothing ships before it is verified, nothing reclaimed before the release is confirmed healthy.
+- **`SKILLS.md`** — all three pipeline skill entries expanded to the new step counts and phase structure.
+- **`pipeline-quality` / `pipeline-review`** — each gained a *Position in the Release Chain* section, so the three skills document how they compose rather than only what they do individually.
+- **`pipeline-review`** — now notes the official `code-simplifier` and `code-review` plugins as lighter single-purpose alternatives to Pass 1 and Pass 2.
+
 ## [2026-07-25] - Claude Opus 5 Alignment, Delegation Discipline & Claude Cowork Support (v3.14.0)
 
 **Claude Opus 5** (`claude-opus-5`) shipped 2026-07-24 — near-frontier intelligence at Opus 4.8's price ($5/$25 per Mtok, 1M context, 128K output), now the default model on Claude Max. As with Sonnet 5, no frontmatter sweep was needed: all 25 `opus` agents inherited it via the alias-based policy.
