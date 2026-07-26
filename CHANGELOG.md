@@ -5,6 +5,28 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-07-26] - Multi-Home Deploy Targeting (v3.17.0)
+
+Both deploy scripts resolved their target as `$HOME/.claude` (bash) and `$env:USERPROFILE\.claude` (PowerShell). That is wrong on any machine where Claude Code runs as a different account than the one invoking the script — most commonly under `sudo`, where `$HOME` is `/root`, or on a box where Claude is run as root while the project lives in a user's home. The failure is silent: the deploy reports success against an install nobody runs.
+
+### Fixed
+
+- **Deliberate target resolution.** Precedence is now `--claude-dir` / `-ClaudeDirOverride` (explicit), then `$CLAUDE_CONFIG_DIR` / `$env:CLAUDE_CONFIG_DIR` (Claude Code's own variable, which it does honour), then — in bash — `$SUDO_USER`'s home when running under sudo, then `$HOME`. The script now prints which installs it is writing to before it writes.
+- **Sudo redirection.** Running under `sudo` targets the invoking user's home rather than `/root`, with a warning naming both paths so the choice is visible and overridable.
+- **Ownership restoration.** A root-run deploy into a user's home now `chown`s the tree back to that user afterwards. Files written as root are unreadable to the account that actually runs Claude — which had to be repaired by hand.
+- **Cache guard widened to every install.** `--repo-dir` is refused if it points inside *any* Claude install on the machine, not just the targeted one. Previously `--repo-dir /home/other/.claude/projects` passed validation while deploying elsewhere, and that path gets `rm -rf`'d on cache corruption.
+- **PowerShell `$home` collision.** The cache guard looped over `foreach ($home in ...)`; `$home` is a read-only automatic variable, so the guard threw `VariableNotWritable` instead of validating. Renamed to `$claudeHome`.
+
+### Added
+
+- **`--list-homes` / `-ListHomes`** — enumerate every Claude install found and how long since each was *actually used*, marking the most recent. Run this first when unsure which install is live.
+- **`--all-homes` / `-AllHomes`** — deploy to every install that has real Claude history, in one invocation.
+- **Liveness probing** reads only artifacts a human using Claude produces — `history.jsonl`, `projects`, `sessions`, `shell-snapshots`, `todos`. `settings.json` is deliberately excluded: `plugin install` rewrites it, which would make a dormant install look active the moment you deploy to it.
+
+### Changed
+
+- Destination paths are recomputed per target rather than fixed at startup, which is what makes `--all-homes` possible. In PowerShell the per-target work moved into `Invoke-DeployToTarget` / `Invoke-ValidateTarget`; machine-wide steps (repo sync, plugin prompt, Semgrep check) still run once.
+
 ## [2026-07-26] - Desktop/Cloud Variant Split (v3.16.0)
 
 `pipeline-full-build` carried both targets as inline branches under Steps 8–10 and 12. That framing understated the divergence: desktop and cloud differ in **compilation, tests, and validation** — not just packaging — so the branches were extracted into two sibling skills. Skill count is now **35**.

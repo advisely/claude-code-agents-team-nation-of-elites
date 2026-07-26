@@ -5,7 +5,25 @@ set -euo pipefail
 # End-to-end: clone/pull → sanitize → deploy → validate
 #
 # Usage:
-#   bash scripts/deploy_agents.sh [--repo-url <url>] [--repo-dir <dir>] [--force-wipe]
+#   bash scripts/deploy_agents.sh [--repo-url <url>] [--repo-dir <dir>]
+#                                 [--claude-dir <dir>] [--all-homes]
+#                                 [--list-homes] [--force-wipe]
+#
+# Choosing the target install:
+#   Claude Code may be run as your user, as root, or as several accounts on the
+#   same box — and $HOME resolves differently in each. Deploying to the wrong one
+#   "succeeds" against an install nobody runs, which is silent and confusing.
+#   Precedence:
+#     1. --claude-dir <dir>      explicit, always wins
+#     2. $CLAUDE_CONFIG_DIR      Claude Code's own env var, honoured if set
+#     3. $SUDO_USER's home       under sudo, $HOME is /root but you rarely mean it
+#     4. $HOME/.claude           the ordinary case
+#
+#   --list-homes  shows every install found and when each was last actually used
+#   --all-homes   deploys to every install that has real Claude history
+#
+#   Run as root into another user's home and ownership is restored afterwards,
+#   so the files stay readable to the account that actually runs Claude.
 #
 # Defaults:
 #   --repo-url  https://github.com/advisely/claude-code-agents-team-nation-of-elites.git
@@ -31,6 +49,9 @@ REPO_DIR_DEFAULT="$HOME/.cache/nation-of-elites"
 REPO_URL="$REPO_URL_DEFAULT"
 REPO_DIR="$REPO_DIR_DEFAULT"
 FORCE_WIPE=false
+CLAUDE_DIR_ARG=""
+ALL_HOMES=false
+LIST_HOMES=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -38,6 +59,12 @@ while [[ $# -gt 0 ]]; do
       REPO_URL="${2:-}"; shift 2;;
     --repo-dir)
       REPO_DIR="${2:-}"; shift 2;;
+    --claude-dir)
+      CLAUDE_DIR_ARG="${2:-}"; shift 2;;
+    --all-homes)
+      ALL_HOMES=true; shift;;
+    --list-homes)
+      LIST_HOMES=true; shift;;
     --force-wipe)
       FORCE_WIPE=true; shift;;
     -h|--help)
@@ -51,19 +78,95 @@ require() { command -v "$1" >/dev/null 2>&1 || { echo "Missing dependency: $1" >
 require git
 require rsync
 
-CLAUDE_DIR="$HOME/.claude"
+# ── Which Claude install are we targeting? ───────────────────────────────────
+# `$HOME/.claude` alone is wrong more often than it looks. Under `sudo` it
+# resolves to /root while the operator means their own account; on a box where
+# Claude Code is run as root, the reverse. Resolve deliberately and say out loud
+# which install is being written to.
+
+# Every plausible Claude install on this machine, deduplicated.
+discover_claude_homes() {
+  {
+    [[ -n "${CLAUDE_CONFIG_DIR:-}" ]] && printf '%s\n' "$CLAUDE_CONFIG_DIR"
+    printf '%s\n' "$HOME/.claude"
+    [[ -n "${SUDO_USER:-}" ]] && printf '%s\n' "$(getent passwd "$SUDO_USER" | cut -d: -f6)/.claude"
+    printf '%s\n' /root/.claude
+    for d in /home/*/ /Users/*/; do [[ -d "$d" ]] && printf '%s\n' "${d}.claude"; done
+  } 2>/dev/null | sed 's://*:/:g' | awk '!seen[$0]++'
+}
+
+# An install is "real" if Claude Code has actually run there.
+is_real_install() {
+  [[ -d "$1" ]] && { [[ -e "$1/history.jsonl" ]] || [[ -d "$1/projects" ]] || [[ -f "$1/settings.json" ]]; }
+}
+
+# Most recently touched install wins when we have to guess. Probe only artifacts
+# a *human using Claude* produces — prompts, transcripts, shell snapshots.
+# settings.json is deliberately excluded: `plugin install` rewrites it, which
+# would make a dormant install look active the moment you deploy to it.
+install_mtime() {
+  local d="$1" newest=0 t
+  for probe in "$d/history.jsonl" "$d/projects" "$d/sessions" "$d/shell-snapshots" "$d/todos"; do
+    [[ -e "$probe" ]] || continue
+    t=$(stat -c %Y "$probe" 2>/dev/null || echo 0)
+    (( t > newest )) && newest=$t
+  done
+  printf '%s' "$newest"
+}
+
+report_homes() {
+  local now active_dir="" active_t=0 t
+  now=$(date +%s)
+  printf "\n%s\n" "Claude Code installs detected on this machine:"
+  while IFS= read -r d; do
+    is_real_install "$d" || continue
+    t=$(install_mtime "$d")
+    (( t > active_t )) && { active_t=$t; active_dir="$d"; }
+  done < <(discover_claude_homes)
+  while IFS= read -r d; do
+    is_real_install "$d" || continue
+    t=$(install_mtime "$d")
+    printf "  %-42s last active %-5s %s\n" \
+      "$d" "$(( (now - t) / 86400 ))d" \
+      "$([[ "$d" == "$active_dir" ]] && echo '<- most recently used')"
+  done < <(discover_claude_homes)
+  printf '\n'
+}
+
+resolve_claude_dir() {
+  # 1. Explicit flag always wins.
+  if [[ -n "$CLAUDE_DIR_ARG" ]]; then printf '%s' "${CLAUDE_DIR_ARG%/}"; return; fi
+  # 2. Claude Code's own env var — if the user set it, honour it.
+  if [[ -n "${CLAUDE_CONFIG_DIR:-}" ]]; then printf '%s' "${CLAUDE_CONFIG_DIR%/}"; return; fi
+  # 3. Under sudo, $HOME is /root but the operator almost never means /root.
+  if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
+    local invoker; invoker="$(getent passwd "$SUDO_USER" | cut -d: -f6)/.claude"
+    warn "Running under sudo. \$HOME is '$HOME' but you likely mean '$invoker'." >&2
+    warn "Targeting '$invoker'. Override with --claude-dir, or use --all-homes." >&2
+    printf '%s' "$invoker"; return
+  fi
+  printf '%s' "$HOME/.claude"
+}
+
 AGENTS_SRC="${REPO_DIR}/agents"
-AGENTS_DST="$CLAUDE_DIR/agents"
 SKILLS_SRC="${REPO_DIR}/skills"
-SKILLS_DST="$CLAUDE_DIR/skills"
-# Manifests record exactly what this deploy installed, so a later run can purge
-# its own stale output without guessing at — or deleting — anything the user
-# put there. Kept outside agents/ and skills/ so they are never mirrored away.
-MANIFEST_AGENTS="$CLAUDE_DIR/.noe-manifest-agents"
-MANIFEST_SKILLS="$CLAUDE_DIR/.noe-manifest-skills"
-BACKUP_ROOT="$CLAUDE_DIR/backups"
-# Note: ~/.claude/projects (memory + session transcripts) is intentionally NOT
+
+# All destination paths derive from the target install, so they are recomputed
+# per target rather than fixed at startup — that is what lets --all-homes run
+# the same deploy against several installs in one invocation.
+# Note: <target>/projects (memory + session transcripts) is intentionally NOT
 # referenced here — the deploy never touches user data.
+set_target_paths() {
+  CLAUDE_DIR="${1%/}"
+  AGENTS_DST="$CLAUDE_DIR/agents"
+  SKILLS_DST="$CLAUDE_DIR/skills"
+  # Manifests record exactly what this deploy installed, so a later run can purge
+  # its own stale output without guessing at — or deleting — anything the user
+  # put there. Kept outside agents/ and skills/ so they are never mirrored away.
+  MANIFEST_AGENTS="$CLAUDE_DIR/.noe-manifest-agents"
+  MANIFEST_SKILLS="$CLAUDE_DIR/.noe-manifest-skills"
+  BACKUP_ROOT="$CLAUDE_DIR/backups"
+}
 
 # Fancy colors (fallback to plain if not a TTY)
 if [[ -t 1 ]]; then
@@ -95,18 +198,26 @@ assert_safe_cache_path() {
     || resolved="$path"
   resolved="${resolved%/}"
   case "$resolved" in
-    ""|"/"|"$HOME"|"$HOME/"|"/root"|"/home")
+    ""|"/"|"$HOME"|"$HOME/"|"/root"|"/home"|"/Users")
       warn "Refusing to use '$resolved' as the repo cache directory." >&2
       exit 1
       ;;
-    # Anywhere inside ~/.claude is off-limits, not just ~/.claude itself: the
-    # cache gets rm -rf'd when it is corrupt, and a stray --repo-dir pointing at
-    # e.g. ~/.claude/projects would take user memory with it.
-    "$CLAUDE_DIR"|"$CLAUDE_DIR"/*)
-      warn "Refusing to use '$resolved' as the repo cache directory (inside $CLAUDE_DIR)." >&2
-      exit 1
-      ;;
   esac
+
+  # Anywhere inside ANY Claude install is off-limits, not just the one being
+  # targeted: the cache gets rm -rf'd when it is corrupt, and a stray --repo-dir
+  # pointing at e.g. /home/someone/.claude/projects would take that user's
+  # memory with it — even though this run never meant to write there.
+  local home
+  while IFS= read -r home; do
+    home="${home%/}"
+    [[ -n "$home" ]] || continue
+    if [[ "$resolved" == "$home" || "$resolved" == "$home"/* ]]; then
+      warn "Refusing to use '$resolved' as the repo cache directory (inside Claude install $home)." >&2
+      exit 1
+    fi
+  done < <(discover_claude_homes)
+
   printf '%s' "$resolved"
 }
 
@@ -498,16 +609,79 @@ validate_install() {
   success "Taste test passed — everything's delicious"
 }
 
-main() {
-  banner "🍳 Mise en Place — Prepping the Kitchen"
-  clone_or_update_repo
+# Everything that writes to one install. Called once per target.
+deploy_to_target() {
+  set_target_paths "$1"
+  banner "🎯 Target: $CLAUDE_DIR"
   sanitize_target
   deploy_agents
   deploy_skills
+  validate_install
+}
+
+# Which installs get written to, given the flags and the environment.
+select_targets() {
+  if [[ "$ALL_HOMES" == true ]]; then
+    local found=0
+    while IFS= read -r d; do
+      is_real_install "$d" && { printf '%s\n' "$d"; found=1; }
+    done < <(discover_claude_homes)
+    if [[ "$found" -eq 0 ]]; then
+      warn "--all-homes found no existing Claude installs; falling back to $(resolve_claude_dir)" >&2
+      printf '%s\n' "$(resolve_claude_dir)"
+    fi
+  else
+    printf '%s\n' "$(resolve_claude_dir)"
+  fi
+}
+
+main() {
+  if [[ "$LIST_HOMES" == true ]]; then
+    report_homes
+    info "Deploy to one:  bash $0 --claude-dir <path>"
+    info "Deploy to all:  bash $0 --all-homes"
+    exit 0
+  fi
+
+  banner "🍳 Mise en Place — Prepping the Kitchen"
+  clone_or_update_repo
+
+  local -a targets=()
+  while IFS= read -r t; do [[ -n "$t" ]] && targets+=("$t"); done < <(select_targets)
+
+  # Say plainly where this is going. The failure mode this guards against is a
+  # deploy that "succeeded" against an install nobody actually runs.
+  info "Deploying to ${#targets[@]} install(s):"
+  for t in "${targets[@]}"; do
+    printf "    %s%s\n" "$t" "$(is_real_install "$t" || echo '   (new — no Claude history here)')"
+  done
+
+  for t in "${targets[@]}"; do
+    deploy_to_target "$t"
+  done
+
+  # Machine-wide, not per-target.
   check_semgrep
   configure_official_plugins
-  validate_install
+
   banner "🍽️ Dinner Is Served — Installation Complete"
+  for t in "${targets[@]}"; do success "Deployed: $t"; done
+
+  # Files written as root inside another user's home are unreadable to them.
+  if [[ "$(id -u)" -eq 0 ]]; then
+    for t in "${targets[@]}"; do
+      case "$t" in
+        /root/*|/root) continue;;
+        /home/*|/Users/*)
+          local owner; owner="$(stat -c %U "$(dirname "$t")" 2>/dev/null || true)"
+          if [[ -n "$owner" && "$owner" != "root" ]]; then
+            info "Restoring ownership of $t to $owner (deploy ran as root)"
+            chown -R "$owner":"$(id -gn "$owner" 2>/dev/null || echo "$owner")" "$t" 2>/dev/null || \
+              warn "Could not chown $t — run: sudo chown -R $owner $t"
+          fi;;
+      esac
+    done
+  fi
 }
 
 main "$@"

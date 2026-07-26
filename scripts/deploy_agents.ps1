@@ -12,6 +12,20 @@
 .PARAMETER RepoDir
     Local cache directory for the cloned repo. Default: $env:TEMP\nation-of-elites
 
+.PARAMETER ClaudeDirOverride
+    Explicit Claude install to deploy to. Always wins. Use this on machines with
+    more than one account, or when running elevated as a different user.
+    Precedence: -ClaudeDirOverride, then $env:CLAUDE_CONFIG_DIR, then
+    $env:USERPROFILE\.claude.
+
+.PARAMETER AllHomes
+    Deploy to every Claude install on this machine that has real Claude history.
+
+.PARAMETER ListHomes
+    List every Claude install found and when each was last actually used, then
+    exit without deploying. Use this first when unsure which install is live -
+    deploying to a dormant one succeeds silently and changes nothing you see.
+
 .PARAMETER ForceWipe
     Force-refresh deployed content: removes only the agents and skills THIS
     deploy previously installed (tracked in ~/.claude/.noe-manifest-*), then
@@ -29,25 +43,96 @@
 param(
     [string]$RepoUrl = "https://github.com/advisely/claude-code-agents-team-nation-of-elites.git",
     [string]$RepoDir = (Join-Path $env:TEMP "nation-of-elites"),
+    [string]$ClaudeDirOverride = "",
+    [switch]$AllHomes,
+    [switch]$ListHomes,
     [switch]$ForceWipe
 )
 
 $ErrorActionPreference = "Stop"
 
-# --- Paths ---
-$ClaudeDir  = Join-Path $env:USERPROFILE ".claude"
-$AgentsSrc  = Join-Path $RepoDir "agents"
-$AgentsDst  = Join-Path $ClaudeDir "agents"
-$SkillsSrc  = Join-Path $RepoDir "skills"
-$SkillsDst  = Join-Path $ClaudeDir "skills"
-# Manifests record exactly what this deploy installed, so a later run can purge
-# its own stale output without guessing at - or deleting - anything the user put
-# there. Kept outside agents/ and skills/ so they are never mirrored away.
-$ManifestAgents = Join-Path $ClaudeDir ".noe-manifest-agents"
-$ManifestSkills = Join-Path $ClaudeDir ".noe-manifest-skills"
-$BackupRoot     = Join-Path $ClaudeDir "backups"
-# Note: ~/.claude/projects (memory + session transcripts) is intentionally NOT
+# --- Source paths (fixed) ---
+$AgentsSrc = Join-Path $RepoDir "agents"
+$SkillsSrc = Join-Path $RepoDir "skills"
+
+# ── Which Claude install are we targeting? ───────────────────────────────────
+# $env:USERPROFILE alone is wrong on any machine with more than one account, or
+# when the script is run elevated as a different user. Resolve deliberately and
+# state which install is being written to.
+
+# Every plausible Claude install on this machine, deduplicated.
+function Get-ClaudeHomes {
+    $candidates = New-Object System.Collections.Generic.List[string]
+    if ($env:CLAUDE_CONFIG_DIR) { $candidates.Add($env:CLAUDE_CONFIG_DIR) }
+    if ($env:USERPROFILE)       { $candidates.Add((Join-Path $env:USERPROFILE ".claude")) }
+    $usersRoot = Split-Path $env:USERPROFILE -Parent
+    if ($usersRoot -and (Test-Path $usersRoot)) {
+        Get-ChildItem -Path $usersRoot -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notin @('Public','Default','Default User','All Users') } |
+            ForEach-Object { $candidates.Add((Join-Path $_.FullName ".claude")) }
+    }
+    return @($candidates | ForEach-Object { $_.TrimEnd('\','/') } | Select-Object -Unique)
+}
+
+# An install is "real" if Claude Code has actually run there.
+function Test-RealInstall($Path) {
+    if (-not (Test-Path $Path)) { return $false }
+    return (Test-Path (Join-Path $Path "history.jsonl")) -or
+           (Test-Path (Join-Path $Path "projects"))      -or
+           (Test-Path (Join-Path $Path "settings.json"))
+}
+
+# Most recently touched install wins when we have to guess. Probe only artifacts
+# a *human using Claude* produces. settings.json is deliberately excluded:
+# `plugin install` rewrites it, which would make a dormant install look active
+# the moment you deploy to it.
+function Get-InstallActivity($Path) {
+    $newest = [datetime]::MinValue
+    foreach ($p in @("history.jsonl","projects","sessions","shell-snapshots","todos")) {
+        $full = Join-Path $Path $p
+        if (Test-Path $full) {
+            $t = (Get-Item $full -ErrorAction SilentlyContinue).LastWriteTime
+            if ($t -and $t -gt $newest) { $newest = $t }
+        }
+    }
+    return $newest
+}
+
+function Show-ClaudeHomes {
+    Write-Host ""
+    Write-Host "  Claude Code installs detected on this machine:" -ForegroundColor White
+    $real = @(Get-ClaudeHomes | Where-Object { Test-RealInstall $_ })
+    if (-not $real) { Write-Warn "None found."; return }
+    $mostRecent = ($real | Sort-Object { Get-InstallActivity $_ } -Descending | Select-Object -First 1)
+    foreach ($h in $real) {
+        $days = [int]((Get-Date) - (Get-InstallActivity $h)).TotalDays
+        $mark = if ($h -eq $mostRecent) { "<- most recently used" } else { "" }
+        Write-Host ("    {0,-46} last active {1,-6} {2}" -f $h, "${days}d", $mark)
+    }
+    Write-Host ""
+}
+
+function Resolve-ClaudeDir {
+    if ($ClaudeDirOverride)      { return $ClaudeDirOverride.TrimEnd('\','/') }   # explicit wins
+    if ($env:CLAUDE_CONFIG_DIR)  { return $env:CLAUDE_CONFIG_DIR.TrimEnd('\','/') } # Claude Code's own var
+    return (Join-Path $env:USERPROFILE ".claude")
+}
+
+# All destination paths derive from the target install, so they are recomputed
+# per target rather than fixed at startup — that is what lets -AllHomes run the
+# same deploy against several installs in one invocation.
+# Note: <target>/projects (memory + session transcripts) is intentionally NOT
 # referenced — the deploy never touches user data.
+function Set-TargetPaths($Path) {
+    $script:ClaudeDir      = $Path.TrimEnd('\','/')
+    $script:AgentsDst      = Join-Path $script:ClaudeDir "agents"
+    $script:SkillsDst      = Join-Path $script:ClaudeDir "skills"
+    # Manifests record exactly what this deploy installed, so a later run can
+    # purge its own stale output without deleting anything the user put there.
+    $script:ManifestAgents = Join-Path $script:ClaudeDir ".noe-manifest-agents"
+    $script:ManifestSkills = Join-Path $script:ClaudeDir ".noe-manifest-skills"
+    $script:BackupRoot     = Join-Path $script:ClaudeDir "backups"
+}
 
 # --- Helpers ---
 function Write-Banner($Title) {
@@ -116,20 +201,24 @@ function Test-GitRepo($Path) {
 function Assert-SafeCachePath($Path) {
     $resolved = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
     $forbidden = @(
-        $env:USERPROFILE, $env:SystemDrive, $env:SystemRoot,
-        (Join-Path $env:USERPROFILE ".claude"), $env:TEMP
+        $env:USERPROFILE, $env:SystemDrive, $env:SystemRoot, $env:TEMP
     ) | Where-Object { $_ } | ForEach-Object { $_.TrimEnd('\', '/') }
     if ([string]::IsNullOrWhiteSpace($resolved) -or $forbidden -contains $resolved) {
         Write-Error "Refusing to use '$resolved' as the repo cache directory."
         exit 1
     }
-    # Anywhere INSIDE ~/.claude is off-limits too, not just ~/.claude itself: the
-    # cache gets force-removed when it is corrupt, and a stray -RepoDir pointing
-    # at e.g. ~/.claude/projects would take Claude Code memory with it.
-    $claudeRoot = (Join-Path $env:USERPROFILE ".claude").TrimEnd('\', '/')
-    if ($resolved.StartsWith($claudeRoot + [System.IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
-        Write-Error "Refusing to use '$resolved' as the repo cache directory (inside $claudeRoot)."
-        exit 1
+    # Anywhere inside ANY Claude install is off-limits, not just the one being
+    # targeted: the cache gets force-removed when it is corrupt, and a stray
+    # -RepoDir pointing at e.g. another user's .claude\projects would take that
+    # user's memory with it — even though this run never meant to write there.
+    # NB: not $home — that is a read-only automatic variable in PowerShell.
+    $sep = [System.IO.Path]::DirectorySeparatorChar
+    foreach ($claudeHome in (Get-ClaudeHomes)) {
+        $h = $claudeHome.TrimEnd('\', '/')
+        if ($resolved -eq $h -or $resolved.StartsWith($h + $sep, [StringComparison]::OrdinalIgnoreCase)) {
+            Write-Error "Refusing to use '$resolved' as the repo cache directory (inside Claude install $h)."
+            exit 1
+        }
     }
     return $resolved
 }
@@ -188,6 +277,13 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
+if ($ListHomes) {
+    Show-ClaudeHomes
+    Write-Info "Deploy to one:  .\deploy_agents.ps1 -ClaudeDirOverride <path>"
+    Write-Info "Deploy to all:  .\deploy_agents.ps1 -AllHomes"
+    exit 0
+}
+
 # --- 1. Clone or Update ---
 Write-Banner "Syncing Repository"
 
@@ -223,6 +319,10 @@ if ($needClone) {
     }
 }
 Write-Ok "Repository synced"
+
+function Invoke-DeployToTarget($TargetDir) {
+Set-TargetPaths $TargetDir
+Write-Banner "Target: $script:ClaudeDir"
 
 # --- 2. Sanitize (data-safe) ---
 Write-Banner "Sanitizing Workspace (data-safe)"
@@ -407,6 +507,100 @@ if (-not (Test-Path $pdfSkill) -and -not (Test-Path $docxSkill)) {
     Write-Ok "Anthropic skills already installed (skipping)"
 }
 
+# --- Validate this target ---
+    Invoke-ValidateTarget
+}
+
+function Invoke-ValidateTarget {
+# --- 7. Validate ---
+Write-Banner "Validating Installation"
+
+$failed = $false
+
+# Canonical orchestrator
+$orchestrator = Join-Path (Join-Path $AgentsDst "07_Orchestrators") "Chief_Operations_Orchestrator.md"
+if (Test-Path $orchestrator) {
+    Write-Ok "Chief Operations Orchestrator present (canonical)"
+} else {
+    Write-Warn "Missing: Chief Operations Orchestrator at $orchestrator"
+    $failed = $true
+}
+
+# No deprecated orchestrator
+$deprecated = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Select-String -Pattern "chief-operations-orchestrator-deprecated" -ErrorAction SilentlyContinue
+if ($deprecated) {
+    Write-Warn "Found deprecated orchestrator entries"
+    $failed = $true
+} else {
+    Write-Ok "No deprecated orchestrator references found"
+}
+
+# Agent count
+$agentFiles = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Measure-Object
+$count = $agentFiles.Count
+if ($count -ge 25) {
+    Write-Ok "Agent count: $count files deployed"
+} else {
+    Write-Warn "Low agent count: $count (verify deployment)"
+}
+
+# Skills count
+if (Test-Path $SkillsDst) {
+    $skillFiles = Get-ChildItem -Path $SkillsDst -Recurse -Filter "SKILL.md" -ErrorAction SilentlyContinue | Measure-Object
+    $skillCount = $skillFiles.Count
+    if ($skillCount -ge 3) {
+        Write-Ok "Skills count: $skillCount skills available"
+    } else {
+        Write-Warn "Low skills count: $skillCount (installation may be incomplete)"
+    }
+}
+
+# Semgrep SAST skill
+$semgrepSkill = Join-Path (Join-Path $SkillsDst "semgrep-sast") "SKILL.md"
+if (Test-Path $semgrepSkill) {
+    Write-Ok "Semgrep SAST skill deployed"
+} else {
+    Write-Warn "Semgrep SAST skill not found at $semgrepSkill"
+}
+
+# Pipeline skills
+$pipelineQuality = Join-Path (Join-Path $SkillsDst "pipeline-quality") "SKILL.md"
+$pipelineBuild = Join-Path (Join-Path $SkillsDst "pipeline-full-build") "SKILL.md"
+if ((Test-Path $pipelineQuality) -and (Test-Path $pipelineBuild)) {
+    Write-Ok "Pipeline skills deployed (quality + full-build)"
+} else {
+    Write-Warn "Pipeline skills not fully deployed"
+}
+
+if ($failed) {
+    Write-Error "Validation failed - check warnings above"
+    exit 2
+}
+
+}
+
+# --- Target selection & deploy loop ---
+$targets = @()
+if ($AllHomes) {
+    $targets = @(Get-ClaudeHomes | Where-Object { Test-RealInstall $_ })
+    if (-not $targets) {
+        Write-Warn "-AllHomes found no existing Claude installs; falling back to $(Resolve-ClaudeDir)"
+        $targets = @(Resolve-ClaudeDir)
+    }
+} else {
+    $targets = @(Resolve-ClaudeDir)
+}
+
+# Say plainly where this is going. The failure mode this guards against is a
+# deploy that "succeeded" against an install nobody actually runs.
+Write-Info "Deploying to $($targets.Count) install(s):"
+foreach ($t in $targets) {
+    $note = if (Test-RealInstall $t) { "" } else { "   (new - no Claude history here)" }
+    Write-Host ("    {0}{1}" -f $t, $note)
+}
+
+foreach ($t in $targets) { Invoke-DeployToTarget $t }
+
 # --- 5. Official Plugins ---
 Write-Banner "Official Plugins - Autoconfiguration"
 
@@ -497,70 +691,6 @@ if ($semgrepCmd) {
     Write-Info "The Semgrep MCP plugin (if enabled in Claude Code) works independently."
 }
 
-# --- 7. Validate ---
-Write-Banner "Validating Installation"
-
-$failed = $false
-
-# Canonical orchestrator
-$orchestrator = Join-Path (Join-Path $AgentsDst "07_Orchestrators") "Chief_Operations_Orchestrator.md"
-if (Test-Path $orchestrator) {
-    Write-Ok "Chief Operations Orchestrator present (canonical)"
-} else {
-    Write-Warn "Missing: Chief Operations Orchestrator at $orchestrator"
-    $failed = $true
-}
-
-# No deprecated orchestrator
-$deprecated = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Select-String -Pattern "chief-operations-orchestrator-deprecated" -ErrorAction SilentlyContinue
-if ($deprecated) {
-    Write-Warn "Found deprecated orchestrator entries"
-    $failed = $true
-} else {
-    Write-Ok "No deprecated orchestrator references found"
-}
-
-# Agent count
-$agentFiles = Get-ChildItem -Path $AgentsDst -Recurse -Filter "*.md" | Measure-Object
-$count = $agentFiles.Count
-if ($count -ge 25) {
-    Write-Ok "Agent count: $count files deployed"
-} else {
-    Write-Warn "Low agent count: $count (verify deployment)"
-}
-
-# Skills count
-if (Test-Path $SkillsDst) {
-    $skillFiles = Get-ChildItem -Path $SkillsDst -Recurse -Filter "SKILL.md" -ErrorAction SilentlyContinue | Measure-Object
-    $skillCount = $skillFiles.Count
-    if ($skillCount -ge 3) {
-        Write-Ok "Skills count: $skillCount skills available"
-    } else {
-        Write-Warn "Low skills count: $skillCount (installation may be incomplete)"
-    }
-}
-
-# Semgrep SAST skill
-$semgrepSkill = Join-Path (Join-Path $SkillsDst "semgrep-sast") "SKILL.md"
-if (Test-Path $semgrepSkill) {
-    Write-Ok "Semgrep SAST skill deployed"
-} else {
-    Write-Warn "Semgrep SAST skill not found at $semgrepSkill"
-}
-
-# Pipeline skills
-$pipelineQuality = Join-Path (Join-Path $SkillsDst "pipeline-quality") "SKILL.md"
-$pipelineBuild = Join-Path (Join-Path $SkillsDst "pipeline-full-build") "SKILL.md"
-if ((Test-Path $pipelineQuality) -and (Test-Path $pipelineBuild)) {
-    Write-Ok "Pipeline skills deployed (quality + full-build)"
-} else {
-    Write-Warn "Pipeline skills not fully deployed"
-}
-
-if ($failed) {
-    Write-Error "Validation failed - check warnings above"
-    exit 2
-}
 
 # --- 8. Done ---
 Write-Banner "Installation Complete"
