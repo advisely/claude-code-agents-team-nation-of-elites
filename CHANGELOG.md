@@ -5,6 +5,21 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-08-08] - Security Gate in the Release Pipelines (v3.18.0)
+
+`/pipeline-quality` listed Semgrep as its only security step, and a Semgrep that never started was indistinguishable from a Semgrep that found nothing. The `security-guidance` plugin was installed alongside the pipelines but never referenced by them — and because it is hooks-only, "it is enabled" and "it ran" are different claims that nothing checked. A release shipped past both, and the cross-tenant read it missed was found later by a manual review.
+
+### Added
+
+- **Step 4 is now a three-part Security Gate** in `/pipeline-quality`, replacing the single Semgrep step. Step numbering is unchanged (1–8), so nothing that cross-references Step 4 breaks.
+  - **4a — `security-guidance` readiness.** The plugin exposes no command; it is hooks-only (`SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Stop`, and an agentic reviewer on `git commit`). You cannot run it, so the gate confirms it is *armed*: installed, enabled in settings, `hooks.json` present, and the agent SDK importable from `~/.claude/security/agent-sdk-venv`. That last condition is the one that matters — when the `SessionStart` venv build fails, the deepest layer stops running while the plugin still reports as enabled.
+  - **4b — Semgrep SAST**, unchanged in behavior, now explicit that an unavailable CLI or MCP server is `NOT RUN`.
+  - **4c — `/security-review`**, the agentic pass that traces data flow across files and reaches what pattern matching cannot: IDOR, authorization bypass, tenant-scope confusion, cross-file SSRF. Includes the range-selection note for when the branch is already merged and a bare `git diff` is empty.
+- **`NOT RUN` as a first-class outcome.** Every security check reports PASS / FAIL / **NOT RUN**, and `NOT RUN` may never be recorded as a pass. This is the rule the whole change exists for: a scanner with no server, a hook that never fired, and a clean scan are three different results that look identical in a log which only records findings.
+- **Deploy-time security precondition** in `/pipeline-full-build` Step 12 and `/pipeline-full-build-cloud` Step 12. Every Step 4 check is restated before shipping. A HIGH finding blocks; a `NOT RUN` ships only as a named decision, never as an unnoticed gap.
+- **Security Gate Record** section in the `/pipeline-full-build` report, and a Security Gate row in its phase table.
+- **Multi-tenant scope check** in `/pipeline-full-build-cloud` Step 1. On a fleet serving many tenants, the highest-impact bug is not injection but a request authorized against one tenant identifier and answered with another's data — which type-checks, lints, and passes every test exercising the honest path. The check asks one question of each route taking a tenant id in the path: which value proved authorization, and which value reaches the `WHERE` clause? Reconcile in shared middleware, because a check each handler must remember is a check that eventually is not run.
+
 ## [2026-07-26] - Multi-Home Deploy Targeting (v3.17.0)
 
 Both deploy scripts resolved their target as `$HOME/.claude` (bash) and `$env:USERPROFILE\.claude` (PowerShell). That is wrong on any machine where Claude Code runs as a different account than the one invoking the script — most commonly under `sudo`, where `$HOME` is `/root`, or on a box where Claude is run as root while the project lives in a user's home. The failure is silent: the deploy reports success against an install nobody runs.

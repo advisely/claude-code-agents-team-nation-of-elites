@@ -71,6 +71,22 @@ done
 
 **Gate rule:** a container running as root, a secret baked into an image layer, or a breaking API change without a version bump blocks the release.
 
+### Multi-tenant scope check (cloud-specific)
+
+A hosted service answers several tenants from one fleet, so the highest-impact vulnerability class here is not injection — it is a request authorized against one tenant and answered with another's data. Step 4c (`/security-review`) is where this gets caught; give it the shape to look for:
+
+```bash
+# Routes taking a tenant id in the PATH. Each must query the tenant it AUTHORIZED, not the
+# one the URL names. Middleware resolving the tenant from a header while the handler reads
+# req.params is the canonical form of this bug — and it type-checks, lints and tests clean.
+grep -rnE "params\.(workspaceId|tenantId|orgId|accountId)" \
+  --include='*.ts' --include='*.py' --include='*.go' src/ app/ 2>/dev/null
+```
+
+Every hit needs one answer: **which value proved authorization, and which value reaches the `WHERE` clause?** If they can differ, that is a cross-tenant read.
+
+**Gate rule:** any route where the authorizing and querying identifiers can diverge blocks the release until they are reconciled — preferably in shared middleware, because a check each handler has to remember is a check that eventually is not run.
+
 ---
 
 # Phase 3 — BUILD (cloud)
@@ -189,6 +205,8 @@ k6 run --vus 50 --duration 2m load/smoke.js \
 ## Step 12: Production Deploy
 
 Unlike desktop, this **is** reversible — and the entire strategy is built around keeping it that way.
+
+**Security precondition.** Restate the Step 4 outcome before pushing the image — Semgrep, `/security-review`, and `security-guidance` readiness, each PASS or NOT RUN. A HIGH finding blocks. A `NOT RUN` ships only as a named decision, never as an unnoticed gap: a fleet deploy reaches every tenant at once, so an absent check is at its most expensive right here.
 
 ```bash
 # Refuse to deploy without the Step 0 failsafe

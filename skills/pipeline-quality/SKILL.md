@@ -1,6 +1,6 @@
 ---
 name: pipeline-quality
-description: Universal quality gate pipeline - lint, type check, Semgrep SAST, tests, happy/non-happy/edge case coverage matrix, dead code detection, and dependency audit. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
+description: Universal quality gate pipeline - lint, type check, a three-part security gate (security-guidance readiness, Semgrep SAST, /security-review), tests, happy/non-happy/edge case coverage matrix, dead code detection, and dependency audit. Records NOT RUN rather than passing a check that never executed. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
 ---
 
 # Pipeline Quality Gate
@@ -63,7 +63,35 @@ Run language-appropriate linters:
 | TypeScript | `npx tsc --noEmit` |
 | Python | `mypy .` or `pyright` |
 
-### Step 4: Semgrep SAST Scan
+### Step 4: Security Gate
+
+Three checks, deliberately independent: a pattern scanner, a hook-driven reviewer, and a reasoning pass. Each catches what the others structurally cannot.
+
+**The rule that governs all three: NOT RUN is not PASS.** A security check that did not execute must be recorded as `NOT RUN` and must never be reported as a pass. Silence is the failure mode these steps exist to prevent — a scanner with no server, a hook that never fired, and a clean scan are three different outcomes that look identical in a log which only records findings.
+
+#### Step 4a: `security-guidance` readiness
+
+The `security-guidance` plugin has **no invocable command** — it is hooks-only (`SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Stop`, and an agentic reviewer on `git commit`). You therefore cannot "run" it; you can only confirm it is armed, and treat an unarmed plugin as a check that did not happen.
+
+```bash
+sg_root=$(ls -d "$HOME/.claude/plugins/cache/claude-plugins-official/security-guidance"/*/ 2>/dev/null | sort -V | tail -1)
+enabled=$(grep -c '"security-guidance@claude-plugins-official"[[:space:]]*:[[:space:]]*true' "$HOME/.claude/settings.json" 2>/dev/null)
+venv_py="$HOME/.claude/security/agent-sdk-venv/bin/python"
+[ -x "$venv_py" ] || venv_py="$HOME/.claude/security/agent-sdk-venv/Scripts/python.exe"   # Windows
+
+if [ -n "$sg_root" ] && [ "${enabled:-0}" -ge 1 ] && [ -f "${sg_root}hooks/hooks.json" ] \
+   && { "$venv_py" -c "import claude_agent_sdk" 2>/dev/null || python3 -c "import claude_agent_sdk" 2>/dev/null; }; then
+  echo "security-guidance: ARMED (${sg_root})"
+else
+  echo "security-guidance: NOT ARMED — record as NOT RUN, do not report a pass"
+fi
+```
+
+Each condition maps to a real way the plugin goes quiet: not installed, disabled in settings, hooks missing, or the agent SDK absent. That last one matters most — the commit reviewer needs it, the `SessionStart` installer builds a venv at `~/.claude/security/agent-sdk-venv`, and when that build fails the deepest layer stops running while the plugin still reports as enabled.
+
+**Gate rule:** `NOT ARMED` does not fail the build — it is a local tooling state, not a defect in the code. It **does** forbid recording Step 4a as a pass, and it must appear in the report so the reviewer knows this layer was absent.
+
+#### Step 4b: Semgrep SAST
 
 ```bash
 # Default security scan
@@ -75,7 +103,23 @@ semgrep scan --config auto --error .
 semgrep ci --supply-chain
 ```
 
-**Gate rule:** Any ERROR-severity finding blocks the pipeline.
+**Gate rule:** Any ERROR-severity finding blocks the pipeline. If neither the CLI nor the MCP server is available, record `NOT RUN` — never let lint and type-check stand in for a SAST pass.
+
+#### Step 4c: Agentic security review
+
+```
+/security-review
+```
+
+Reads the branch diff and traces data flow across files, so it reaches what pattern matching cannot: IDOR, authorization bypass, tenant-scope confusion, cross-file SSRF. Point it at an explicit range when the branch is already merged and a bare `git diff` would be empty:
+
+```bash
+git log --oneline "$(git merge-base HEAD origin/main)..HEAD"   # confirm the range first
+```
+
+**Gate rule:** any HIGH finding blocks. MEDIUM findings block unless explicitly accepted and recorded.
+
+**Multi-tenant systems — check this explicitly.** Where a request is authorized against one tenant identifier and queried with another, every deterministic check above passes: it type-checks, it lints, and the tests exercise the honest path. Confirm the value that proved authorization is the same value reaching the `WHERE` clause. A route that authorizes on a header and selects on a path parameter is the canonical form of this bug.
 
 ### Step 5: Tests
 
@@ -168,7 +212,9 @@ Find unused exports, variables, imports, and unreachable code:
 | Stack Detection | [stack] | Auto-detected: [languages/frameworks] |
 | Lint | PASS/FAIL | [error count] errors, [warning count] warnings |
 | Type Check | PASS/FAIL/SKIP | [error count] type errors |
-| Semgrep SAST | PASS/FAIL | [finding count] findings ([critical]/[high]/[medium]) |
+| security-guidance | ARMED/NOT RUN | hooks armed; agent SDK importable |
+| Semgrep SAST | PASS/FAIL/**NOT RUN** | [finding count] findings ([critical]/[high]/[medium]) |
+| Security Review | PASS/FAIL/**NOT RUN** | [n] HIGH, [n] MEDIUM — HIGH blocks |
 | Tests | PASS/FAIL | [passed]/[total] tests, [coverage]% coverage |
 | Test Case Matrix | PASS/FAIL | [n] behaviors changed: [n] happy, [n] non-happy, [n] edge — [n] gaps |
 | Dead Code | PASS/FAIL/SKIP | [count] unused exports/vars/imports found |
@@ -234,7 +280,7 @@ jobs:
       - name: Lint
         run: |  # Stack-specific lint command
 
-      - name: Semgrep SAST
+      - name: Security Gate (Semgrep SAST)
         uses: semgrep/semgrep-action@v1
         with:
           config: p/default p/owasp-top-ten p/secrets
