@@ -132,9 +132,11 @@ git clone "$BACKUP_ROOT/repo-$STAMP.bundle" /tmp/restore-check && rm -rf /tmp/re
 /pipeline-quality
 ```
 
-Runs stack detection, lint, type check, Semgrep SAST, tests, the **happy / non-happy / edge case coverage matrix**, dead code detection, and dependency audit.
+Runs stack detection, lint, type check, the **three-part security gate** (`security-guidance` readiness → Semgrep SAST → `/security-review`), tests, the **happy / non-happy / edge case coverage matrix**, dead code detection, and dependency audit.
 
-**Gate rule:** all checks must pass. Any Semgrep ERROR-severity finding, or any changed behavior lacking a non-happy-path or edge case test, blocks the pipeline. Cheap and fails fast — this is why it precedes the reasoning passes.
+**Gate rule:** all checks must pass. Any Semgrep ERROR-severity finding, any HIGH finding from `/security-review`, or any changed behavior lacking a non-happy-path or edge case test blocks the pipeline. Cheap and fails fast — this is why it precedes the reasoning passes.
+
+**Record `NOT RUN`, never a silent pass.** Each security check reports one of PASS / FAIL / NOT RUN. A missing Semgrep server, an unarmed `security-guidance`, or a skipped review are all `NOT RUN` — carry them forward so Step 12's deploy decision is made against what was actually verified rather than against an absence of findings. `security-guidance` cannot be invoked (it is hooks-only); Step 4a confirms it is armed, and an unarmed plugin is a check that did not happen.
 
 ## Step 2: Code Simplify
 
@@ -284,6 +286,8 @@ The first irreversible step. Step 0's backup is its safety net — confirm it be
 # Record what is currently live, so rollback has an exact target
 echo "$(cat .last-deployed-version 2>/dev/null || echo none)" > .previous-deployed-version
 ```
+
+**Security precondition.** Before shipping, state the Step 4 outcome explicitly — Semgrep, `/security-review`, and `security-guidance` readiness, each as PASS or NOT RUN. An unresolved HIGH finding blocks the deploy outright. A `NOT RUN` does not block, but it must be named in the release record and to the operator: shipping past an absent check is a decision someone should make on purpose rather than inherit from a quiet log. The failure this prevents is the one where a scanner that never started reads, three phases later, as a clean scan.
 
 The deploy mechanics themselves live in the variant skill, because what "production" *means* differs:
 
@@ -490,6 +494,7 @@ fi
 |-------|------|--------|----------|---------|
 | 0 Safeguard | Failsafe Backup | DONE | 8s | repo-20260726.bundle verified, 3 backups retained |
 | 1 Verify | Quality Gate | PASS | 45s | 8 checks; test matrix 12/12 behaviors covered |
+| 1 Verify | Security Gate | PASS | 90s | guidance ARMED; Semgrep 0 ERROR; review 0 HIGH / 1 MEDIUM accepted |
 | 1 Verify | Code Simplify | PASS | 20s | 4 simplifications, tests still green |
 | 1 Verify | Code Review | PASS | 60s | 0 blocking, 3 medium, 2 low |
 | 2 Integrate | Version Bump | DONE | 2s | v2026.07.25 -> v2026.07.26 |
@@ -514,6 +519,12 @@ fi
 - Backups retained: 3 (newest verified)
 - Rollback target: `app:2026.07.25` (present locally and in registry)
 
+### Security Gate Record
+State each as PASS / FAIL / NOT RUN. `NOT RUN` is a legitimate outcome and an illegitimate omission.
+- `security-guidance`: ARMED (2.0.6) — hooks-only, no invocable command
+- Semgrep SAST: PASS (0 ERROR) — or `NOT RUN (no CLI/MCP server available)`
+- `/security-review`: PASS (0 HIGH, 1 MEDIUM accepted — [reason])
+
 ### Follow-ups (non-blocking)
 - 🟡 N+1 on roles — db/users.ts:30
 
@@ -537,7 +548,7 @@ jobs:
       - name: Failsafe Backup
         run: git bundle create /tmp/repo.bundle --all && git bundle verify /tmp/repo.bundle
       - name: Quality Gate
-        run: |  # Lint + types + Semgrep + tests + test matrix + dead code + audit
+        run: |  # Lint + types + security gate + tests + test matrix + dead code + audit
 
   build:
     needs: verify

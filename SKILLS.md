@@ -220,7 +220,8 @@ See [templates/](templates/) for project scaffolding.
 
 - **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0
   - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
-  - 8-step gate: lint, type check, Semgrep SAST, tests, **test case matrix**, dead code detection, dependency audit
+  - 8-step gate: lint, type check, **three-part security gate**, tests, **test case matrix**, dead code detection, dependency audit
+  - Security gate (v3.18.0): `security-guidance` readiness probe → Semgrep SAST → `/security-review`; records **NOT RUN** rather than passing a check that never executed
   - Test case matrix enforces happy path, non-happy path, and edge case coverage per changed behavior — plus an assertion-quality check that catches tests which run but assert nothing
   - Dead code tools: Vulture/Ruff (Python), Knip/ts-prune/ESLint (Node/TS), Staticcheck (Go), Debride (Ruby), Psalm (PHP), SpotBugs (Java)
   - Desktop (Electron+Python) and cloud (web/API) variants
@@ -239,10 +240,10 @@ See [templates/](templates/) for project scaffolding.
 - **pipeline-full-build** - Universal end-to-end release pipeline - NEW in v3.6.0
   - 7 phases / 17 steps: Safeguard → Verify → Integrate → Build → Ship → Document → Reclaim
   - **Safeguard**: verified `git bundle` failsafe backup + DB dump + rollback image, with a retention invariant that never leaves zero backups
-  - **Verify**: `/pipeline-quality`, then `/pipeline-review` simplify + review passes
+  - **Verify**: `/pipeline-quality` (incl. the three-part security gate), then `/pipeline-review` simplify + review passes
   - **Integrate**: version bump (CalVer), commit, merge to main (gate re-run post-rebase to catch semantic conflicts), push with landing verification
   - **Build**: build, package/Docker with image CVE gate, CI validation + SHA256SUMS
-  - **Ship**: tag + GitHub release, production deploy with one-command rollback, post-deploy health/version/smoke gate
+  - **Ship**: tag + GitHub release, production deploy with one-command rollback and a security precondition (every Step 4 check restated as PASS or NOT RUN), post-deploy health/version/smoke gate
   - **Document**: project docs (CHANGELOG, README, API, MIGRATION) then Claude docs (`CLAUDE.md`, `docs/rules/*.md`, agents, skills) with a broken-reference check and an always-loaded-budget optimization pass
   - **Reclaim**: local + VPS junk, dangling Docker images, log rotation, backup pruning — keeps the current release, the rollback target, and volumes; never runs after a failed deploy
   - Owns the shared spine; routes Phase 3 and Step 12 to the desktop or cloud variant on stack detection
