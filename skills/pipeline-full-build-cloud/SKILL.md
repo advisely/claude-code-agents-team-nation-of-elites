@@ -469,6 +469,7 @@ printf '%s\n' "$ROLLBACK_ID"  > .previous-deployed-image-id     # retention key 
 # runs at the filesystem root of a box shared with sibling apps.
 case "${REMOTE_APP_DIR:-}" in
   ""|"/"|*..*) echo "ABORT: refusing to rsync --delete into '${REMOTE_APP_DIR:-<empty>}'"; exit 1 ;;
+  */|//*) echo "ABORT: REMOTE_APP_DIR must not have a trailing slash or repeated leading slashes, got '${REMOTE_APP_DIR:-<empty>}'"; exit 1 ;;
   /*/*) : ;;                       # absolute and at least two segments deep — OK
   *) echo "ABORT: REMOTE_APP_DIR must be an absolute path at least two segments deep, got '$REMOTE_APP_DIR'"; exit 1 ;;
 esac
