@@ -65,8 +65,6 @@ Auto-detect the project stack to select appropriate tools:
 [ -f "tsconfig.json" ] && echo "TYPESCRIPT"
 ```
 
-### Step 0b: (reserved)
-
 Stack detection above doubles as the desktop/cloud signal consumed by the variant skills; no separate sub-step is needed here.
 
 ### Step 0c: Version Consistency
@@ -399,20 +397,45 @@ Every severity blocks. Debt is defined concretely so this is enforceable rather 
 
 ### Step 13: No-Regression Gate
 
-```bash
-# Test count must not fall versus the previous release
-prev=$(git show "$(git describe --tags --abbrev=0)":package.json 2>/dev/null | grep -c . || echo 0)
-# (project-specific: adapt to the project's own test-count assertion command)
+Five sub-checks. Each either runs for real or is recorded as `NOT RUN` — never as a silent pass, and never as a bare comment describing a check that does not execute.
 
-# No newly-skipped tests
-git diff "$(git describe --tags --abbrev=0)"...HEAD -- '*test*' '*spec*' \
+```bash
+prev_tag=$(git describe --tags --abbrev=0 2>/dev/null)
+
+# 1. Test count must not fall versus the previous release. Count test
+#    DECLARATIONS in test files, stack-adaptively — not lines of a manifest,
+#    which measures nothing about test coverage.
+count_tests() {   # ref -> integer count
+  local ref="$1" pattern='\b(it|test)\(|\bdef test_|\bfunc Test'
+  git ls-tree -r --name-only "$ref" -- '*test*' '*spec*' '*_test.go' 2>/dev/null \
+    | grep -E '\.(ts|tsx|js|jsx|py|go)$' \
+    | while read -r f; do git show "$ref:$f" 2>/dev/null; done \
+    | grep -cE "$pattern"
+}
+
+if [ -n "$prev_tag" ]; then
+  prev_count=$(count_tests "$prev_tag")
+  head_count=$(count_tests HEAD)
+  echo "test declarations: previous=$prev_count head=$head_count"
+  [ "$head_count" -lt "$prev_count" ] \
+    && { echo "ABORT: test count dropped ($prev_count -> $head_count)"; exit 1; }
+else
+  echo "1. Test count:  NOT RUN — no previous tag to compare against (first release)"
+fi
+
+# 2. No newly-skipped tests
+git diff "${prev_tag:-$(git rev-list --max-parents=0 HEAD)}"...HEAD -- '*test*' '*spec*' \
   | grep -E '^\+.*(\.skip|\.only|xit\(|xdescribe\()' \
   && { echo "ABORT: newly skipped tests without justification"; exit 1; }
 
-# Coverage must not fall; bundle size within threshold of the previous release
+# 3-5. These genuinely need per-project wiring; emit as NOT RUN rather than
+#      silently absent, so they surface in the report as unexecuted checks.
+echo "3. Coverage vs. previous release:      NOT RUN — requires per-project wiring: a coverage threshold plus a stored baseline (previous release's coverage %) to diff against"
+echo "4. Previously-green E2E specs:         NOT RUN — requires per-project wiring: a record of which Step 7 specs passed on the previous release, to detect specs that flipped or were silently removed"
+echo "5. Artifact size vs. previous release: NOT RUN — requires per-project wiring: a stored baseline artifact/bundle size and an acceptable-drift threshold"
 ```
 
-**Gate rule:** a suite that shrank is a regression even when every remaining test passes. Deleting a failing test is the cheapest way to make a pipeline green, and this step exists to make it visible. If there is no previous tag to compare against (first release), record `NOT RUN` for the count/coverage comparisons rather than a vacuous pass.
+**Gate rule:** a suite that shrank is a regression even when every remaining test passes. Deleting a failing test is the cheapest way to make a pipeline green, and sub-check 1 exists to make it visible — by counting actual test declarations, not a proxy. If there is no previous tag to compare against (first release), sub-check 1 records `NOT RUN` rather than a vacuous pass. Sub-checks 3–5 are unimplementable without project-specific configuration (a coverage tool's threshold, a baseline artifact size); recording them as `NOT RUN` with the exact wiring they need is the same principle Step 4's security gate already applies — an unexecuted check is never reported as passing.
 
 ### Step 14: Local Worker Purge
 
@@ -433,9 +456,9 @@ ps -eo pid,pcpu,args --sort=-pcpu | awk -v cwd="$PWD" 'NR>1 && $2>50 {print}' | 
 
 | Step | Status | Details |
 |------|--------|---------|
+| 0a Stack Detection | [stack] | Auto-detected: [languages/frameworks] |
 | 0c Version Consistency | PASS/FAIL | ./scripts/check-version-consistency.sh result |
 | 0d knip Decision | [tool]/NOT RUN | tool selected for this stack |
-| Stack Detection | [stack] | Auto-detected: [languages/frameworks] |
 | Lint | PASS/FAIL | [error count] errors, [warning count] warnings |
 | Type Check | PASS/FAIL/NOT RUN | [error count] type errors |
 | Build | PASS/FAIL | compile/bundle result |
@@ -475,6 +498,17 @@ ps -eo pid,pcpu,args --sort=-pcpu | awk -v cwd="$PWD" 'NR>1 && $2>50 {print}' | 
 ### Recommendations
 - [Non-blocking suggestions]
 ```
+
+## CI/CD Integration
+
+Invoke the gate as **one opaque step** — never re-list its individual checks in a workflow file:
+
+```yaml
+- name: Quality Gate
+  run: |  # invoke /pipeline-quality (or the project's equivalent gate command)
+```
+
+A partial copy of Steps 0–14 is a second, lossy definition of the gate: it silently stops covering whatever check is added here later, the same drift `pr-ready` must guard against. If you need a fuller GitHub Actions template — matrix builds, caching, artifact upload — see the `github-actions` skill; it should still call this gate as a single step, not re-implement it.
 
 ## Position in the Release Chain
 
