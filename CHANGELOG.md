@@ -5,6 +5,34 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v4.0.0 - 2026-08-18
+
+### Removed (BREAKING)
+- `pipeline-full-build` and `pipeline-review` are no longer invocable. Content redistributed:
+  the release spine into both variant skills, the simplify and review passes into
+  `pipeline-quality` steps 10–11.
+
+### Changed
+- `pipeline-quality` is now the complete pre-merge pipeline: 15 steps across deterministic
+  gates (1–9), a reasoning fan-out (10–11) and consuming gates (12–14).
+- `pipeline-full-build-cloud` is a standalone chain with **VPS + docker compose over SSH** as
+  the primary deploy path; Kubernetes is a documented secondary branch.
+- `pr-ready` and `feature-workflow` delegate to `/pipeline-quality` instead of inlining checks.
+
+### Added
+- Local Playwright E2E (quality step 7) and production critical-path E2E with temporary
+  accounts (cloud step 9), with mandatory teardown and an orphan sweep.
+- Zero-debt and no-regression gates; named deferrals must be recorded in `PLAN.md`.
+- Worker purge and app-scoped cleanup — the VPS is multi-app, so host-wide prunes are forbidden.
+- `scripts/check-version-consistency.sh`, wired into quality step 0.
+
+### Fixed
+- **Silent gate failure:** `code-reviewer` emitted Critical/Major/Minor while the gate blocked on
+  Critical/High. Major findings — semantically High — passed a gate that should have stopped them.
+  One four-level scale now applies everywhere.
+- 11 phantom skill names in `CONTRIBUTING.md`; three dangling level-3 resource links in
+  `security-audit`; `owasp-checklist` references; skill-count and version drift across five files.
+
 ## [2026-08-08] - Security Gate in the Release Pipelines (v3.18.0)
 
 `/pipeline-quality` listed Semgrep as its only security step, and a Semgrep that never started was indistinguishable from a Semgrep that found nothing. The `security-guidance` plugin was installed alongside the pipelines but never referenced by them — and because it is hooks-only, "it is enabled" and "it ran" are different claims that nothing checked. A release shipped past both, and the cross-tenant read it missed was found later by a manual review.

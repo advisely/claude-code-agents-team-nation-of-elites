@@ -234,7 +234,7 @@ Plugins now support `.lsp.json` for Language Server Protocol integrations, provi
 | **Sub-agents** | ✅ | ✅ | ❌ greyed out |
 | **Hooks** | ✅ | ✅ | ❌ greyed out |
 
-Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 35 skills and slash commands still work.
+Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 33 skills and slash commands still work.
 
 ### Installing into Cowork
 
