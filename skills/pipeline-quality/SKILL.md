@@ -60,12 +60,12 @@ Auto-detect the project stack to select appropriate tools:
 [ -f "Gemfile" ] && echo "RUBY"
 [ -f "composer.json" ] && echo "PHP"
 [ -f "pom.xml" ] || [ -f "build.gradle" ] && echo "JAVA"
-[ -f "electron-builder.yml" ] || [ -f "electron.vite.config.*" ] && echo "ELECTRON"
+[ -f "electron-builder.yml" ] || compgen -G "electron.vite.config.*" >/dev/null && echo "ELECTRON"
 [ -f "Dockerfile" ] || [ -f "docker-compose.yml" ] && echo "DOCKER"
 [ -f "tsconfig.json" ] && echo "TYPESCRIPT"
 ```
 
-Stack detection above doubles as the desktop/cloud signal consumed by the variant skills; no separate sub-step is needed here.
+The `ELECTRON` vs. `DOCKER`/PaaS signal above is also what tells you which release variant to reach for afterwards — `pipeline-full-build-desktop` or `pipeline-full-build-cloud`. Each of those carries its own Stack Detection; nothing is handed off from here.
 
 ### Step 0c: Version Consistency
 
@@ -122,16 +122,27 @@ The build a check-only gate needs is proof the project compiles/bundles cleanly 
 ```bash
 set -euo pipefail
 
+# Every branch is guarded by its own stack marker. An UNGUARDED
+# `npm run build || npx vite build` is a trap under `set -e`: the command after
+# the final `||` is not exempt from errexit, so on a Go/Rust/Python project —
+# where both halves fail because there is no package.json — the whole block
+# terminates and the lines below never run. (A bare `[ -f x ] && cmd` is exempt,
+# because the failing test is not the final command in the list.)
+
 # Cloud / web (see pipeline-full-build-cloud Step 7 for the full release build)
-npm run build || npx vite build
+if [ -f package.json ] && grep -q '"electron"' package.json; then
+  # Desktop / Electron (see pipeline-full-build-desktop Steps 7-8 for native rebuilds, signing)
+  [ -f tsconfig.node.json ] && npx tsc -p tsconfig.node.json --noEmit   # main process, if split config exists
+  [ -f tsconfig.web.json ]  && npx tsc -p tsconfig.web.json  --noEmit   # renderer, if split config exists
+  npm run build || npx electron-vite build
+elif [ -f package.json ]; then
+  npm run build || npx vite build
+fi
 [ -f "pyproject.toml" ] && python -m build
 [ -f "go.mod" ]        && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" ./...
 [ -f "Cargo.toml" ]    && cargo build --release
 
-# Desktop / Electron (see pipeline-full-build-desktop Steps 7-8 for native rebuilds, signing)
-npx tsc -p tsconfig.node.json --noEmit 2>/dev/null || true   # main process, if split config exists
-npx tsc -p tsconfig.web.json  --noEmit 2>/dev/null || true   # renderer, if split config exists
-npm run build || npx electron-vite build
+echo "Build: OK"   # a trailing guard so a false final `[ -f ]` test is not the block exit status
 ```
 
 **Gate rule:** a build failure here blocks before any reasoning pass runs — it is cheap and fails fast. This step proves the code compiles; native module ABI rebuilds, code signing, notarization, and container/SBOM work belong to `pipeline-full-build-desktop` and `pipeline-full-build-cloud` respectively, not here.
@@ -254,9 +265,16 @@ PORT="${E2E_PORT:-4099}"     # dedicated, not the dev port
 lsof -ti :"$PORT" | xargs -r kill -9
 
 # 2. Start the app and refuse to run specs until it is genuinely up
+# `npm run start` is a WRAPPER: $! is the npm process, not the server it
+# spawns. Killing the wrapper leaves the server holding $PORT, and the next
+# run's stale-listener sweep is the only thing that notices. Enable job
+# control so the wrapper gets its own process group, then kill the GROUP.
+set -m
 npm run start -- --port "$PORT" &
-APP_PID=$!
-trap 'kill $APP_PID 2>/dev/null; npm run e2e:teardown 2>/dev/null || true' EXIT
+APP_PGID=$!          # with `set -m`, the background job's PID is its process-group id
+trap 'kill -TERM -"$APP_PGID" 2>/dev/null; sleep 2; kill -KILL -"$APP_PGID" 2>/dev/null;
+      npm run e2e:teardown 2>/dev/null || true;
+      lsof -ti :"$PORT" | xargs -r kill -9' EXIT
 
 timeout 60 bash -c "until curl -fs localhost:$PORT/health >/dev/null; do sleep 1; done" \
   || { echo "ABORT: app never became healthy on :$PORT"; exit 1; }
@@ -385,13 +403,38 @@ Every severity blocks. Debt is defined concretely so this is enforceable rather 
 
 | Blocks | Detection |
 |--------|-----------|
-| `TODO`/`FIXME` with no linked task id | `grep -rnE '(TODO\|FIXME)' --include='*.ts' --include='*.py' . \| grep -vE '#[0-9]+\|[A-Z]+-[0-9]+'` |
-| `as any` / `# type: ignore` with no justification comment | `grep -rnE 'as any\|# type: ignore' . \| grep -v '//.*because\|#.*because'` |
+| `TODO`/`FIXME` with no linked task id | shell block below |
+| `as any` / `# type: ignore` with no justification comment | shell block below |
 | Empty `catch` blocks | `/silent-failure-audit` |
-| `.backup` / `.old` / `.deprecated` files | `find . -name '*.backup' -o -name '*.old' -o -name '*.deprecated'` |
+| `.backup` / `.old` / `.deprecated` files | shell block below |
 | Hardcoded secrets, mock data on production paths | Semgrep (step 4) + grep |
 | Dead code | step 8 output |
 | Any review finding, Critical through Low | step 10 output |
+
+The first three run here. They live in a fenced block, **not** in the table
+above: a markdown table forces `|` to be written `\|`, and a command copied out
+of a table cell therefore searches for a literal backslash — `(TODO\|FIXME)`
+matches nothing, and the `because`-justification filter never fires, so a
+properly-justified `as any` blocks anyway while a bare `TODO` sails through.
+
+```bash
+SRC_INCLUDES=(--include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx'
+              --include='*.py' --include='*.go' --include='*.rs' --include='*.rb'
+              --include='*.php' --include='*.java' --include='*.cs')
+EXCL=(--exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=vendor)
+
+# 1. TODO / FIXME with no linked task id (#123 or ABC-123)
+grep -rnE '(TODO|FIXME)' "${SRC_INCLUDES[@]}" "${EXCL[@]}" . \
+  | grep -vE '#[0-9]+|[A-Z]+-[0-9]+' && echo "BLOCK: unlinked TODO/FIXME"
+
+# 2. Escape hatches with no justification comment on the same line
+grep -rnE 'as any|# type: ignore|@ts-ignore|@ts-expect-error|# noqa' "${SRC_INCLUDES[@]}" "${EXCL[@]}" . \
+  | grep -viE '(//|#).*(because|justif)' && echo "BLOCK: unjustified type escape hatch"
+
+# 3. Abandoned-file suffixes
+find . -path ./node_modules -prune -o -path ./.git -prune -o \
+     \( -name '*.backup' -o -name '*.old' -o -name '*.deprecated' \) -print
+```
 
 **Named deferral, never silent.** A deferral is permitted only when it is (a) justified in this run's report and (b) written to `PLAN.md`. An undocumented deferral is a gate failure. The principle is the same one the security gate uses: nothing is carried quietly. Any of the checks above that could not run for lack of a tool records `NOT RUN` and is not treated as a pass.
 
@@ -400,33 +443,83 @@ Every severity blocks. Debt is defined concretely so this is enforceable rather 
 Five sub-checks. Each either runs for real or is recorded as `NOT RUN` — never as a silent pass, and never as a bare comment describing a check that does not execute.
 
 ```bash
-prev_tag=$(git describe --tags --abbrev=0 2>/dev/null)
+prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
 
 # 1. Test count must not fall versus the previous release. Count test
 #    DECLARATIONS in test files, stack-adaptively — not lines of a manifest,
 #    which measures nothing about test coverage.
-count_tests() {   # ref -> integer count
-  local ref="$1" pattern='\b(it|test)\(|\bdef test_|\bfunc Test'
-  git ls-tree -r --name-only "$ref" -- '*test*' '*spec*' '*_test.go' 2>/dev/null \
-    | grep -E '\.(ts|tsx|js|jsx|py|go)$' \
-    | while read -r f; do git show "$ref:$f" 2>/dev/null; done \
-    | grep -cE "$pattern"
+#
+#    Filtering is done with grep, NOT with a pathspec: `git ls-tree` does not
+#    honour glob pathspecs (it matches them as literal path prefixes and
+#    rejects `:(glob)` magic), so `git ls-tree -r --name-only $ref -- '*test*'`
+#    silently returns nothing and the whole check degrades to `0 -lt 0` — a
+#    fabricated measurement that reads as a pass. `git diff` DOES honour
+#    globs, which is why sub-check 2 below may still use a pathspec.
+TEST_NAME_RE='(test|spec|Test|Spec)'
+TEST_LANG_RE='\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|rb|php|java|cs|kt|swift)$'
+TEST_DECL_RE='\b(it|test|describe)[[:space:]]*\(|\bdef[[:space:]]+test_|\bfunc[[:space:]]+Test|#\[test\]|\[TestMethod\]|\bpublic[[:space:]]+void[[:space:]]+test'
+
+list_test_files() {   # <ref>|WORKTREE -> paths
+  if [ "$1" = "WORKTREE" ]; then
+    git ls-files --cached --others --exclude-standard
+  else
+    git ls-tree -r --name-only "$1"
+  fi | grep -E "$TEST_NAME_RE" | grep -E "$TEST_LANG_RE" || true
 }
 
-if [ -n "$prev_tag" ]; then
+count_tests() {       # <ref>|WORKTREE -> integer count of test declarations
+  local ref="$1" f
+  list_test_files "$ref" | while IFS= read -r f; do
+    if [ "$ref" = "WORKTREE" ]; then cat -- "$f" 2>/dev/null
+    else git show "$ref:$f" 2>/dev/null; fi
+  done | grep -cE "$TEST_DECL_RE" || true
+}
+
+# HEAD is the WRONG comparison point: both release variants call this gate at
+# their Step 2 and do not commit until Step 4, so at gate time HEAD is the
+# pre-change state. Compare the WORKING TREE — the state actually being gated.
+if [ "$(list_test_files WORKTREE | wc -l)" -eq 0 ]; then
+  echo "1. Test count:  NOT RUN — no test-counting rule for this stack (no test/spec files in a countable language)"
+elif [ -z "$prev_tag" ]; then
+  echo "1. Test count:  NOT RUN — no previous tag to compare against (first release)"
+else
   prev_count=$(count_tests "$prev_tag")
-  head_count=$(count_tests HEAD)
-  echo "test declarations: previous=$prev_count head=$head_count"
+  head_count=$(count_tests WORKTREE)
+  echo "test declarations: previous($prev_tag)=$prev_count working-tree=$head_count"
   [ "$head_count" -lt "$prev_count" ] \
     && { echo "ABORT: test count dropped ($prev_count -> $head_count)"; exit 1; }
-else
-  echo "1. Test count:  NOT RUN — no previous tag to compare against (first release)"
 fi
 
-# 2. No newly-skipped tests
-git diff "${prev_tag:-$(git rev-list --max-parents=0 HEAD)}"...HEAD -- '*test*' '*spec*' \
-  | grep -E '^\+.*(\.skip|\.only|xit\(|xdescribe\()' \
-  && { echo "ABORT: newly skipped tests without justification"; exit 1; }
+# 2. No newly-skipped or newly-focused tests without a justification comment.
+#    `git rev-list --max-parents=0` emits one line PER ROOT; take the last.
+#    Diff against the working tree (no `...HEAD`), same reason as sub-check 1.
+base_ref="${prev_tag:-$(git rev-list --max-parents=0 HEAD | tail -1)}"
+merge_base=$(git merge-base "$base_ref" HEAD 2>/dev/null || echo "$base_ref")
+newly_skipped=$( {
+  git diff "$merge_base" -- '*test*' '*spec*' '*Test*'
+  # brand-new test files are untracked and invisible to `git diff`; every line
+  # in them is an added line, so render them that way before the same filter.
+  git ls-files --others --exclude-standard \
+    | grep -E "$TEST_NAME_RE" | grep -E "$TEST_LANG_RE" \
+    | while IFS= read -r f; do sed 's/^/+/' -- "$f"; done
+} | awk '
+  BEGIN {
+    just = "(because|#[0-9]+|[A-Z]+-[0-9]+)"
+    # anchored on the call parens so `.onlyChild` / `.skipped` do not match
+    skip = "(\\.skip[ \t]*\\(|\\.only[ \t]*\\(|[^A-Za-z0-9_]xit[ \t]*\\(|[^A-Za-z0-9_]xdescribe[ \t]*\\(|@pytest\\.mark\\.skip|[^A-Za-z0-9_]t\\.Skip[ \t]*\\()"
+  }
+  { p2 = p1; p1 = cur; cur = $0 }
+  cur ~ /^\+/ && cur ~ skip {
+    # justification may sit on the skip line or on either of the two lines above it
+    if (cur ~ just || p1 ~ just || p2 ~ just) next
+    print cur
+  }')
+if [ -n "$newly_skipped" ]; then
+  echo 'ABORT: newly skipped/focused tests with no justification (a because-note or an issue id):'
+  echo "$newly_skipped"
+  exit 1
+fi
+echo "2. Newly-skipped tests: none without justification"
 
 # 3-5. These genuinely need per-project wiring; emit as NOT RUN rather than
 #      silently absent, so they surface in the report as unexecuted checks.
@@ -441,10 +534,20 @@ echo "5. Artifact size vs. previous release: NOT RUN — requires per-project wi
 
 ```bash
 # Stale dev servers, orphaned test runners and detached build jobs left by
-# earlier runs. Scope by working directory — a blind pkill is a defect even
-# when it happens to work.
-ps -eo pid,pcpu,args --sort=-pcpu | awk -v cwd="$PWD" 'NR>1 && $2>50 {print}' | head -20
-# Review, then kill by PID within this project's tree only.
+# earlier runs. Scope by WORKING DIRECTORY — a CPU threshold alone lists
+# sibling projects' processes, and "review, then kill by PID" on that list is
+# how someone else's build dies. A blind pkill is a defect even when it works.
+proc_cwd() {   # pid -> working directory (Linux /proc, macOS lsof fallback)
+  readlink -e "/proc/$1/cwd" 2>/dev/null \
+    || lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1
+}
+
+PROJ=$(pwd -P)
+ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50 {print $1}' | while read -r pid; do
+  cwd=$(proc_cwd "$pid"); [ -n "$cwd" ] || continue          # unreadable /proc -> not ours
+  case "$cwd" in "$PROJ"|"$PROJ"/*) ps -p "$pid" -o pid=,pcpu=,args= ;; esac
+done | head -20
+# Every PID printed above has its cwd inside this project. Review, then kill.
 ```
 
 **Gate rule:** never `pkill -f node`. On a machine running sibling projects that stops someone else's work.
