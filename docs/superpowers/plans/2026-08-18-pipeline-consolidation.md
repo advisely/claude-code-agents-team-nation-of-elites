@@ -77,6 +77,15 @@ check "CLAUDE.md Cowork row" \
 check "plugin.json description" \
   "$(grep -oE '[0-9]+ skills' .claude-plugin/plugin.json | head -1 | grep -oE '[0-9]+')" "$COUNT"
 
+# Catch-all: ANY "<n> skills" / "<n> custom skills" claim anywhere in the docs
+# must equal COUNT. The targeted checks above cover known phrasings; this
+# catches a count hiding in a sentence nobody thought to pattern-match.
+while IFS= read -r hit; do
+  n=$(sed -E 's/.*[^0-9]([0-9]+) (custom )?skills.*/\1/' <<<"$hit")
+  [ "$n" = "$COUNT" ] || { note FAIL "stale count: $hit"; fail=1; }
+done < <(grep -rnoE '[0-9]+ (custom )?skills' README.md CLAUDE.md CONTRIBUTING.md \
+           .claude-plugin/plugin.json docs/rules/*.md 2>/dev/null)
+
 [ "$fail" -eq 0 ] && echo "version consistency: PASS" || echo "version consistency: FAIL"
 exit "$fail"
 EOF
@@ -635,7 +644,7 @@ Replace the update-feed section with a staged rollout plus a clean-VM install sm
 - [ ] **Step 6: Verify and commit**
 
 ```bash
-grep -c 'pipeline-full-build`\|/pipeline-review' skills/pipeline-full-build-desktop/SKILL.md   # expect 0
+grep -cE 'pipeline-full-build[^-]|pipeline-review' skills/pipeline-full-build-desktop/SKILL.md   # expect 0
 git add skills/pipeline-full-build-desktop/SKILL.md
 git commit -m "feat(pipeline-full-build-desktop): standalone chain, security precondition parity"
 ```
