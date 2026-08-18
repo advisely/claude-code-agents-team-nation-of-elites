@@ -17,10 +17,12 @@ for d in pipeline-full-build pipeline-review; do
   [ -d "skills/$d" ] && { note FAIL "AC1 skills/$d still exists"; fail=1; } || note ok "AC1 skills/$d removed"
 done
 
-# AC2 — no live references to the deleted skills (CHANGELOG and specs/plans are records)
+# AC2 — no live references to the deleted skills (CHANGELOG, specs/plans, and the
+# gitignored SDD workspace are records of the work, not references from the product)
 refs=$(grep -rln 'pipeline-review\|pipeline-full-build[^-]' \
         --include='*.md' --include='*.json' . 2>/dev/null \
-        | grep -v node_modules | grep -v CHANGELOG.md | grep -v docs/superpowers/ || true)
+        | grep -v node_modules | grep -v CHANGELOG.md | grep -v docs/superpowers/ \
+        | grep -v '\.superpowers/' || true)
 [ -z "$refs" ] && note ok "AC2 no live refs to deleted skills" \
   || { note FAIL "AC2 live refs remain in: $(echo "$refs" | tr '\n' ' ')"; fail=1; }
 
