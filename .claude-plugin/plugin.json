@@ -1,7 +1,7 @@
 {
-  "name": "nation-of-elites",
+  "name": "noe",
   "description": "A complete 74-agent AI workforce organized like a real IT company, aligned with Claude Opus 5 (orchestration & hard reasoning) and Claude Sonnet 5 (default workhorse \u2014 1M context; Haiku not used). Runs in Claude Code (CLI, Desktop, IDE) and Claude Cowork. 12 divisions including executive leadership, strategic planning, engineering, QA, SecOps, AI/ML, mobile, construction AI, content & localization, and business development. Features persistent memory, 33 skills with preloading (including humanizer), official plugin integrations, /loop recurring tasks, delegation discipline for Opus 5, and Agent Teams support.",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "keywords": [
     "multi-agent",
     "enterprise",

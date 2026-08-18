@@ -5,6 +5,46 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-08-18] - Plugin Renamed to `noe` (v4.0.2)
+
+### Breaking — the plugin id is now `noe`
+
+Every skill and agent is addressed by `<plugin>:<name>`, so the old id spent 16
+characters before reaching the part that identifies anything:
+
+```
+before   nation-of-elites:pipeline-quality (pipeline-quality)
+after    noe:pipeline-quality (pipeline-quality)
+
+before   nation-of-elites:03_Engineering_Division:backend-developer
+after    noe:03_Engineering_Division:backend-developer
+```
+
+On a phone, or in a narrow pane, the prefix was consuming the visible line and
+truncating to `…n-of-elites:` — you could not read what you were typing. 13
+characters come off every id in the plugin.
+
+**Migration — a reinstall, not an update.** The id lives in the marketplace
+manifest, so pulling the repo is not enough:
+
+```
+/plugin uninstall nation-of-elites
+/plugin marketplace remove nation-of-elites
+/plugin marketplace add advisely/claude-code-agents-team-nation-of-elites
+/plugin install noe@noe
+```
+
+The GitHub repository name is unchanged — only the plugin id moved. An old
+`"nation-of-elites@nation-of-elites": true` entry left in `settings.json` is
+inert after uninstall and can be deleted.
+
+### Fixed
+- **`marketplace.json` had drifted to "35 skills" and nothing caught it.**
+  `check-version-consistency.sh` read the description in `plugin.json` but not the
+  duplicate in `marketplace.json`, so the stale count survived v4.0.0 and v4.0.1.
+  The gate now checks both descriptions, and asserts the two manifests agree on
+  the plugin name — the string that prefixes every id a user types.
+
 ## [2026-08-18] - Deploy Data-Safety Fix & Doc Reconciliation (v4.0.1)
 
 ### Fixed

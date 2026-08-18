@@ -114,14 +114,14 @@ This copies agents to `~/.claude/agents/` and you're done!
 /marketplace add advisely/claude-code-agents-team-nation-of-elites
 
 # Step 2: Install the plugin from marketplace
-/plugin install nation-of-elites
+/plugin install noe
 
 # Step 3: Remove old agents directory if migrating from v1.x
 rm -rf ~/.claude/agents
 
 # Step 4: Verify plugin is recognized
 /plugin list
-# Should show: "nation-of-elites v2.0.0"
+# Should show: "noe v2.0.0"
 ```
 
 **Alternative Plugin Method** (bypasses marketplace):
@@ -141,7 +141,7 @@ git clone https://github.com/advisely/claude-code-agents-team-nation-of-elites.g
 # Check that agents are accessible
 ls ~/.claude/agents/07_Orchestrators/Chief_Operations_Orchestrator.md
 # OR (if using plugin system)
-ls ~/.claude/plugins/nation-of-elites/agents/07_Orchestrators/Chief_Operations_Orchestrator.md
+ls ~/.claude/plugins/noe/agents/07_Orchestrators/Chief_Operations_Orchestrator.md
 
 # Test agent invocation
 claude "I need help with project planning"
@@ -224,7 +224,7 @@ Only the **installation method** and **recommended invocation pattern** changed:
 
 **Solution**:
 1. Verify plugin is active: `/plugin list`
-2. Enable plugin: `/plugin enable nation-of-elites`
+2. Enable plugin: `/plugin enable noe`
 3. Use explicit agent mention as fallback: "Use the [agent-name] to..."
 
 ### Issue: Context Overhead
@@ -234,11 +234,11 @@ Only the **installation method** and **recommended invocation pattern** changed:
 **Solution**:
 ```bash
 # Disable plugin when not needed
-/plugin disable nation-of-elites
+/plugin disable noe
 
 # Enable only for specific projects
 cd my-project
-/plugin enable nation-of-elites
+/plugin enable noe
 ```
 
 ## Best Practices for v2.0
@@ -261,10 +261,10 @@ Enable plugins only when needed:
 
 ```bash
 # For simple projects - disable to reduce context
-/plugin disable nation-of-elites
+/plugin disable noe
 
 # For enterprise projects - enable full workforce
-/plugin enable nation-of-elites
+/plugin enable noe
 ```
 
 ### 3. Trust Automatic Agent Selection
@@ -296,7 +296,7 @@ If you need to rollback:
 
 ```bash
 # Uninstall v2.0 plugin
-/plugin uninstall nation-of-elites
+/plugin uninstall noe
 
 # Restore v1.x backup
 cp -r ~/.claude/agents.backup ~/.claude/agents
