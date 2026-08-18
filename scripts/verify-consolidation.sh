@@ -19,7 +19,7 @@ done
 
 # AC2 — no live references to the deleted skills (CHANGELOG, specs/plans, and the
 # gitignored SDD workspace are records of the work, not references from the product)
-refs=$(grep -rln 'pipeline-review\|pipeline-full-build[^-]' \
+refs=$(grep -rln 'pipeline-review\|pipeline-full-build\($\|[^-]\)' \
         --include='*.md' --include='*.json' . 2>/dev/null \
         | grep -v node_modules | grep -v CHANGELOG.md | grep -v docs/superpowers/ \
         | grep -v '\.superpowers/' || true)
@@ -63,8 +63,9 @@ done < <(grep -rn '^skills: \[' agents/ 2>/dev/null)
   && note ok "AC4 version consistency" \
   || { note FAIL "AC4 version consistency (run scripts/check-version-consistency.sh)"; fail=1; }
 
-# AC5 — one severity scale: 'Major'/'Minor' must not survive as severity labels
-legacy=$(grep -rln '🟡 \*\*Major\*\*\|🟢 \*\*Minor\*\*' agents/ skills/ 2>/dev/null || true)
+# AC5 — one severity scale: 'Major'/'Minor' must not survive as severity labels,
+# whether as bold inline labels, section headings, or table-cell values.
+legacy=$(grep -rln '🟡 \*\*Major\*\*\|🟢 \*\*Minor\*\*\|Major Issues\|Minor Suggestions' agents/ skills/ 2>/dev/null || true)
 [ -z "$legacy" ] && note ok "AC5 single severity scale" \
   || { note FAIL "AC5 legacy Major/Minor scale in: $(echo "$legacy" | tr '\n' ' ')"; fail=1; }
 
