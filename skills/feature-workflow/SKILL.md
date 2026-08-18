@@ -38,21 +38,15 @@ After user confirms the plan:
 4. Validate input boundaries
 5. **OUTPUT**: Edge cases covered and any issues found
 
-### Phase 5–6: Simplification + Review
-
-Delegate both the simplification pass and the severity-rated review to the dedicated reasoning skill — do not inline the checklist here, so the logic stays in one place:
+### Phase 5–6: Quality Gate, Simplification + Review
 
 ```
-/pipeline-review
+/pipeline-quality
 ```
 
-`pipeline-review` runs:
-- **Pass 1 — Simplification** (behavior-preserving): reuse, simplification, efficiency, altitude, naming — tests must still pass after.
-- **Pass 2 — Review** (severity-rated): correctness, security, error handling, performance, maintainability, test adequacy — delegated to the `code-reviewer` agent. Any 🔴 Critical / 🟠 High finding blocks the phase.
+Steps 10–11 are the reasoning passes: **simplification** (behavior-preserving — reuse, efficiency, altitude, naming; tests must still pass) and a **severity-rated review** delegated to the `code-reviewer` agent. Any 🔴 Critical or 🟠 High finding blocks the phase; the zero-debt gate at step 12 blocks on the rest unless a deferral is recorded in `PLAN.md`.
 
-**OUTPUT**: Simplification changes applied + Pipeline Review Report (PASS/FAIL with severity-rated findings).
-
-> Pair with `/pipeline-quality` (deterministic gate: lint, SAST, tests, audit) for the full pre-merge check — `pipeline-quality` first, then `pipeline-review`.
+**OUTPUT**: Simplification changes applied + Quality Gate Report.
 
 ### Phase 7: Documentation
 1. Update code comments where needed
