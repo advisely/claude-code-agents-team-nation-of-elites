@@ -5,7 +5,52 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-08-18] - Deploy Data-Safety Fix & Doc Reconciliation (v4.0.1)
+
+### Fixed
+- **`scripts/deploy_agents.ps1` could destroy a working tree it was pointed at.**
+  `Test-GitRepo` treated every non-zero `git rev-parse` as "not a valid clone",
+  including git's `fatal: detected dubious ownership` refusal — which is routine
+  when Windows reaches a WSL path (`\\wsl.localhost\...`). The script concluded the
+  directory was garbage and replaced it, rewriting 135 files to CRLF and stripping
+  every executable bit before the clone itself failed.
+
+  Two independent guards now prevent this:
+  - `Get-GitRepoState` distinguishes **refused** (a permission complaint, with the
+    `safe.directory` command to fix it) from **invalid** (no repository present).
+    A refusal aborts; it never deletes.
+  - A directory named by `-RepoDir` is never deleted or re-cloned. Only the managed
+    cache under `$env:TEMP` is treated as disposable, because only that one is ours.
+    A caller-supplied tree that is diverged or offline now deploys as it stands.
+
+### Changed
+- `SKILLS.md` and `docs/rules/skills-integration.md` claimed `qa-engineer` and
+  `automated-test-scripter` preload `webapp-testing`, which neither declares, while
+  omitting `pytest-patterns`, which both do. The maps now match the frontmatter, and
+  `webapp-testing` is documented as a recommended companion rather than a preload.
+
 ## [2026-08-18] - Pipeline Consolidation: Five Skills to Three (v4.0.0)
+
+### Breaking — deploy contract for `pipeline-full-build-cloud`
+
+Production deploys must now pin the image to an explicit version the compose
+file resolves, and Step 8 asserts this before deploying:
+
+```yaml
+services:
+  app:
+    image: ${APP_IMAGE}:${APP_VERSION}   # APP_VERSION lives in $REMOTE_APP_DIR/.env
+```
+
+**If your compose file uses a floating tag (`:latest`) or an inline literal
+version, the deploy will now abort** with a message naming this requirement.
+
+Why it changed: the previous rollback retagged `$APP_IMAGE:latest`, a tag nothing
+in the chain ever created and the compose file need not reference. Rollback
+therefore exited 0 having changed nothing — the release was marked superseded
+while production kept serving the broken build. Pinning the version is what makes
+the one-command rollback real rather than nominal. Migration is one line in your
+compose file plus an `APP_VERSION=` entry in the remote `.env`.
 
 ### Removed (BREAKING)
 - `pipeline-full-build` and `pipeline-review` are no longer invocable. Content redistributed:

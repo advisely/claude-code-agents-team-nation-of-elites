@@ -461,8 +461,12 @@ the PDF content into context.
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion
-- `qa-engineer` → webapp-testing, silent-failure-audit, semgrep-sast, pipeline-quality
-- `automated-test-scripter` → webapp-testing, silent-failure-audit, semgrep-sast
+- `qa-engineer` → pytest-patterns, semgrep-sast, silent-failure-audit, pipeline-quality
+- `automated-test-scripter` → pytest-patterns, semgrep-sast, silent-failure-audit
+
+> These lists are the agents' `skills:` frontmatter — what actually preloads. `webapp-testing`
+> is an official Anthropic skill both agents pair well with, but it is **not** preloaded; install
+> it separately (see Official Anthropic Skills below) and invoke it by name.
 - `visual-regression-specialist` → canvas-design, artifacts-builder
 
 ### SecOps & Infrastructure Division

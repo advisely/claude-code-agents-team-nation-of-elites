@@ -197,6 +197,23 @@ function Test-GitRepo($Path) {
     return (Invoke-Native git @("-C", $Path, "rev-parse", "--git-dir") -Quiet).ExitCode -eq 0
 }
 
+# Three states, because they demand opposite responses:
+#   valid    git resolved the repository
+#   refused  git FOUND a repository and declined to use it - safe.directory /
+#            "dubious ownership", which is routine on UNC paths such as
+#            \\wsl.localhost\Ubuntu\... and on drives shared between accounts
+#   invalid  there is no usable repository here
+# Collapsing "refused" into "invalid" is how a permission complaint becomes a
+# directory deletion: git says "I will not look at this", the caller hears
+# "there is nothing here", and replaces a healthy working tree.
+function Get-GitRepoState($Path) {
+    if (-not (Test-Path (Join-Path $Path ".git"))) { return "invalid" }
+    $probe = Invoke-Native git @("-C", $Path, "rev-parse", "--git-dir")
+    if ($probe.ExitCode -eq 0) { return "valid" }
+    if ($probe.Output -match "dubious ownership|safe\.directory|detected dubious") { return "refused" }
+    return "invalid"
+}
+
 # Guard against a mis-set -RepoDir wiping something important.
 function Assert-SafeCachePath($Path) {
     $resolved = [System.IO.Path]::GetFullPath($Path).TrimEnd('\', '/')
@@ -290,23 +307,67 @@ Write-Banner "Syncing Repository"
 $RepoDir = Assert-SafeCachePath $RepoDir
 $needClone = $true
 
-if (Test-GitRepo $RepoDir) {
+# The discard-and-reclone recovery below is only ever safe against the managed
+# cache this script owns. A directory the caller named is theirs, may be a live
+# working tree, and is never ours to delete.
+$RepoDirIsOurs = -not $PSBoundParameters.ContainsKey('RepoDir')
+
+$repoState = Get-GitRepoState $RepoDir
+
+if ($repoState -eq "valid") {
     Write-Info "Updating existing clone at $RepoDir"
     $fetch = Invoke-Native git @("-C", $RepoDir, "fetch", "--all", "--prune") -Quiet
     $pull  = Invoke-Native git @("-C", $RepoDir, "pull", "--ff-only") -Quiet
     if ($fetch.ExitCode -eq 0 -and $pull.ExitCode -eq 0) {
         $needClone = $false
-    } else {
-        # Diverged branch, shallow clone, detached HEAD, or offline. The cache is
-        # disposable, so discard it rather than failing the deploy.
+    } elseif ($RepoDirIsOurs) {
+        # Diverged branch, shallow clone, detached HEAD, or offline. The managed
+        # cache is disposable, so discard it rather than failing the deploy.
         Write-Warn "Update failed (diverged, shallow, or offline) - re-cloning"
+    } else {
+        # Same symptom, different directory: this one is the caller's. A diverged
+        # or offline working tree is a normal state, not damage.
+        Write-Warn "Could not fast-forward $RepoDir (diverged, offline, or local commits)"
+        Write-Info "Deploying from the tree as it stands - it is yours, so it is not being replaced"
+        $needClone = $false
     }
+} elseif ($repoState -eq "refused") {
+    Write-Error @"
+git found a repository at $RepoDir but refused to use it:
+    fatal: detected dubious ownership in repository
+
+This is a PERMISSION refusal, not a corrupt clone, and the directory must not
+be replaced. It is the usual result of reaching a WSL or network path from
+Windows. Either trust it:
+
+    git config --global --add safe.directory '$RepoDir'
+
+or omit -RepoDir and let this script use its own cache at
+$(Join-Path $env:TEMP "nation-of-elites").
+"@
+    exit 1
 } elseif (Test-Path $RepoDir) {
+    if (-not $RepoDirIsOurs) {
+        Write-Error @"
+-RepoDir points at $RepoDir, which exists but is not a git clone.
+
+Refusing to delete a directory you named explicitly. Remove it yourself if that
+is what you intend, or omit -RepoDir to use the managed cache at
+$(Join-Path $env:TEMP "nation-of-elites").
+"@
+        exit 1
+    }
     Write-Warn "Cache at $RepoDir is not a valid git clone - replacing it"
 }
 
 if ($needClone) {
-    if (Test-Path $RepoDir) { Remove-Item $RepoDir -Recurse -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $RepoDir) {
+        if (-not $RepoDirIsOurs) {
+            Write-Error "Refusing to delete caller-supplied -RepoDir $RepoDir"
+            exit 1
+        }
+        Remove-Item $RepoDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
     $parent = Split-Path $RepoDir -Parent
     if ($parent -and -not (Test-Path $parent)) {
         New-Item -ItemType Directory -Force -Path $parent | Out-Null

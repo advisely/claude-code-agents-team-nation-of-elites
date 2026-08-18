@@ -26,7 +26,7 @@
 - `documentation-specialist` → pdf, docx, pptx skills
 
 **Quality Assurance:**
-- `qa-engineer`, `automated-test-scripter` → webapp-testing, silent-failure-audit, semgrep-sast skills
+- `qa-engineer`, `automated-test-scripter` → pytest-patterns, silent-failure-audit, semgrep-sast skills
 - `visual-regression-specialist` → canvas-design, artifacts-builder skills
 - `code-reviewer` → semgrep-sast, silent-failure-audit, pipeline-quality skills
 
