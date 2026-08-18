@@ -122,13 +122,13 @@ The build a check-only gate needs is proof the project compiles/bundles cleanly 
 ```bash
 set -euo pipefail
 
-# Cloud / web (see pipeline-full-build-cloud Step 8 for the full release build)
+# Cloud / web (see pipeline-full-build-cloud Step 7 for the full release build)
 npm run build || npx vite build
 [ -f "pyproject.toml" ] && python -m build
 [ -f "go.mod" ]        && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" ./...
 [ -f "Cargo.toml" ]    && cargo build --release
 
-# Desktop / Electron (see pipeline-full-build-desktop Step 8 for native rebuilds, signing)
+# Desktop / Electron (see pipeline-full-build-desktop Steps 7-8 for native rebuilds, signing)
 npx tsc -p tsconfig.node.json --noEmit 2>/dev/null || true   # main process, if split config exists
 npx tsc -p tsconfig.web.json  --noEmit 2>/dev/null || true   # renderer, if split config exists
 npm run build || npx electron-vite build

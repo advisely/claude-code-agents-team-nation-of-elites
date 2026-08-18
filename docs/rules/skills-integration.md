@@ -28,11 +28,11 @@
 **Quality Assurance:**
 - `qa-engineer`, `automated-test-scripter` → webapp-testing, silent-failure-audit, semgrep-sast skills
 - `visual-regression-specialist` → canvas-design, artifacts-builder skills
-- `code-reviewer` → security-audit, silent-failure-audit, semgrep-sast, pipeline-quality skills
+- `code-reviewer` → semgrep-sast, pipeline-quality skills
 
 **SecOps & Infrastructure:**
-- `devops-engineer` → github-actions, kubernetes-deployment, semgrep-sast, pipeline-quality, pipeline-full-build skills
-- `cyber-sentinel` → security-audit, owasp-checklist, silent-failure-audit, semgrep-sast skills
+- `devops-engineer` → github-actions, kubernetes-deployment, semgrep-sast, pipeline-quality, pipeline-full-build-cloud, pipeline-full-build-desktop skills
+- `cyber-sentinel` → security-audit, semgrep-sast skills
 
 **Content & Localization Wing:**
 - `book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist` → humanizer skill
@@ -56,7 +56,7 @@ Skills are the **most portable** component of the plugin — they run everywhere
 
 This makes skills the right home for knowledge that must survive outside an agentic session. Two consequences:
 
-- **Don't duplicate Cowork's built-ins.** Cowork ships `pdf`, `docx`, `pptx`, `xlsx`, and `canvas-design` skills that load automatically for those file types. Custom skills should carry judgment (`humanizer`, `pipeline-review`, `silent-failure-audit`), not file-format mechanics.
+- **Don't duplicate Cowork's built-ins.** Cowork ships `pdf`, `docx`, `pptx`, `xlsx`, and `canvas-design` skills that load automatically for those file types. Custom skills should carry judgment (`humanizer`, `pipeline-quality`, `silent-failure-audit`), not file-format mechanics.
 - **Frontmatter parsing is now tolerant** (Claude Code 2.1.186+): `display-name`, `default-enabled`, `fallback`, and `metadata.*` accept kebab-case, snake_case, and camelCase, and a malformed `SKILL.md` loads with empty metadata instead of failing. Existing skills need no changes.
 
 ## Security Considerations

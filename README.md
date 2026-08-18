@@ -552,14 +552,13 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 </details>
 
 <details>
-<summary><strong>Security & DevOps (7 skills)</strong></summary>
+<summary><strong>Security & DevOps (6 skills)</strong></summary>
 
 | Skill | Purpose | Preloaded By |
 |:---|:---|:---|
 | security-audit | OWASP Top 10 checklist | cyber-sentinel |
 | semgrep-sast | SAST scanning + MCP plugin | cyber-sentinel, code-reviewer, qa-engineer |
 | pipeline-quality | Universal quality gate | code-reviewer, qa-engineer, devops-engineer |
-| pipeline-full-build | Universal build pipeline | devops-engineer |
 | github-actions | CI/CD templates | devops-engineer |
 | kubernetes-deployment | K8s patterns, autoscaling | devops-engineer |
 | terraform-patterns | IaC modules, state mgmt | cloud-architect |
