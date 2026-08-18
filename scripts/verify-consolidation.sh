@@ -28,6 +28,8 @@ refs=$(grep -rln 'pipeline-review\|pipeline-full-build[^-]' \
 # backticked kebab-case name must resolve to a real skill, a real agent, or a
 # documented external built-in. Anything else is a phantom reference.
 AGENTS=$(grep -rhoE '^name: [a-z0-9-]+' agents/ 2>/dev/null | sed 's/^name: //' | sort -u)
+# Template placeholder tokens used as generic examples in docs, not real names.
+PLACEHOLDERS='skill-name|agent-name|display-name|default-enabled'
 missing=""
 for f in CONTRIBUTING.md docs/rules/skills-integration.md; do
   [ -f "$f" ] || continue
@@ -35,6 +37,7 @@ for f in CONTRIBUTING.md docs/rules/skills-integration.md; do
     [ -d "skills/$n" ]                  && continue
     grep -qx "$n" <<<"$AGENTS"          && continue
     grep -qE "^($EXTERNAL)$" <<<"$n"    && continue
+    grep -qE "^($PLACEHOLDERS)$" <<<"$n" && continue
     missing="$missing $f:$n"
   done
 done
@@ -46,6 +49,7 @@ badfm=""
 while IFS= read -r line; do
   f=${line%%:*}; list=${line#*skills: [}; list=${list%]}
   for n in $(echo "$list" | tr ',' ' '); do
+    case "$n" in *:*) continue ;; esac  # plugin:skill form, not a local skills/ dir
     [ -d "skills/$n" ] || badfm="$badfm $f:$n"
   done
 done < <(grep -rn '^skills: \[' agents/ 2>/dev/null)

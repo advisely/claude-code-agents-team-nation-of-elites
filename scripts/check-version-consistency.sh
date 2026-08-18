@@ -37,10 +37,15 @@ check "plugin.json description" \
 # Catch-all: ANY "<n> skills" / "<n> custom skills" claim anywhere in the docs
 # must equal COUNT. The targeted checks above cover known phrasings; this
 # catches a count hiding in a sentence nobody thought to pattern-match.
+# Per-category <summary> subtotals (e.g. "Framework Patterns (8 skills)") are
+# legitimately not the roster total, so lines containing <summary> are skipped.
 while IFS= read -r hit; do
-  n=$(sed -E 's/.*[^0-9]([0-9]+) (custom )?skills.*/\1/' <<<"$hit")
-  [ "$n" = "$COUNT" ] || { note FAIL "stale count: $hit"; fail=1; }
-done < <(grep -rnoE '[0-9]+ (custom )?skills' README.md CLAUDE.md CONTRIBUTING.md \
+  file=${hit%%:*}; rest=${hit#*:}; lineno=${rest%%:*}; content=${rest#*:}
+  [[ "$content" == *"<summary>"* ]] && continue
+  match=$(grep -oE '[0-9]+ (custom )?skills' <<<"$content" | head -1)
+  n=$(grep -oE '[0-9]+' <<<"$match" | head -1)
+  [ "$n" = "$COUNT" ] || { note FAIL "stale count: $file:$lineno: $match"; fail=1; }
+done < <(grep -rnE '[0-9]+ (custom )?skills' README.md CLAUDE.md CONTRIBUTING.md \
            .claude-plugin/plugin.json docs/rules/*.md 2>/dev/null)
 
 [ "$fail" -eq 0 ] && echo "version consistency: PASS" || echo "version consistency: FAIL"
