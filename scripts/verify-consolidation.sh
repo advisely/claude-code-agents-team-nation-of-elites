@@ -19,10 +19,12 @@ done
 
 # AC2 — no live references to the deleted skills (CHANGELOG, specs/plans, and the
 # gitignored SDD workspace are records of the work, not references from the product)
+# Scripts count too: deploy_agents.{sh,ps1} probed for a deleted skill path and
+# warned on every correct v4.0.0 install, which an .md-only sweep cannot see.
 refs=$(grep -rln 'pipeline-review\|pipeline-full-build\($\|[^-]\)' \
-        --include='*.md' --include='*.json' . 2>/dev/null \
+        --include='*.md' --include='*.json' --include='*.sh' --include='*.ps1' . 2>/dev/null \
         | grep -v node_modules | grep -v CHANGELOG.md | grep -v docs/superpowers/ \
-        | grep -v '\.superpowers/' || true)
+        | grep -v '\.superpowers/' | grep -v 'scripts/verify-consolidation.sh' || true)
 [ -z "$refs" ] && note ok "AC2 no live refs to deleted skills" \
   || { note FAIL "AC2 live refs remain in: $(echo "$refs" | tr '\n' ' ')"; fail=1; }
 

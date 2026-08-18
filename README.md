@@ -552,13 +552,15 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 </details>
 
 <details>
-<summary><strong>Security & DevOps (6 skills)</strong></summary>
+<summary><strong>Security & DevOps (8 skills)</strong></summary>
 
 | Skill | Purpose | Preloaded By |
 |:---|:---|:---|
 | security-audit | OWASP Top 10 checklist | cyber-sentinel |
 | semgrep-sast | SAST scanning + MCP plugin | cyber-sentinel, code-reviewer, qa-engineer |
-| pipeline-quality | Universal quality gate | code-reviewer, qa-engineer, devops-engineer |
+| pipeline-quality | Universal quality gate — lint, types, build, 3-part security gate, tests, happy/non-happy/edge matrix, dead code, dep audit, simplify + severity-rated review. Stops before git | code-reviewer, qa-engineer, devops-engineer |
+| pipeline-full-build-cloud | Standalone release chain for web/API apps on a VPS or container platform — failsafe backup with remote DB dump, quality gate, container build with SBOM and CVE gate, staging validation against a restored production schema, deploy over SSH, production smoke, one-command rollback, app-scoped cleanup | devops-engineer, qa-engineer |
+| pipeline-full-build-desktop | Standalone release chain for installable desktop apps — failsafe backup, quality gate, native module rebuilds against the Electron ABI, code signing and notarization, packaged-binary launch/offline/clean-VM validation, staged update-feed publish, telemetry gate, local cleanup | devops-engineer, qa-engineer |
 | github-actions | CI/CD templates | devops-engineer |
 | kubernetes-deployment | K8s patterns, autoscaling | devops-engineer |
 | terraform-patterns | IaC modules, state mgmt | cloud-architect |

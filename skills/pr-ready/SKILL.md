@@ -11,6 +11,8 @@ Complete pre-PR checklist with automated git operations.
 
 ### Phase 1: Quality Gate
 
+#### Step 1: Run the Gate
+
 ```
 /pipeline-quality
 ```
@@ -21,7 +23,7 @@ Runs the entire gate — lint, type check, build, the three-part security gate, 
 
 ### Phase 2: Documentation
 
-#### Step 6: Documentation Check
+#### Step 2: Documentation Check
 - [ ] Code comments for complex logic (only where needed)
 - [ ] README updated if API/usage changed
 - [ ] CHANGELOG entry added with version
@@ -29,14 +31,14 @@ Runs the entire gate — lint, type check, build, the three-part security gate, 
 
 ### Phase 3: Git Operations
 
-#### Step 7: Stage Changes
+#### Step 3: Stage Changes
 ```bash
 git status
 git diff --stat
 git add -p  # Interactive staging (or specific files)
 ```
 
-#### Step 8: Create Commit
+#### Step 4: Create Commit
 ```bash
 git commit -m "$(cat <<'EOF'
 feat(scope): Brief description of change
@@ -57,7 +59,7 @@ Follow conventional commits:
 - `test:` - Adding tests
 - `chore:` - Maintenance
 
-#### Step 9: Push to Remote
+#### Step 5: Push to Remote
 ```bash
 git push origin HEAD
 # Or create new branch and push
@@ -67,7 +69,7 @@ git push -u origin feature/branch-name
 
 ### Phase 4: Create Pull Request
 
-#### Step 10: Create PR with GitHub CLI
+#### Step 6: Create PR with GitHub CLI
 ```bash
 gh pr create \
   --title "feat(scope): Brief description" \
@@ -92,7 +94,7 @@ EOF
 )"
 ```
 
-#### Step 11: Add PR Comments (Optional)
+#### Step 7: Add PR Comments (Optional)
 ```bash
 # Add review comments for specific lines
 gh pr comment --body "Note: This section handles edge case X"
@@ -102,6 +104,8 @@ gh pr edit --add-reviewer username1,username2
 ```
 
 ### Phase 5: Release (Optional)
+
+#### Step 8: Route to the Full Release Chain
 
 Only if the user requests a release. Do not hand-roll the version bump and tag here — route to the full chain, which carries the failsafe backup, the post-rebase gate re-run and the post-deploy verification that this phase previously lacked:
 

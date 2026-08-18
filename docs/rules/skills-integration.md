@@ -28,11 +28,11 @@
 **Quality Assurance:**
 - `qa-engineer`, `automated-test-scripter` → webapp-testing, silent-failure-audit, semgrep-sast skills
 - `visual-regression-specialist` → canvas-design, artifacts-builder skills
-- `code-reviewer` → semgrep-sast, pipeline-quality skills
+- `code-reviewer` → semgrep-sast, silent-failure-audit, pipeline-quality skills
 
 **SecOps & Infrastructure:**
 - `devops-engineer` → github-actions, kubernetes-deployment, semgrep-sast, pipeline-quality, pipeline-full-build-cloud, pipeline-full-build-desktop skills
-- `cyber-sentinel` → security-audit, semgrep-sast skills
+- `cyber-sentinel` → security-audit, silent-failure-audit, semgrep-sast skills
 
 **Content & Localization Wing:**
 - `book-author`, `book-editor`, `publishing-specialist`, `translation-localization-specialist` → humanizer skill

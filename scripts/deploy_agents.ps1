@@ -563,13 +563,18 @@ if (Test-Path $semgrepSkill) {
     Write-Warn "Semgrep SAST skill not found at $semgrepSkill"
 }
 
-# Pipeline skills
-$pipelineQuality = Join-Path (Join-Path $SkillsDst "pipeline-quality") "SKILL.md"
-$pipelineBuild = Join-Path (Join-Path $SkillsDst "pipeline-full-build") "SKILL.md"
-if ((Test-Path $pipelineQuality) -and (Test-Path $pipelineBuild)) {
-    Write-Ok "Pipeline skills deployed (quality + full-build)"
+# Pipeline skills. v4.0.0 consolidated five pipeline skills into the three
+# listed below; probing for any other name warns on a correct deployment.
+$pipelineSkills = @("pipeline-quality", "pipeline-full-build-cloud", "pipeline-full-build-desktop")
+$missingPipeline = @()
+foreach ($s in $pipelineSkills) {
+    $skillPath = Join-Path (Join-Path $SkillsDst $s) "SKILL.md"
+    if (-not (Test-Path $skillPath)) { $missingPipeline += $s }
+}
+if ($missingPipeline.Count -eq 0) {
+    Write-Ok "Pipeline skills deployed (quality + cloud + desktop)"
 } else {
-    Write-Warn "Pipeline skills not fully deployed"
+    Write-Warn "Pipeline skills not fully deployed - missing: $($missingPipeline -join ', ')"
 }
 
 if ($failed) {

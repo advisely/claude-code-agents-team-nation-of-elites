@@ -202,7 +202,7 @@ See [templates/](templates/) for project scaffolding.
   - TypeScript integration
   - Professional dashboard components
 
-#### Security & DevOps (7 skills)
+#### Security & DevOps (8 skills)
 - **security-audit** - OWASP Top 10 security checklist
   - OWASP Top 10 (2021) comprehensive checklist
   - Authentication and authorization patterns
@@ -227,26 +227,26 @@ See [templates/](templates/) for project scaffolding.
   - Consuming gates (12-14): zero-debt gate, no-regression gate, local worker purge
   - Dead code tools: Vulture/Ruff (Python), Knip/ts-prune/ESLint (Node/TS), Staticcheck (Go), Debride (Ruby), Psalm (PHP), SpotBugs (Java)
   - Invoked by `/feature-workflow`, `/pr-ready`, and both `pipeline-full-build-*` variants instead of inline checklists
-  - Desktop (Electron+Python) and cloud (web/API) variants; CI/CD template for GitHub Actions; standardized output report format
+  - Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects; standardized output report format. Invoke it in CI as **one opaque step** — re-listing its individual checks in a workflow file creates a second, lossy definition of the gate. See the `github-actions` skill for a fuller workflow that still calls this gate as a single step
 
 - **pipeline-full-build-desktop** - Desktop release chain (Electron + Python) - NEW in v3.16.0, standalone chain since v4.0.0
   - 16 steps (0-15): preflight → failsafe backup & retention proof → `/pipeline-quality` → version bump → commit → merge to main (gate re-run post-rebase) → push
   - **Step 7 local compilation**: TypeScript main + renderer, native module rebuild against the **Electron ABI** (not system Node), per-module load verification under the Electron runtime, frozen Python sidecar via PyInstaller
   - **Step 8 package + sign**: electron-builder per platform, then Windows signtool verification, macOS codesign + hardened runtime + notarization staple check, Linux GPG detached signature, signed SHA256SUMS
   - **Step 9 artifact validation** (no cloud equivalent): installer size/asar hygiene, **launch smoke test of the packaged binary**, clean-profile first-run, offline start, cross-platform matrix (universal binary check, deb dependency graph)
-  - **Step 11 distribution**: update feed version + checksum verification, staged percentage rollout, store submissions, feed-revert rollback
+  - **Step 11 distribution**: update feed version + checksum verification, staged percentage rollout (`stagingPercentage`), clean-VM install smoke, store submissions. **There is no server-side rollback** — halting the feed stops new installs only; clients that already updated need a superseding release
   - **Steps 12-15**: post-publish verification & rollback gate, documentation, local worker purge, app-scoped cleanup
-  - Adds Electron security gates to Step 1: blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false`
+  - Adds Electron security gates to **Step 2** (alongside `/pipeline-quality`): blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false`
   - Post-deploy verification is telemetry-based (crash-free sessions, update adoption) — desktop cannot be rolled back server-side
 
 - **pipeline-full-build-cloud** - Cloud release chain (web/API/container) - NEW in v3.16.0, standalone chain since v4.0.0
   - 14 steps (0-13): preflight → failsafe backup & retention proof → `/pipeline-quality` → version bump → commit → merge to main (gate re-run post-rebase) → push
   - **Step 7 build**: reproducible build with `SOURCE_DATE_EPOCH`, trimmed Go/Rust release binaries, container image with provenance labels, credential-in-layer check, **SBOM** via syft, Trivy CVE gate (HIGH/CRITICAL, `--ignore-unfixed`), cosign image signing, staging validation (container smoke incl. SIGTERM handling, migration dry-run up/down/up against a **restored production schema** with lock inspection, Pact contract tests, k6 load thresholds)
-  - **Step 8 deploy to production**: **VPS + `docker compose` over SSH** as the primary path, expand-only migrations, canary at 10% with error-rate query, then rolling with automatic `rollout undo`; Kubernetes documented as a secondary branch
+  - **Step 8 deploy to production**: **VPS + `docker compose` over SSH** as the primary path — a deploy-time assertion that the compose file resolves `image: ${APP_IMAGE}:${APP_VERSION}` (a deploy that could not be reversed fails here, loudly, rather than silently at rollback time), an explicit `RSYNC_EXCLUDES` list guarding the `--delete` sync, a rollback target captured as both a version pin and an image ID, and a health gate before success. Kubernetes — with its canary and `kubectl rollout undo` — is documented as a secondary branch
   - **Step 9 production E2E**: critical-path tests with temporary accounts, mandatory teardown, and an orphan sweep
   - **Steps 10-13**: post-deploy verification & rollback gate, documentation, worker purge (local + VPS), app-scoped cleanup — VPS is multi-app, so host-wide prunes are forbidden
-  - Adds infra gates to Step 1: `kubectl --dry-run=server`, hadolint, non-root user check, secret-in-Dockerfile check, `oasdiff` breaking-change detection
-  - Rollback is one command and stays real because migrations only ever expand
+  - Adds infra gates to **Step 7b**: hadolint, non-root user check, secret-in-Dockerfile check, `docker compose config -q` validation, down-migration presence check, and `kubectl --dry-run=server` / `helm lint` on the Kubernetes secondary path
+  - Rollback is one command — rewrite `APP_VERSION` in the remote `.env` and `docker compose up -d --no-build` — and it stays real because the compose file is asserted at deploy time to resolve that pin, and Step 13 retains the image it points at by image ID
 
 - **github-actions** - CI/CD pipeline templates
   - Node.js CI/CD pipelines
@@ -457,7 +457,7 @@ the PDF content into context.
 
 **Code Excellence Guild:**
 - `documentation-specialist` → pdf, docx, pptx, xlsx
-- `code-reviewer` → semgrep-sast, pipeline-quality
+- `code-reviewer` → semgrep-sast, silent-failure-audit, pipeline-quality
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion

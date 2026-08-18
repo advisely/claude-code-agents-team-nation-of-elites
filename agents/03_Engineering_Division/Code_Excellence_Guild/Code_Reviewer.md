@@ -4,7 +4,7 @@ description: MUST BE USED to run a rigorous, security-aware review after every f
 tools: Read, Grep, Glob, Bash
 model: opus
 memory: project
-skills: [semgrep-sast, pipeline-quality]
+skills: [semgrep-sast, silent-failure-audit, pipeline-quality]
 ---
 
 # Code‑Reviewer – High‑Trust Quality Gate
