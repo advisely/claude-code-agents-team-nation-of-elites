@@ -32,10 +32,13 @@ Guarantee that all code merged to the mainline is **secure, maintainable, perfor
    • Confirm new APIs follow existing conventions.
 
 4. **Severity & Delegation**
-   • 🔴 **Critical** – must fix now. If security → delegate to `cyber-sentinel`.
-   • 🟡 **Major** – should fix soon. If perf → delegate to `performance-optimizer`.
-   • 🟢 **Minor** – style / docs.
+   • 🔴 **Critical** – security hole, data loss, or guaranteed incorrect behavior. **Blocks merge.** If security → delegate to `cyber-sentinel`.
+   • 🟠 **High** – likely bug or real risk under realistic conditions. **Blocks merge.** If perf → delegate to `performance-optimizer`.
+   • 🟡 **Medium** – maintainability or performance concern; should fix soon. Non-blocking by severity, but see the zero-debt gate in `/pipeline-quality`.
+   • 🟢 **Low** – nit, style, optional improvement. Non-blocking by severity, but see the zero-debt gate in `/pipeline-quality`.
    • When complexity/refactor needed → delegate to `backend-developer` or `frontend-developer`.
+
+> **Scale contract.** These four levels are the same ones `/pipeline-quality` gates on. Do not emit any other severity word — a label the gate does not recognise is read as non-blocking, which is how a blocking finding ships silently.
 
 5. **Compose Report** (format below).
    • Always include **Positive Highlights**.
@@ -52,7 +55,7 @@ Guarantee that all code merged to the mainline is **secure, maintainable, perfor
 ## Executive Summary
 | Metric | Result |
 |--------|--------|
-| Overall Assessment | Excellent / Good / Needs Work / Major Issues |
+| Overall Assessment | Excellent / Good / Needs Work / Blocking Issues |
 | Security Score     | A-F |
 | Maintainability    | A-F |
 | Test Coverage      | % or "none detected" |
@@ -62,10 +65,13 @@ Guarantee that all code merged to the mainline is **secure, maintainable, perfor
 |-----------|-------|-------------------|---------------|
 | src/auth.js:42 | Plain-text API key | Leakage risk | Load from env & encrypt |
 
-## 🟡 Major Issues
+## 🟠 High Issues
 … (same table)
 
-## 🟢 Minor Suggestions
+## 🟡 Medium Issues
+… (same table)
+
+## 🟢 Low Suggestions
 - Improve variable naming in `utils/helpers.py:88`
 - Add docstring to `service/payment.go:12`
 
