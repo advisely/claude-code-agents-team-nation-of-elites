@@ -23,6 +23,27 @@ The core difference from a server release: a cloud deploy ships to infrastructur
 - `chief-operations-orchestrator` — Release coordination
 - `documentation-specialist` — Project and Claude doc updates
 
+## Configuration
+
+These environment variables are assumed throughout. Set them per app before
+running the chain — never hardcode one app's values into a shared skill.
+
+| Var | Meaning | Example |
+|-----|---------|---------|
+| `BACKUP_ROOT` | Where Step 1 writes the failsafe bundle. Defaults to `$HOME/.backups/$(basename $PWD)` | `~/.backups/myapp` |
+| `UPDATE_FEED_URL` | Base URL `electron-updater` clients poll for `latest*.yml` | `https://updates.example.com` |
+| `CLEAN_VM_WIN` | SSH target for a **fresh** Windows VM used by the Step 11 install smoke. Must have none of the build box's prerequisites installed | `runner@win-clean.local` |
+| `CLEAN_VM_MAC` | SSH target for a fresh macOS VM (same purpose) | `runner@mac-clean.local` |
+| `CLEAN_VM_LINUX` | SSH target for a fresh Linux VM (same purpose) | `runner@linux-clean.local` |
+| `CSC_LINK`, `CSC_KEY_PASSWORD` | Windows/macOS code-signing certificate and its password (Step 8) | — |
+| `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID` | Notarization credentials (Step 8) | — |
+| `GH_TOKEN` | Token `electron-builder --publish` and `gh release` use | — |
+
+**Why this table exists.** The clean-VM smoke is the only step that can catch a
+missing runtime dependency before users do, and it is worthless if it runs
+against the build box. `CLEAN_VM_*` must point at machines that have never
+built this app.
+
 ## Stack Detection
 
 Routes here when any of these are present:
@@ -74,6 +95,35 @@ Phase 6 — RECLAIM
 ## Versioning Scheme
 
 CalVer: `vYYYY.MM.DD`. `package.json` stores `2026.04.04`; the git tag is `v2026.04.04`. A same-day re-release appends a suffix: `v2026.04.04.2`. This is a valid semver-shaped version (`major.minor.patch`), which is what `electron-updater` requires to compare releases and decide whether a client should update.
+
+## Block Preamble — every fenced block is a separate shell
+
+Nothing assigned in one fenced block is in scope in the next: each block is
+executed as its own shell. A block that consumes `STAMP`, `new`, `current`,
+`BRANCH` or `BACKUP_ROOT` **must re-derive it at the top**, or it silently runs
+with an empty value — `git log "v..v"` kills CHANGELOG generation, and `cd ""`
+is a no-op returning 0 that leaves a destructive block running in the project
+directory, deleting `repo-*.bundle` there and then reporting `FAILSAFE
+VIOLATED` on a perfectly healthy backup set.
+
+Copy the lines you need:
+
+```bash
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+STAMP=$(ls -t "$BACKUP_ROOT"/repo-*.bundle 2>/dev/null | head -1 | sed -E 's/.*repo-(.*)\.bundle$/\1/')
+new=$(node -p "require('./package.json').version")          # post-Step 3
+current=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')   # pre-tag
+# after Step 10 has tagged v$new, `current` is the tag BEFORE it:
+# current=$(git describe --tags --abbrev=0 "v$new^" 2>/dev/null | sed 's/^v//')
+BRANCH=$(git branch --show-current)
+```
+
+**Two rules that follow from this, applied throughout:**
+
+1. Every `cd` carries `|| exit 1`. `cd ""` succeeds and changes nothing.
+2. Every re-derived value that a destructive command depends on is asserted
+   non-empty before that command runs.
+
 
 ---
 
@@ -224,6 +274,8 @@ git diff --cached | grep -nEi '(api[_-]?key|secret|password|token|BEGIN [A-Z ]*P
 **Gate rule:** never commit directly on `main`/`master`. If `git branch --show-current` returns the default branch, branch first. Never commit over unresolved 🔴/🟠 findings from Step 2.
 
 ```bash
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+
 [ "$(git branch --show-current)" = "main" ] && git checkout -b "release/v$new"
 git commit -m "release: v$new"
 ```
@@ -232,6 +284,7 @@ git commit -m "release: v$new"
 
 ```bash
 BRANCH=$(git branch --show-current)
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
 git fetch origin --prune
 
 # Rebase onto the latest main first so the merge is a fast-forward and CI
@@ -413,6 +466,8 @@ dpkg-deb --info dist/*.deb | grep Depends
 Tag only a commit that already passed packaged-artifact validation above — that ordering is what makes the release trustworthy.
 
 ```bash
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+
 git tag -a "v$new" -m "Release v$new"
 git push origin "v$new"
 gh release create "v$new" --title "v$new" --generate-notes \
@@ -432,12 +487,16 @@ gh release create "v$new" --title "v$new" --generate-notes \
 **Security precondition.** Before shipping, state the quality gate's step 4 outcome explicitly — Semgrep, `/security-review`, and `security-guidance` readiness, each as PASS or NOT RUN. An unresolved High finding blocks the release outright. A `NOT RUN` does not block, but it must be named in the release record: shipping past an absent check is a decision someone should make on purpose rather than inherit from a quiet log. A desktop release cannot be recalled — once the update feed serves it, the only remedy is another release.
 
 ```bash
+set -euo pipefail
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+UPDATE_FEED_URL="${UPDATE_FEED_URL:?set UPDATE_FEED_URL before publishing}"
+
 # Publish artifacts and the update metadata
 npx electron-builder --publish always
 
 # ── Verify the update feed BEFORE announcing ────────────────────────────────
 for f in latest.yml latest-mac.yml latest-linux.yml; do
-  curl -fsSL "https://updates.example.com/$f" | grep -q "$new" \
+  curl -fsSL "$UPDATE_FEED_URL/$f" | grep -q "$new" \
     || { echo "ABORT: $f does not serve v$new"; exit 1; }
 done
 
@@ -458,6 +517,7 @@ sed -i 's/^stagingPercentage:.*/stagingPercentage: 10/' dist/latest.yml
 # The build box already has every prerequisite installed; a fresh VM does
 # not. This is the last chance to catch missing runtime dependencies
 # (VC++ redistributables, WebView2, system libs) before real users do.
+[ -n "${CLEAN_VM_WIN:-}" ] || { echo "ABORT: CLEAN_VM_WIN unset — the install smoke would run on the build box"; exit 1; }
 ssh "$CLEAN_VM_WIN" 'powershell -c "Start-Process -Wait dist\app-setup.exe /S"'
 ssh "$CLEAN_VM_WIN" 'powershell -c "& \"C:\Program Files\App\app.exe\" --smoke-test --exit-after-ready"' \
   || { echo "ABORT: clean-VM install smoke failed"; exit 1; }
@@ -480,7 +540,8 @@ Cloud verifies a live endpoint and can roll back in one command. Desktop has nei
 # A desktop regression shows up as a crash rate delta, not a failing health check.
 
 # Update adoption: is the feed reaching clients at all?
-curl -fsSL https://updates.example.com/metrics | grep "$new"
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+curl -fsSL "${UPDATE_FEED_URL:?}/metrics" | grep "$new"
 ```
 
 | Signal | Healthy | Act |
@@ -492,6 +553,7 @@ curl -fsSL https://updates.example.com/metrics | grep "$new"
 **Halt the feed** (stops new pulls only — already-updated clients are unaffected):
 
 ```bash
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
 sed -i 's/^stagingPercentage:.*/stagingPercentage: 0/' dist/latest.yml
 gh release edit "v$new" --prerelease     # de-list without deleting artifacts
 ```
@@ -517,8 +579,18 @@ Written while the release context is fresh, and before anything is cleaned up.
 | `PLAN.md` | Tick off shipped items; carry the 🟡/🟢 review follow-ups forward |
 
 ```bash
-{ echo "## v$new - $(date +%Y-%m-%d)"; echo; git log "v$current..v$new" --pretty='- %s' --no-merges; echo; cat CHANGELOG.md; } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
-grep -rn "$current" --include='*.md' . | grep -v CHANGELOG.md
+# Re-derived: separate shell. By this step v$new is already tagged (Step 10),
+# so `new` is the newest tag and `current` is the one before it. An empty
+# `$current` would produce `git log "v..v$new"` and kill CHANGELOG generation.
+# `git tag --sort=-creatordate | sed -n 2p` is not reliable — lightweight tags
+# sort by commit date and tie on same-second commits.
+new=$(node -p "require('./package.json').version")
+current=$(git describe --tags --abbrev=0 "v$new^" 2>/dev/null | sed 's/^v//')
+[ -n "$new" ] || { echo "ABORT: cannot read version from package.json"; exit 1; }
+if [ -n "$current" ]; then RANGE="v$current..v$new"; else RANGE="v$new"; fi
+
+{ echo "## v$new - $(date +%Y-%m-%d)"; echo; git log "$RANGE" --pretty='- %s' --no-merges; echo; cat CHANGELOG.md; } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+if [ -n "$current" ]; then grep -rn "$current" --include='*.md' . | grep -v CHANGELOG.md || true; fi
 ```
 
 **Gate rule:** no doc may describe behavior this release removed.
@@ -549,16 +621,32 @@ wc -w CLAUDE.md
 ## Step 14: Purge CPU-Eating Workers (local only)
 
 ```bash
-ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50' | head -20
+# Scope by WORKING DIRECTORY. A CPU threshold alone lists sibling projects'
+# processes, and "kill by PID" on that list kills someone else's work.
+proc_cwd() {   # pid -> working directory (Linux /proc, macOS lsof fallback)
+  readlink -e "/proc/$1/cwd" 2>/dev/null \
+    || lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1
+}
+
+PROJ=$(pwd -P)
+ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50 {print $1}' | while read -r pid; do
+  cwd=$(proc_cwd "$pid"); [ -n "$cwd" ] || continue
+  case "$cwd" in "$PROJ"|"$PROJ"/*) ps -p "$pid" -o pid=,pcpu=,args= ;; esac
+done | head -20
 ```
 
-**Gate rule:** identify, then kill by PID, scoped to this project's own processes only. There is no VPS in this path — nothing here reaches beyond the build machine.
+**Gate rule:** identify, then kill by PID. Every PID the block prints has its
+working directory inside this project — that scoping is what makes "kill by
+PID" safe on a machine running sibling projects. There is no VPS in this path — nothing here reaches beyond the build machine.
 
 ## Step 15: Cleanup — local, app-scoped
 
 Runs **only** after Step 12 confirms the staged rollout is healthy through at least one telemetry cycle. Everything here is local — there is no VPS to clean in this path — and the failsafe invariant is re-proved before a single deletion.
 
 ```bash
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"   # re-derived: separate shell
+[ -d "$BACKUP_ROOT" ] || { echo "ABORT: BACKUP_ROOT '$BACKUP_ROOT' is not a directory"; exit 1; }
+
 # ── Precondition: the failsafe must still hold ───────────────────────────────
 BACKUPS=$(find "$BACKUP_ROOT" -name 'repo-*.bundle' | wc -l)
 [ "$BACKUPS" -ge 1 ] || { echo "ABORT: cleanup would leave zero backups"; exit 1; }
@@ -571,7 +659,10 @@ rm -rf node_modules/.cache dist/win-unpacked dist/mac dist/linux-unpacked
 # ── dist/ artifacts: keep the current release AND the previous one ───────────
 # The previous release is what a feed halt (Step 12) leaves clients on —
 # deleting it removes that mitigation.
-KEEP_VERSIONS="$new $(git tag --sort=-creatordate | sed -n 2p | sed 's/^v//')"
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+[ -n "$new" ] || { echo "ABORT: cannot read version — refusing to prune dist/"; exit 1; }
+prev=$(git describe --tags --abbrev=0 "v$new^" 2>/dev/null | sed 's/^v//')
+KEEP_VERSIONS="$new${prev:+ $prev}"
 find dist -maxdepth 1 -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.msi' \) \
   | while read -r f; do
       keep=false
@@ -585,7 +676,13 @@ find dist -maxdepth 1 -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.AppI
 ### Backup retention — the failsafe rule
 
 ```bash
-cd "$BACKUP_ROOT"
+# Re-derived: separate shell. An unset BACKUP_ROOT makes `cd ""` a NO-OP that
+# returns 0, after which this block prunes repo-*.bundle in the PROJECT
+# directory and reports FAILSAFE VIOLATED on a perfectly healthy backup set.
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+[ -n "$BACKUP_ROOT" ] && [ -d "$BACKUP_ROOT" ] || { echo "ABORT: BACKUP_ROOT '$BACKUP_ROOT' is not a directory"; exit 1; }
+cd "$BACKUP_ROOT" || exit 1
+
 TOTAL=$(ls -1 repo-*.bundle 2>/dev/null | wc -l)
 if [ "$TOTAL" -gt 5 ]; then
   ls -t repo-*.bundle | tail -n +6 | while read -r old; do
@@ -646,4 +743,4 @@ fi
 | Skill | Role |
 |-------|------|
 | `/pipeline-quality` | Step 2 gate — deterministic checks plus simplify/review; this skill adds Electron/Python-specific checks on top |
-| `/pipeline-full-build-cloud` | Sibling — same phase order, different Steps 7–12 for containerized/server targets |
+| `/pipeline-full-build-cloud` | Sibling — same phase order; its Steps 7–10 diverge (container build, SBOM/CVE gate, staging validation, release, deploy, post-deploy rollback gate) where this skill's Steps 7–12 do the packaged-binary equivalent |

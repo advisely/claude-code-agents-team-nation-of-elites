@@ -37,8 +37,13 @@ These environment variables are assumed throughout. Set them per app before runn
 | `APP_CONTAINER` | Running container name for this app | `clearpath-api` |
 | `APP_IMAGE` | Image repo:tag base for this app | `registry.example.com/clearpath` |
 | `APP_PREFIX` | Container-name prefix that scopes this app on a shared box | `clearpath-` |
+| `COMPOSE_PROJECT` | Compose project name; scopes the Step 13 image prune by label. Defaults to `basename $REMOTE_APP_DIR` | `clearpath` |
+| `APP_VERSION` | **Lives in `$REMOTE_APP_DIR/.env` on the VPS, not in your shell.** The compose file must resolve `image: ${APP_IMAGE}:${APP_VERSION}`; deploy rewrites it forward, rollback rewrites it back. This is what makes the rollback real | `2026.07.26` |
 | `DB_CONTAINER`, `DB_USER`, `DB_NAME` | Postgres container and credentials for the remote dump | `clearpath-db`, `clearpath`, `clearpath_prod` |
 | `DOMAIN` | Public hostname for health checks and production E2E | `app.example.com` |
+| `STAGING_HOST` | SSH target for the staging box (Step 7d); may equal `VPS_HOST` | `deploy@72.60.115.213` |
+| `STAGING_COMPOSE_FILE` | Compose file for the staging stack | `docker-compose.staging.yml` |
+| `STAGING_DB` | Local database Step 7d restores the production dump into | `staging_db` |
 | `E2E_ADMIN_TOKEN` | Teardown credential for production E2E accounts; absent → that step records `NOT RUN` | — |
 
 **Why this table exists.** A real Hostinger VPS running this pattern hosts several unrelated apps behind one nginx — clearpath, resumeflex, and others each get their own `APP_CONTAINER`/`APP_PREFIX`/`REMOTE_APP_DIR`. Every scoped command below depends on these being set correctly for *this* app; an unset or wrong `APP_PREFIX` is how a cleanup step reaches into a neighbor.
@@ -90,6 +95,34 @@ Phase 6 — RECLAIM
 ## Versioning Scheme
 
 CalVer: `vYYYY.MM.DD`. `package.json` stores `2026.04.04`; the git tag is `v2026.04.04`. A same-day re-release appends a suffix: `v2026.04.04.2`.
+
+## Block Preamble — every fenced block is a separate shell
+
+Nothing assigned in one fenced block is in scope in the next: each block is
+executed as its own shell. A block that consumes `STAMP`, `new`, `current`,
+`BRANCH` or `BACKUP_ROOT` **must re-derive it at the top**, or it silently runs
+with an empty value — `pg_restore … "db-.dump"`, a false `ABORT: no failsafe
+backup`, `git log "v..v"`, and worst, `cd ""` which is a no-op returning 0 that
+leaves a destructive block running in the project directory.
+
+Copy the lines you need:
+
+```bash
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+STAMP=$(ls -t "$BACKUP_ROOT"/repo-*.bundle 2>/dev/null | head -1 | sed -E 's/.*repo-(.*)\.bundle$/\1/')
+new=$(node -p "require('./package.json').version")          # post-Step 3
+current=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')   # pre-tag
+# after Step 7e has tagged v$new, `current` is the tag BEFORE it:
+# current=$(git describe --tags --abbrev=0 "v$new^" 2>/dev/null | sed 's/^v//')
+BRANCH=$(git branch --show-current)
+```
+
+**Two rules that follow from this, applied throughout:**
+
+1. Every `cd` carries `|| exit 1`. `cd ""` succeeds and changes nothing.
+2. Every re-derived value that a destructive command depends on is asserted
+   non-empty before that command runs.
+
 
 ---
 
@@ -210,6 +243,8 @@ git diff --cached | grep -nEi '(api[_-]?key|secret|password|token|BEGIN [A-Z ]*P
 **Gate rule:** never commit directly on `main`/`master`. If `git branch --show-current` returns the default branch, branch first. Never commit over unresolved 🔴/🟠 findings from Step 2.
 
 ```bash
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+
 [ "$(git branch --show-current)" = "main" ] && git checkout -b "release/v$new"
 git commit -m "release: v$new"
 ```
@@ -218,6 +253,7 @@ git commit -m "release: v$new"
 
 ```bash
 BRANCH=$(git branch --show-current)
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
 git fetch origin --prune
 
 # Rebase onto the latest main first so the merge is a fast-forward and CI
@@ -300,6 +336,9 @@ done
 ### 7c — Container Build, SBOM & CVE Gate
 
 ```bash
+set -euo pipefail
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+
 docker build \
   --build-arg VCS_REF="$(git rev-parse HEAD)" \
   --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
@@ -310,6 +349,7 @@ docker images "$APP_IMAGE:$new" --format "{{.Size}}"
 docker history "$APP_IMAGE:$new" --no-trunc | grep -iE 'SECRET|PASSWORD|TOKEN' \
   && { echo "ABORT: credential visible in image history"; exit 1; }
 
+mkdir -p dist   # syft cannot create the redirect target itself
 syft "$APP_IMAGE:$new" -o spdx-json > "dist/sbom-$new.spdx.json"
 
 trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed "$APP_IMAGE:$new" \
@@ -325,6 +365,13 @@ cosign sign --yes "$APP_IMAGE:$new" 2>/dev/null || echo "NOT RUN: cosign unavail
 Run the **real image** in a **real environment** before production sees it.
 
 ```bash
+set -euo pipefail
+# Re-derived: each fenced block is a separate shell (see Block Preamble).
+new=$(node -p "require('./package.json').version")
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+STAMP=$(ls -t "$BACKUP_ROOT"/repo-*.bundle 2>/dev/null | head -1 | sed -E 's/.*repo-(.*)\.bundle$/\1/')
+[ -n "$STAMP" ] || { echo "ABORT: no Step 1 backup found — cannot restore a production schema"; exit 1; }
+
 # Container smoke — must start standalone, become healthy, shut down cleanly
 docker run -d --name smoke -p 8080:8080 --env-file .env.staging "$APP_IMAGE:$new"
 timeout 60 bash -c 'until curl -fs localhost:8080/health >/dev/null; do sleep 2; done' \
@@ -337,14 +384,15 @@ docker stop --time=30 smoke
 docker rm -f smoke
 
 # Migration dry-run against a RESTORED copy of production — never a synthetic schema
-pg_restore -d staging_db "$BACKUP_ROOT/db-$STAMP.dump"
+[ -s "$BACKUP_ROOT/db-$STAMP.dump" ] || { echo "ABORT: Step 1 database dump missing or empty"; exit 1; }
+pg_restore -d "$STAGING_DB" "$BACKUP_ROOT/db-$STAMP.dump"
 npm run migrate:up   || { echo "ABORT: migration fails on production schema"; exit 1; }
 npm run migrate:down || { echo "ABORT: migration is not reversible"; exit 1; }
 npm run migrate:up
-psql staging_db -c "SELECT relname, mode FROM pg_locks l JOIN pg_class c ON c.oid=l.relation WHERE mode LIKE '%Exclusive%';"
+psql "$STAGING_DB" -c "SELECT relname, mode FROM pg_locks l JOIN pg_class c ON c.oid=l.relation WHERE mode LIKE '%Exclusive%';"
 
 # Deploy to staging over the same SSH+compose path used for production, then validate
-ssh "$STAGING_HOST" "cd $REMOTE_APP_DIR && docker compose -f docker-compose.staging.yml pull && docker compose -f docker-compose.staging.yml up -d"
+ssh "$STAGING_HOST" "cd '$REMOTE_APP_DIR' || exit 1; docker compose -f $STAGING_COMPOSE_FILE pull && docker compose -f $STAGING_COMPOSE_FILE up -d"
 npm run test:smoke -- --base-url="https://staging.$DOMAIN"
 npx pact-broker can-i-deploy --pacticipant app --version "$new" --to-environment production 2>/dev/null || echo "NOT RUN: no contract broker configured"
 k6 run --vus 50 --duration 2m load/smoke.js \
@@ -358,6 +406,8 @@ k6 run --vus 50 --duration 2m load/smoke.js \
 Tag only a commit that already passed staging validation above — that ordering is what makes the release trustworthy.
 
 ```bash
+new=$(node -p "require('./package.json').version")   # re-derived: separate shell
+
 git tag -a "v$new" -m "Release v$new"
 git push origin "v$new"
 gh release create "v$new" --title "v$new" --generate-notes
@@ -373,36 +423,104 @@ gh release create "v$new" --title "v$new" --generate-notes
 
 The first irreversible-feeling step — irreversible only if the rollback target is captured wrong. This is a recorded failure mode, not a hypothetical: `resumeflex/deploy-cloud.sh` carries a comment recording a real incident on 2026-07-30 where a cleanup pass counted image *rows* (`docker images`, one row per tag) instead of image *IDs*, and deleted its own rollback target because a repository with three tags pointing at two images made the third row look like a distinct, disposable image. Capturing and cleaning up **by image ID**, not by tag, is not a style preference — it is the fix for that incident.
 
+**Reversibility is a property of the compose file, not of the rollback command.**
+Retagging an image name the compose file never references and running `up -d`
+is a no-op that exits 0 — the deploy looks rolled back and production keeps
+serving the broken build. So this skill pins the deploy to an explicit version
+the compose file actually resolves, and asserts that at *deploy* time:
+
+```yaml
+# $REMOTE_APP_DIR/$COMPOSE_FILE — the app service MUST resolve its image this way
+services:
+  app:
+    image: ${APP_IMAGE}:${APP_VERSION}    # APP_VERSION comes from $REMOTE_APP_DIR/.env
+    build: .                              # optional; only for deploy shape (a)
+```
+
 ```bash
-# Capture the rollback target BY IMAGE ID, not by tag row.
+set -euo pipefail
+
+# Re-derive: each fenced block is a separate shell (see Block Preamble).
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+STAMP=$(ls -t "$BACKUP_ROOT"/repo-*.bundle 2>/dev/null | head -1 | sed -E 's/.*repo-(.*)\.bundle$/\1/')
+new=$(node -p "require('./package.json').version")
+
+# ── Precondition 1: the deploy must be reversible AT ALL ────────────────────
+# Fail loudly here rather than silently at rollback time.
+ssh "$VPS_HOST" "grep -qE 'image:[[:space:]]*\\\$\\{?APP_IMAGE\\}?:\\\$\\{?APP_VERSION\\}?' '$REMOTE_APP_DIR/$COMPOSE_FILE'" \
+  || { echo "ABORT: $COMPOSE_FILE does not resolve its image from \${APP_IMAGE}:\${APP_VERSION} — this deploy would not be reversible"; exit 1; }
+
+# ── Precondition 2: a verified failsafe backup exists ───────────────────────
+[ -n "$STAMP" ] && [ -f "$BACKUP_ROOT/repo-$STAMP.bundle" ] \
+  || { echo "ABORT: no failsafe backup in $BACKUP_ROOT"; exit 1; }
+
+# ── Capture the rollback target: BOTH the version pin and the image ID ──────
+# The version pin is what rollback rewrites; the image ID is what keeps Step 13
+# from pruning the image that pin resolves to.
+PREV_VERSION=$(ssh "$VPS_HOST" "grep -E '^APP_VERSION=' '$REMOTE_APP_DIR/.env' | head -1 | cut -d= -f2-")
+[ -n "$PREV_VERSION" ] || { echo "ABORT: no APP_VERSION in remote .env — nothing to roll back to"; exit 1; }
 ROLLBACK_ID=$(ssh "$VPS_HOST" "docker inspect --format='{{.Image}}' $APP_CONTAINER")
 ssh "$VPS_HOST" "docker tag $ROLLBACK_ID $APP_IMAGE:rollback-previous"
-echo "$ROLLBACK_ID" > .previous-deployed-version
+printf '%s\n' "$PREV_VERSION" > .previous-deployed-version      # the rollback TARGET
+printf '%s\n' "$ROLLBACK_ID"  > .previous-deployed-image-id     # retention key for Step 13
 
-# Refuse to deploy without a verified backup and without a passing Step 2 gate
-[ -f "$BACKUP_ROOT/repo-$STAMP.bundle" ] || { echo "ABORT: no failsafe backup"; exit 1; }
+# ── Guard the destructive sync ──────────────────────────────────────────────
+# With REMOTE_APP_DIR empty the target degrades to "$VPS_HOST:/" and --delete
+# runs at the filesystem root of a box shared with sibling apps.
+case "${REMOTE_APP_DIR:-}" in
+  ""|"/"|*..*) echo "ABORT: refusing to rsync --delete into '${REMOTE_APP_DIR:-<empty>}'"; exit 1 ;;
+  /*/*) : ;;                       # absolute and at least two segments deep — OK
+  *) echo "ABORT: REMOTE_APP_DIR must be an absolute path at least two segments deep, got '$REMOTE_APP_DIR'"; exit 1 ;;
+esac
+
+# RSYNC_EXCLUDES must be DEFINED, here, next to the command that uses it. An
+# undefined array expands to nothing under `set -u` in bash >= 4.4 without
+# erroring, degrading this into an unfiltered destructive sync that deletes the
+# remote .env, uploads/ and releases/ — none of which Step 1 backs up.
+RSYNC_EXCLUDES=(
+  --exclude='.env' --exclude='.env.*'      # the version pin lives here
+  --exclude='uploads/' --exclude='storage/' --exclude='data/' --exclude='media/'
+  --exclude='releases/'                    # the same dir Step 13 prunes
+  --exclude='node_modules/' --exclude='.git/'
+  --exclude='*.dump' --exclude='*.sqlite' --exclude='*.sqlite3'
+)
+[ "${#RSYNC_EXCLUDES[@]}" -ge 6 ] || { echo "ABORT: RSYNC_EXCLUDES not populated"; exit 1; }
 
 # Sync and bring up. Two shapes, both supported — pick one per app:
-#   a) rsync source, build on the VPS
+#   a) rsync source, build on the VPS (compose's `image:` key tags the build)
 rsync -avz --delete "${RSYNC_EXCLUDES[@]}" ./ "$VPS_HOST:$REMOTE_APP_DIR/"
-ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker compose -f $COMPOSE_FILE up -d --build"
+ssh "$VPS_HOST" "cd '$REMOTE_APP_DIR' || exit 1; \
+  sed -i 's/^APP_VERSION=.*/APP_VERSION=$new/' .env && grep -qx 'APP_VERSION=$new' .env \
+  && docker compose -f $COMPOSE_FILE up -d --build"
 #   b) build locally, push to a registry, pull remotely
-#      docker push "$APP_IMAGE:$new" && ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker compose -f $COMPOSE_FILE pull && docker compose -f $COMPOSE_FILE up -d"
+#      docker push "$APP_IMAGE:$new"
+#      ssh "$VPS_HOST" "cd '$REMOTE_APP_DIR' || exit 1; \
+#        sed -i 's/^APP_VERSION=.*/APP_VERSION=$new/' .env && grep -qx 'APP_VERSION=$new' .env \
+#        && docker compose -f $COMPOSE_FILE pull && docker compose -f $COMPOSE_FILE up -d"
 
 # Health-gate before declaring success
 timeout 120 bash -c "until [ \"\$(ssh $VPS_HOST \"docker inspect -f '{{.State.Health.Status}}' $APP_CONTAINER\")\" = healthy ]; do sleep 5; done" \
   || { echo "ABORT: container never became healthy"; exit 1; }
 ```
 
-**Rollback — one command, and it is real because the image is retained by ID:**
+**Rollback — one command, and it is real because it rewrites the pin the
+compose file resolves, not a tag nothing references:**
 
 ```bash
-ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"
+PREV_VERSION=$(cat .previous-deployed-version)
+[ -n "$PREV_VERSION" ] || { echo "ABORT: no rollback target recorded — Step 8 never ran"; exit 1; }
+ssh "$VPS_HOST" "cd '$REMOTE_APP_DIR' || exit 1; \
+  sed -i 's/^APP_VERSION=.*/APP_VERSION=$PREV_VERSION/' .env \
+  && grep -qx 'APP_VERSION=$PREV_VERSION' .env \
+  && docker compose -f $COMPOSE_FILE up -d --no-build"
+timeout 120 bash -c "until [ \"\$(ssh $VPS_HOST \"docker inspect -f '{{.State.Health.Status}}' $APP_CONTAINER\")\" = healthy ]; do sleep 5; done" \
+  || { echo "ABORT: rollback to $PREV_VERSION did not become healthy — manual intervention"; exit 1; }
+echo "rolled back to $PREV_VERSION"
 ```
 
 **Security precondition.** Restate the Step 2 outcome before deploying — Semgrep, `/security-review`, and `security-guidance` readiness, each PASS or `NOT RUN`. A HIGH finding blocks. A `NOT RUN` ships only as a named decision, never as an unnoticed gap.
 
-**Kubernetes (secondary).** Where the target is a cluster rather than a VPS, substitute `kubectl set image` / `kubectl rollout status` / `kubectl rollout undo` for the compose commands above, staged through a canary before the full rollout. The gate rules — image-ID rollback capture, health gate before success, one-command reversibility — are unchanged; only the transport differs.
+**Kubernetes (secondary).** Where the target is a cluster rather than a VPS, substitute `kubectl set image` / `kubectl rollout status` / `kubectl rollout undo` for the compose commands above, staged through a canary before the full rollout. The gate rules are unchanged; only the transport differs — and the reversibility precondition still applies, it is just satisfied differently: a Deployment's `.spec.template.spec.containers[].image` must name an explicit tag (never `:latest`) so `kubectl rollout undo` has a distinct previous revision to return to. Assert that before deploying, the same way Precondition 1 asserts it for compose.
 
 ## Step 9: Production E2E (critical path only)
 
@@ -415,17 +533,21 @@ RUN_ID=$(git rev-parse --short HEAD)
 export E2E_ACCOUNT="e2e+${RUN_ID}@example.com"
 
 # Refuse to start without teardown credentials. Creating accounts you cannot
-# remove is worse than skipping the check.
-[ -n "${E2E_ADMIN_TOKEN:-}" ] || { echo "SKIP: no teardown credentials — recorded as NOT RUN"; exit 0; }
+# remove is worse than skipping the check. `exit 0` here would end the WHOLE
+# release chain with a success status before Steps 10-13 ever run — skip the
+# step with a conditional instead.
+if [ -z "${E2E_ADMIN_TOKEN:-}" ]; then
+  echo "9. Production E2E: NOT RUN — no teardown credentials (E2E_ADMIN_TOKEN unset)"
+else
+  # Sweep orphans from earlier failed runs BEFORE creating new ones
+  npm run e2e:sweep-orphans -- --pattern 'e2e+*@example.com' --older-than 1h
 
-# Sweep orphans from earlier failed runs BEFORE creating new ones
-npm run e2e:sweep-orphans -- --pattern 'e2e+*@example.com' --older-than 1h
+  trap 'npm run e2e:teardown -- --account "$E2E_ACCOUNT"' EXIT
 
-trap 'npm run e2e:teardown -- --account "$E2E_ACCOUNT"' EXIT
-
-npx playwright test --config playwright.prod.config.ts \
-  --grep @critical-path \
-  --base-url "https://$DOMAIN"
+  npx playwright test --config playwright.prod.config.ts \
+    --grep @critical-path \
+    --base-url "https://$DOMAIN"
+fi
 ```
 
 All test traffic carries an analytics-exclusion header so the run does not pollute production metrics.
@@ -433,7 +555,15 @@ All test traffic carries an analytics-exclusion header so the run does not pollu
 **Gate rule:** a failure here triggers the rollback gate below. It cannot block in the ordinary sense, because the tag and release from Step 7e already exist — instead of deleting the published tag (which would break anyone who already fetched it), the release is marked **SUPERSEDED**:
 
 ```bash
-ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"
+new=$(node -p "require('./package.json').version")
+
+# Roll back by rewriting the version pin the compose file resolves (Step 8).
+PREV_VERSION=$(cat .previous-deployed-version)
+[ -n "$PREV_VERSION" ] || { echo "ABORT: no rollback target recorded"; exit 1; }
+ssh "$VPS_HOST" "cd '$REMOTE_APP_DIR' || exit 1; \
+  sed -i 's/^APP_VERSION=.*/APP_VERSION=$PREV_VERSION/' .env \
+  && grep -qx 'APP_VERSION=$PREV_VERSION' .env \
+  && docker compose -f $COMPOSE_FILE up -d --no-build"
 
 gh release edit "v$new" --title "v$new (SUPERSEDED $(date -u +%FT%TZ))" \
   --notes "$(gh release view "v$new" --json body -q .body)
@@ -450,9 +580,17 @@ Verification is immediate here — and so is the rollback.
 ```bash
 curl -f  "https://$DOMAIN/health"
 curl -fs "https://$DOMAIN/version" | grep -q "$new" \
-  || { ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"; echo "ABORT: live version mismatch"; exit 1; }
+  || { PREV_VERSION=$(cat .previous-deployed-version); \
+       ssh "$VPS_HOST" "cd '$REMOTE_APP_DIR' || exit 1; sed -i 's/^APP_VERSION=.*/APP_VERSION=$PREV_VERSION/' .env && grep -qx 'APP_VERSION=$PREV_VERSION' .env && docker compose -f $COMPOSE_FILE up -d --no-build"; \
+       echo "ABORT: live version mismatch — rolled back to $PREV_VERSION"; exit 1; }
 
-ssh "$VPS_HOST" "docker ps --filter name=$APP_PREFIX --format '{{.Names}}\t{{.Status}}'" | grep -v healthy && echo "WARNING: unhealthy sibling container under this app's prefix"
+# Match `(unhealthy)` explicitly. `grep -v healthy` fires on every container
+# that simply has NO healthcheck — the warning would then be permanently on.
+ssh "$VPS_HOST" "docker ps --filter name=$APP_PREFIX --format '{{.Names}}\t{{.Status}}'" \
+  | grep -F '(unhealthy)' && echo "WARNING: unhealthy sibling container under this app's prefix"
+ssh "$VPS_HOST" "docker ps --filter name=$APP_PREFIX --format '{{.Names}}\t{{.Status}}'" \
+  | grep -vF '(healthy)' | grep -vF '(unhealthy)' \
+  | while read -r line; do echo "NOTE: no healthcheck defined — health unknown for: $line"; done
 ```
 
 | Signal | Healthy | Act |
@@ -484,8 +622,19 @@ Written while the release context is fresh, and before anything is cleaned up.
 | `PLAN.md` | Tick off shipped items; carry the 🟡/🟢 review follow-ups forward |
 
 ```bash
-{ echo "## v$new - $(date +%Y-%m-%d)"; echo; git log "v$current..v$new" --pretty='- %s' --no-merges; echo; cat CHANGELOG.md; } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
-grep -rn "$current" --include='*.md' . | grep -v CHANGELOG.md
+# Re-derived: separate shell. By this step v$new is already tagged (Step 7e),
+# so `new` is the newest tag and `current` is the one before it. An empty
+# `$current` would produce `git log "v..v$new"` and kill CHANGELOG generation.
+new=$(node -p "require('./package.json').version")
+# `git tag --sort=-creatordate | sed -n 2p` is NOT reliable here: lightweight
+# tags sort by commit date, so two tags on same-second commits tie and fall
+# back to name order. Ask git for the nearest tag before this release instead.
+current=$(git describe --tags --abbrev=0 "v$new^" 2>/dev/null | sed 's/^v//')
+[ -n "$new" ] || { echo "ABORT: cannot read version from package.json"; exit 1; }
+if [ -n "$current" ]; then RANGE="v$current..v$new"; else RANGE="v$new"; fi
+
+{ echo "## v$new - $(date +%Y-%m-%d)"; echo; git log "$RANGE" --pretty='- %s' --no-merges; echo; cat CHANGELOG.md; } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+if [ -n "$current" ]; then grep -rn "$current" --include='*.md' . | grep -v CHANGELOG.md || true; fi
 ```
 
 **Gate rule:** no doc may describe behavior this release removed.
@@ -516,8 +665,18 @@ wc -w CLAUDE.md
 ## Step 12: Purge CPU-Eating Workers (local + VPS)
 
 ```bash
-# Local
-ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50' | head -20
+# Local — scope by WORKING DIRECTORY. A CPU threshold alone lists sibling
+# projects' processes, and "kill by PID" on that list kills someone else's work.
+proc_cwd() {   # pid -> working directory (Linux /proc, macOS lsof fallback)
+  readlink -e "/proc/$1/cwd" 2>/dev/null \
+    || lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1
+}
+
+PROJ=$(pwd -P)
+ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50 {print $1}' | while read -r pid; do
+  cwd=$(proc_cwd "$pid"); [ -n "$cwd" ] || continue
+  case "$cwd" in "$PROJ"|"$PROJ"/*) ps -p "$pid" -o pid=,pcpu=,args= ;; esac
+done | head -20
 
 # VPS — scope to THIS app's containers. The box is multi-app.
 ssh "$VPS_HOST" "docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}' \
@@ -537,17 +696,29 @@ BACKUPS=$(find "$BACKUP_ROOT" -name 'repo-*.bundle' | wc -l)
 git bundle verify "$(ls -t "$BACKUP_ROOT"/repo-*.bundle | head -1)" >/dev/null \
   || { echo "ABORT: newest backup fails verification"; exit 1; }
 
-# ── Dangling layers only. Always safe: they are orphaned by rebuilds. ────────
-ssh "$VPS_HOST" "docker image prune -f"
-ssh "$VPS_HOST" "docker builder prune -f --filter 'until=168h'"
+# ── Dangling layers — SCOPED TO THIS APP'S COMPOSE PROJECT ──────────────────
+# A bare `docker image prune -f` is host-wide. On a shared box that deletes a
+# sibling app's dangling images — including a rollback target it captured by
+# image ID without tagging it, which is the exact technique Step 8 teaches.
+# `docker builder prune` has no equivalent project scope, so it is NOT run
+# here; it lives under the honestly-labelled host-level section below.
+COMPOSE_PROJECT="${COMPOSE_PROJECT:-$(basename "$REMOTE_APP_DIR")}"
+ssh "$VPS_HOST" "docker image prune -f --filter 'label=com.docker.compose.project=$COMPOSE_PROJECT'"
 
 # ── Tagged images: keep current AND rollback, matched by image ID ────────────
 # Matched by ID, not by tag row — see Step 8 for why a row-count is unsafe.
 KEEP_IDS=$(ssh "$VPS_HOST" "docker inspect --format='{{.Image}}' $APP_CONTAINER; \
-                            docker images -q $APP_IMAGE:rollback-previous")
+                            docker images -q $APP_IMAGE:rollback-previous" | grep -v '^$' || true)
+# An empty KEEP_IDS is the state after a FAILED deploy (container not running,
+# rollback-previous absent). `echo "" | grep -q "$id"` returns 1 for every row,
+# so the loop below would rmi every tag — rollback target included — with
+# `|| true` swallowing the evidence. Refuse to proceed instead.
+[ -n "$KEEP_IDS" ] || { echo "ABORT: cannot identify images to keep — refusing to prune"; exit 1; }
+
 ssh "$VPS_HOST" "docker images '$APP_IMAGE' --format '{{.ID}} {{.Tag}}'" \
   | while read -r id tag; do
-      echo "$KEEP_IDS" | grep -q "$id" || ssh "$VPS_HOST" "docker rmi ${APP_IMAGE}:${tag}" || true
+      [ -n "$id" ] || continue
+      echo "$KEEP_IDS" | grep -qF "$id" || ssh "$VPS_HOST" "docker rmi ${APP_IMAGE}:${tag}" || true
     done
 ```
 
@@ -559,6 +730,10 @@ ssh "$VPS_HOST" "docker images '$APP_IMAGE' --format '{{.ID}} {{.Tag}}'" \
 ssh "$VPS_HOST" bash -s <<'REMOTE'
 journalctl --vacuum-time=14d
 find /var/log -name '*.gz' -mtime +30 -delete
+# Host-wide by design: the BuildKit cache has no per-app scope. It is
+# regenerable, but it is shared — run it knowing it slows every app's next
+# build on this box, not just this one's.
+docker builder prune -f --filter 'until=168h'
 REMOTE
 
 # This app's release directories only — keep the newest 3
@@ -568,7 +743,13 @@ ssh "$VPS_HOST" "ls -1dt ${REMOTE_APP_DIR}/releases/* 2>/dev/null | tail -n +4 |
 ### Backup retention — the failsafe rule
 
 ```bash
-cd "$BACKUP_ROOT"
+# Re-derived: separate shell. An unset BACKUP_ROOT makes `cd ""` a NO-OP that
+# returns 0, after which this block prunes repo-*.bundle in the PROJECT
+# directory and reports FAILSAFE VIOLATED on a perfectly healthy backup set.
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+[ -n "$BACKUP_ROOT" ] && [ -d "$BACKUP_ROOT" ] || { echo "ABORT: BACKUP_ROOT '$BACKUP_ROOT' is not a directory"; exit 1; }
+cd "$BACKUP_ROOT" || exit 1
+
 TOTAL=$(ls -1 repo-*.bundle 2>/dev/null | wc -l)
 if [ "$TOTAL" -gt 5 ]; then
   ls -t repo-*.bundle | tail -n +6 | while read -r old; do
@@ -611,8 +792,9 @@ fi
 - `dist/sbom-2026.07.26.spdx.json`
 
 ### Rollback
-- One command: `docker tag app:rollback-previous app:latest && docker compose up -d` on `$VPS_HOST`
-- Rollback target captured by image ID, not tag row
+- One command: rewrite `APP_VERSION` in `$REMOTE_APP_DIR/.env` to the recorded previous version and `docker compose up -d --no-build` on `$VPS_HOST`
+- Reversibility asserted at deploy time: `$COMPOSE_FILE` must resolve `image: ${APP_IMAGE}:${APP_VERSION}`
+- Rollback target recorded twice: the version pin (what rollback rewrites) and the image ID (what keeps Step 13 from pruning it)
 ```
 
 ## Relationship to Other Skills
@@ -620,5 +802,5 @@ fi
 | Skill | Role |
 |-------|------|
 | `/pipeline-quality` | Step 2 gate — deterministic checks plus simplify/review; this skill adds no duplicate checks |
-| `/pipeline-full-build-desktop` | Sibling — same phase order, different Steps 7–8 for Electron/desktop targets |
+| `/pipeline-full-build-desktop` | Sibling — same phase order; its Steps 7–12 diverge (local compile, sign/notarize, packaged-binary validation, release, update-feed publish, telemetry gate) where this skill's Steps 7–10 do the containerized equivalent |
 | `/kubernetes-deployment`, `/terraform-patterns` | Deeper reference for the Kubernetes secondary path in Step 8 |
