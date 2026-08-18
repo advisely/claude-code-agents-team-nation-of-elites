@@ -5,7 +5,7 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v4.0.0 - 2026-08-18
+## [2026-08-18] - Pipeline Consolidation: Five Skills to Three (v4.0.0)
 
 ### Removed (BREAKING)
 - `pipeline-full-build` and `pipeline-review` are no longer invocable. Content redistributed:
