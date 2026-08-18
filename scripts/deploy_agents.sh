@@ -591,11 +591,18 @@ validate_install() {
     warn "Semgrep SAST skill not found at $SKILLS_DST/semgrep-sast/SKILL.md"
   fi
 
-  # 6) Verify pipeline skills deployed
-  if [[ -f "$SKILLS_DST/pipeline-quality/SKILL.md" ]] && [[ -f "$SKILLS_DST/pipeline-full-build/SKILL.md" ]]; then
-    success "Pipeline skills deployed (quality + full-build)"
+  # 6) Verify pipeline skills deployed. v4.0.0 consolidated five pipeline
+  #    skills into the three listed below; probing for any other name warns
+  #    on a correct deployment.
+  local _missing_pipeline=()
+  local _s
+  for _s in pipeline-quality pipeline-full-build-cloud pipeline-full-build-desktop; do
+    [[ -f "$SKILLS_DST/$_s/SKILL.md" ]] || _missing_pipeline+=("$_s")
+  done
+  if [[ ${#_missing_pipeline[@]} -eq 0 ]]; then
+    success "Pipeline skills deployed (quality + cloud + desktop)"
   else
-    warn "Pipeline skills not fully deployed"
+    warn "Pipeline skills not fully deployed - missing: ${_missing_pipeline[*]}"
   fi
 
   # 7) Print WSL2 path hint

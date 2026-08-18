@@ -405,12 +405,12 @@ the PDF content into context.
 
 Place skills in appropriate categories:
 
-- **Framework Patterns**: `react-patterns`, `django-patterns`, `laravel-patterns`
-- **Security**: `security-audit`, `owasp-checklist`, `penetration-testing`
-- **DevOps**: `github-actions`, `kubernetes-deployment`, `terraform-templates`
-- **Document Processing**: `pdf-tools`, `excel-automation`, `word-templates`
-- **Testing**: `playwright-patterns`, `pytest-patterns`, `test-strategies`
-- **Architecture**: `microservices-patterns`, `event-driven-design`, `api-design`
+- **Framework Patterns**: `react-patterns`, `django-patterns`, `laravel-patterns`, `nextjs-patterns`, `vue-patterns`
+- **Security**: `security-audit`, `semgrep-sast`, `silent-failure-audit`
+- **DevOps**: `github-actions`, `kubernetes-deployment`, `terraform-patterns`
+- **Pipelines**: `pipeline-quality`, `pipeline-full-build-cloud`, `pipeline-full-build-desktop`
+- **Testing**: `pytest-patterns`
+- **Language Patterns**: `python-patterns`, `typescript-patterns`, `go-patterns`, `java-patterns`
 
 ### Which Agents Should Use Which Skills?
 

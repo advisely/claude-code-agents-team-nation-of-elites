@@ -202,7 +202,7 @@ See [templates/](templates/) for project scaffolding.
   - TypeScript integration
   - Professional dashboard components
 
-#### Security & DevOps (7 skills)
+#### Security & DevOps (8 skills)
 - **security-audit** - OWASP Top 10 security checklist
   - OWASP Top 10 (2021) comprehensive checklist
   - Authentication and authorization patterns
@@ -218,52 +218,35 @@ See [templates/](templates/) for project scaffolding.
   - CI/CD integration templates (GitHub Actions)
   - Severity mapping to NoE quality gates
 
-- **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0
+- **pipeline-quality** - Universal quality gate pipeline - NEW in v3.6.0, consolidated in v4.0.0
   - Auto-detects project stack (Python, Node, Rust, Go, Ruby, PHP, Java)
-  - 8-step gate: lint, type check, **three-part security gate**, tests, **test case matrix**, dead code detection, dependency audit
-  - Security gate (v3.18.0): `security-guidance` readiness probe → Semgrep SAST → `/security-review`; records **NOT RUN** rather than passing a check that never executed
+  - 15-step gate: deterministic checks (0-9) — lint, type check, build, **three-part security gate**, tests, **test case matrix**, local E2E (Playwright), dead code detection, dependency audit
+  - Security gate: `security-guidance` readiness probe → Semgrep SAST → `/security-review`; records **NOT RUN** rather than passing a check that never executed
   - Test case matrix enforces happy path, non-happy path, and edge case coverage per changed behavior — plus an assertion-quality check that catches tests which run but assert nothing
+  - Reasoning fan-out (10-11): parallel simplification pass (behavior-preserving: reuse, efficiency, altitude, naming) and a severity-rated correctness/security/performance review delegated to the `code-reviewer` agent — any 🔴 Critical / 🟠 High finding blocks
+  - Consuming gates (12-14): zero-debt gate, no-regression gate, local worker purge
   - Dead code tools: Vulture/Ruff (Python), Knip/ts-prune/ESLint (Node/TS), Staticcheck (Go), Debride (Ruby), Psalm (PHP), SpotBugs (Java)
-  - Desktop (Electron+Python) and cloud (web/API) variants
-  - CI/CD template for GitHub Actions
-  - Standardized output report format
+  - Invoked by `/feature-workflow`, `/pr-ready`, and both `pipeline-full-build-*` variants instead of inline checklists
+  - Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects; standardized output report format. Invoke it in CI as **one opaque step** — re-listing its individual checks in a workflow file creates a second, lossy definition of the gate. See the `github-actions` skill for a fuller workflow that still calls this gate as a single step
 
-- **pipeline-review** - Universal reasoning-based review pipeline - NEW in v3.11.0
-  - Judgment counterpart to `pipeline-quality` (which runs deterministic CI gates)
-  - Pass 1 — Simplification (behavior-preserving): reuse, simplification, efficiency, altitude, naming
-  - Pass 2 — Review (severity-rated 🔴/🟠/🟡/🟢): correctness, security, error handling, performance, maintainability, test adequacy
-  - Pass 3 — Commit: Conventional Commits, deliberate staging, staged-secret scan, never commits to the default branch or over blocking findings
-  - Delegates the review pass to the `code-reviewer` agent; 🔴 Critical / 🟠 High findings block merge
-  - Invoked by `/feature-workflow` (Phases 5–6) and `/pr-ready` instead of inline checklists
-  - Stack-adaptive scope detection (branch diff by default); standardized report format
-
-- **pipeline-full-build** - Universal end-to-end release pipeline - NEW in v3.6.0
-  - 7 phases / 17 steps: Safeguard → Verify → Integrate → Build → Ship → Document → Reclaim
-  - **Safeguard**: verified `git bundle` failsafe backup + DB dump + rollback image, with a retention invariant that never leaves zero backups
-  - **Verify**: `/pipeline-quality` (incl. the three-part security gate), then `/pipeline-review` simplify + review passes
-  - **Integrate**: version bump (CalVer), commit, merge to main (gate re-run post-rebase to catch semantic conflicts), push with landing verification
-  - **Build**: build, package/Docker with image CVE gate, CI validation + SHA256SUMS
-  - **Ship**: tag + GitHub release, production deploy with one-command rollback and a security precondition (every Step 4 check restated as PASS or NOT RUN), post-deploy health/version/smoke gate
-  - **Document**: project docs (CHANGELOG, README, API, MIGRATION) then Claude docs (`CLAUDE.md`, `docs/rules/*.md`, agents, skills) with a broken-reference check and an always-loaded-budget optimization pass
-  - **Reclaim**: local + VPS junk, dangling Docker images, log rotation, backup pruning — keeps the current release, the rollback target, and volumes; never runs after a failed deploy
-  - Owns the shared spine; routes Phase 3 and Step 12 to the desktop or cloud variant on stack detection
-  - Standardized build report format with failsafe status
-
-- **pipeline-full-build-desktop** - Desktop release variant (Electron + Python) - NEW in v3.16.0
-  - **Step 8 local compilation**: TypeScript main + renderer, native module rebuild against the **Electron ABI** (not system Node), per-module load verification under the Electron runtime, frozen Python sidecar via PyInstaller
-  - **Step 9 package + sign**: electron-builder per platform, then Windows signtool verification, macOS codesign + hardened runtime + notarization staple check, Linux GPG detached signature, signed SHA256SUMS
-  - **Step 10 artifact validation** (no cloud equivalent): installer size/asar hygiene, **launch smoke test of the packaged binary**, clean-profile first-run, offline start, cross-platform matrix (universal binary check, deb dependency graph)
-  - **Step 12 distribution**: update feed version + checksum verification, staged percentage rollout, store submissions, feed-revert rollback
-  - Adds Electron security gates to Step 1: blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false`
+- **pipeline-full-build-desktop** - Desktop release chain (Electron + Python) - NEW in v3.16.0, standalone chain since v4.0.0
+  - 16 steps (0-15): preflight → failsafe backup & retention proof → `/pipeline-quality` → version bump → commit → merge to main (gate re-run post-rebase) → push
+  - **Step 7 local compilation**: TypeScript main + renderer, native module rebuild against the **Electron ABI** (not system Node), per-module load verification under the Electron runtime, frozen Python sidecar via PyInstaller
+  - **Step 8 package + sign**: electron-builder per platform, then Windows signtool verification, macOS codesign + hardened runtime + notarization staple check, Linux GPG detached signature, signed SHA256SUMS
+  - **Step 9 artifact validation** (no cloud equivalent): installer size/asar hygiene, **launch smoke test of the packaged binary**, clean-profile first-run, offline start, cross-platform matrix (universal binary check, deb dependency graph)
+  - **Step 11 distribution**: update feed version + checksum verification, staged percentage rollout (`stagingPercentage`), clean-VM install smoke, store submissions. **There is no server-side rollback** — halting the feed stops new installs only; clients that already updated need a superseding release
+  - **Steps 12-15**: post-publish verification & rollback gate, documentation, local worker purge, app-scoped cleanup
+  - Adds Electron security gates to **Step 2** (alongside `/pipeline-quality`): blocks `nodeIntegration: true`, `contextIsolation: false`, `webSecurity: false`
   - Post-deploy verification is telemetry-based (crash-free sessions, update adoption) — desktop cannot be rolled back server-side
 
-- **pipeline-full-build-cloud** - Cloud release variant (web/API/container) - NEW in v3.16.0
-  - **Step 8 build**: reproducible build with `SOURCE_DATE_EPOCH`, trimmed Go/Rust release binaries
-  - **Step 9 container**: provenance labels, credential-in-layer check, **SBOM** via syft, Trivy CVE gate (HIGH/CRITICAL, `--ignore-unfixed`), cosign image signing
-  - **Step 10 staging validation**: container smoke incl. **SIGTERM handling**, migration dry-run up/down/up against a **restored production schema** with lock inspection, staging deploy, Pact contract tests, k6 load thresholds
-  - **Step 12 production deploy**: expand-only migrations, canary at 10% with error-rate query, then rolling with automatic `rollout undo`
-  - Adds infra gates to Step 1: `kubectl --dry-run=server`, hadolint, non-root user check, secret-in-Dockerfile check, `oasdiff` breaking-change detection
-  - Rollback is one command and stays real because migrations only ever expand
+- **pipeline-full-build-cloud** - Cloud release chain (web/API/container) - NEW in v3.16.0, standalone chain since v4.0.0
+  - 14 steps (0-13): preflight → failsafe backup & retention proof → `/pipeline-quality` → version bump → commit → merge to main (gate re-run post-rebase) → push
+  - **Step 7 build**: reproducible build with `SOURCE_DATE_EPOCH`, trimmed Go/Rust release binaries, container image with provenance labels, credential-in-layer check, **SBOM** via syft, Trivy CVE gate (HIGH/CRITICAL, `--ignore-unfixed`), cosign image signing, staging validation (container smoke incl. SIGTERM handling, migration dry-run up/down/up against a **restored production schema** with lock inspection, Pact contract tests, k6 load thresholds)
+  - **Step 8 deploy to production**: **VPS + `docker compose` over SSH** as the primary path — a deploy-time assertion that the compose file resolves `image: ${APP_IMAGE}:${APP_VERSION}` (a deploy that could not be reversed fails here, loudly, rather than silently at rollback time), an explicit `RSYNC_EXCLUDES` list guarding the `--delete` sync, a rollback target captured as both a version pin and an image ID, and a health gate before success. Kubernetes — with its canary and `kubectl rollout undo` — is documented as a secondary branch
+  - **Step 9 production E2E**: critical-path tests with temporary accounts, mandatory teardown, and an orphan sweep
+  - **Steps 10-13**: post-deploy verification & rollback gate, documentation, worker purge (local + VPS), app-scoped cleanup — VPS is multi-app, so host-wide prunes are forbidden
+  - Adds infra gates to **Step 7b**: hadolint, non-root user check, secret-in-Dockerfile check, `docker compose config -q` validation, down-migration presence check, and `kubectl --dry-run=server` / `helm lint` on the Kubernetes secondary path
+  - Rollback is one command — rewrite `APP_VERSION` in the remote `.env` and `docker compose up -d --no-build` — and it stays real because the compose file is asserted at deploy time to resolve that pin, and Step 13 retains the image it points at by image ID
 
 - **github-actions** - CI/CD pipeline templates
   - Node.js CI/CD pipelines
@@ -474,7 +457,7 @@ the PDF content into context.
 
 **Code Excellence Guild:**
 - `documentation-specialist` → pdf, docx, pptx, xlsx
-- `code-reviewer` → security-audit, silent-failure-audit, semgrep-sast, pipeline-quality, pipeline-review
+- `code-reviewer` → semgrep-sast, silent-failure-audit, pipeline-quality
 - `performance-optimizer` → react-patterns (performance section)
 
 ### Quality Assurance Battalion
@@ -483,7 +466,7 @@ the PDF content into context.
 - `visual-regression-specialist` → canvas-design, artifacts-builder
 
 ### SecOps & Infrastructure Division
-- `devops-engineer` → github-actions, kubernetes patterns, semgrep-sast, pipeline-quality, pipeline-full-build
+- `devops-engineer` → github-actions, kubernetes patterns, semgrep-sast, pipeline-quality, pipeline-full-build-cloud, pipeline-full-build-desktop
 - `cyber-sentinel` → security-audit, silent-failure-audit, semgrep-sast (primary users)
 - `cloud-architect` → cloud deployment patterns
 
@@ -744,7 +727,7 @@ Before installing a skill:
 ### ✅ v3.6 (Released)
 - Semgrep SAST skill with MCP plugin integration for automated security scanning
 - Universal pipeline-quality skill: auto-detect stack, lint + Semgrep + tests + audit
-- Universal pipeline-full-build skill: version bump through release for desktop and cloud
+- Universal release pipeline skill (later split into cloud and desktop variants; superseded the shared spine in v4.0.0): version bump through release for desktop and cloud
 - 3 new skills bringing total to 31 custom skills
 - Updated agents: cyber-sentinel, code-reviewer, qa-engineer, automated-test-scripter, devops-engineer
 

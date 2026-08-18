@@ -95,7 +95,7 @@ Opus 5 dynamically decides when and how much reasoning is required. Extended-thi
 
 ## Task Budgets (Beta)
 
-For long-running agentic loops where cost must be bounded, set a task budget via the beta header `task-budgets-2026-03-13`. This gives the model a visible countdown across thinking, tool calls, tool results, and final output — advisory, not a hard cap (`max_tokens` remains the ceiling). Minimum 20K tokens. Natural fit for `pipeline-full-build`, `pipeline-quality`, and orchestrator-driven loops. Skip when quality matters more than speed.
+For long-running agentic loops where cost must be bounded, set a task budget via the beta header `task-budgets-2026-03-13`. This gives the model a visible countdown across thinking, tool calls, tool results, and final output — advisory, not a hard cap (`max_tokens` remains the ceiling). Minimum 20K tokens. Natural fit for `pipeline-quality`, `pipeline-full-build-cloud`/`pipeline-full-build-desktop`, and orchestrator-driven loops. Skip when quality matters more than speed.
 
 ## Recurring Tasks (`/loop`)
 
@@ -170,7 +170,7 @@ The harness itself changed substantially alongside the model. These affect how t
 | **Concurrent subagent cap: 20** | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` — the practical ceiling for orchestrator fan-out |
 | **`/subtask`** | Spawns an in-session subagent (took over the old `/fork` subagent behavior) |
 | **`/fork`** | Now copies the conversation into a new **background session** |
-| **`/code-review` runs as a background subagent** | Review work no longer fills the main conversation — complements `pipeline-review` |
+| **`/code-review` runs as a background subagent** | Review work no longer fills the main conversation — complements `pipeline-quality`'s review pass (steps 10-11) |
 | **`claude agents` view + `Notification` hook** | Fires on `agent_needs_input` / `agent_completed`. Background agents can commit, push, and open a draft PR when finished |
 | **Subagents inherit session thinking config** | Effort/thinking set once at session level now propagates |
 | **Sandbox settings** | `sandbox.network.strictAllowlist`, `sandbox.filesystem.disabled`, `sandbox.credentials`, `sandbox.allowAppleEvents` — relevant to `cyber-sentinel` and `devops-engineer` |
@@ -183,7 +183,7 @@ Claude plans a task, then spins up parallel subagents in a single session, with 
 
 **Size guideline (2.1.219):** workflows now default to **medium — aim for fewer than 15 agents**. Change it via the `workflowSizeGuideline` settings key or *Dynamic workflow size* in `/config`. Given Opus 5's delegation eagerness, treat the medium default as the right starting point rather than a limit to raise reflexively.
 
-The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build` skills are natural beneficiaries. Decompose explicitly, keep subagent tasks independent, and rely on the built-in verification of returned outputs — **do not add your own verification stage on top**, which Opus 5 makes redundant.
+The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build-cloud` / `pipeline-full-build-desktop` skills are natural beneficiaries. Decompose explicitly, keep subagent tasks independent, and rely on the built-in verification of returned outputs — **do not add your own verification stage on top**, which Opus 5 makes redundant.
 
 ## Subagent Advanced Features
 
@@ -234,7 +234,7 @@ Plugins now support `.lsp.json` for Language Server Protocol integrations, provi
 | **Sub-agents** | ✅ | ✅ | ❌ greyed out |
 | **Hooks** | ✅ | ✅ | ❌ greyed out |
 
-Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 35 skills and slash commands still work.
+Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 33 skills and slash commands still work.
 
 ### Installing into Cowork
 

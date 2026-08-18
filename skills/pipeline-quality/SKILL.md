@@ -1,11 +1,13 @@
 ---
 name: pipeline-quality
-description: Universal quality gate pipeline - lint, type check, a three-part security gate (security-guidance readiness, Semgrep SAST, /security-review), tests, happy/non-happy/edge case coverage matrix, dead code detection, and dependency audit. Records NOT RUN rather than passing a check that never executed. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
+description: Universal pre-merge pipeline - lint, type check, build, a three-part security gate, tests, a happy/non-happy/edge case matrix, local Playwright E2E, conditional knip/dead-code analysis, dependency audit, then a parallel simplification and severity-rated code review, a zero-technical-debt gate and a no-regression gate. Use to review a diff, simplify code, or run the full quality gate. Stops before git - no commit, no release, no deploy. Records NOT RUN rather than passing a check that never executed. Stack-adaptive for desktop (Electron+Python) and cloud (web/API) projects.
 ---
 
 # Pipeline Quality Gate
 
-Universal quality gate that auto-detects your stack and runs the appropriate checks. Use as a pre-merge gate or standalone quality check.
+Universal pre-merge pipeline that auto-detects your stack, runs the deterministic checks fast, then closes with the reasoning passes an agent performs over a diff. Use as a pre-merge gate, a standalone quality check, or when asked to review a diff or simplify code.
+
+**This skill never runs git, never tags, never deploys.** It stops before all of that — that boundary is the entire point of the v4.0.0 consolidation. Committing, merging, releasing, and deploying live in the release-automation variant skills (cloud and desktop), not here.
 
 ## When to Use This Skill
 
@@ -13,10 +15,11 @@ Universal quality gate that auto-detects your stack and runs the appropriate che
 - After completing a feature implementation
 - As a periodic codebase health check
 - When onboarding to a new project (baseline scan)
+- When asked to review a diff or simplify code — the reasoning passes (Steps 10–11) cover both
 
 ## Target Agents
 
-- `code-reviewer` - Quality gate during reviews
+- `code-reviewer` - Primary operator for Steps 10–11 (simplification + review); quality gate during reviews
 - `cyber-sentinel` - Security scanning pass
 - `qa-engineer` - Automated validation
 - `devops-engineer` - CI/CD pipeline integration
@@ -24,7 +27,27 @@ Universal quality gate that auto-detects your stack and runs the appropriate che
 
 ## Pipeline Steps
 
-### Step 1: Stack Detection
+| # | Step | Phase |
+|---|------|-------|
+| 0 | Stack detection, version consistency, knip decision | Setup |
+| 1 | Lint + auto-fix | Deterministic |
+| 2 | Type check | Deterministic |
+| 3 | Build | Deterministic |
+| 4 | Security gate (3-part) | Deterministic |
+| 5 | Tests | Deterministic |
+| 6 | Test case matrix (happy / non-happy / edge) | Deterministic |
+| 7 | Local E2E (Playwright) | Deterministic |
+| 8 | Dead code + knip | Deterministic |
+| 9 | Dependency audit | Deterministic |
+| 10 | Parallel analysis — one message | Reasoning |
+| 11 | Remediation including pre-existing | Reasoning |
+| 12 | Zero-debt gate | Consuming |
+| 13 | No-regression gate | Consuming |
+| 14 | Local worker purge | Cleanup |
+
+Steps 1–9 are cheap and fail fast, so they run before the reasoning passes. Steps 12–13 consume the output of both phases. **This skill never runs git, never tags, never deploys.**
+
+### Step 0a: Stack Detection
 
 Auto-detect the project stack to select appropriate tools:
 
@@ -37,12 +60,41 @@ Auto-detect the project stack to select appropriate tools:
 [ -f "Gemfile" ] && echo "RUBY"
 [ -f "composer.json" ] && echo "PHP"
 [ -f "pom.xml" ] || [ -f "build.gradle" ] && echo "JAVA"
-[ -f "electron-builder.yml" ] || [ -f "electron.vite.config.*" ] && echo "ELECTRON"
+[ -f "electron-builder.yml" ] || compgen -G "electron.vite.config.*" >/dev/null && echo "ELECTRON"
 [ -f "Dockerfile" ] || [ -f "docker-compose.yml" ] && echo "DOCKER"
 [ -f "tsconfig.json" ] && echo "TYPESCRIPT"
 ```
 
-### Step 2: Lint
+The `ELECTRON` vs. `DOCKER`/PaaS signal above is also what tells you which release variant to reach for afterwards — `pipeline-full-build-desktop` or `pipeline-full-build-cloud`. Each of those carries its own Stack Detection; nothing is handed off from here.
+
+### Step 0c: Version Consistency
+
+`plugin.json` (or `package.json` for non-plugin projects) is the single source of truth. Every declared version and count elsewhere must agree with it.
+
+```bash
+./scripts/check-version-consistency.sh
+```
+
+**Gate rule:** any disagreement blocks. This is the check that prevents three versions and three skill counts coexisting in one repository — a drift that is invisible in review because each individual file reads as internally correct.
+
+### Step 0d: knip Decision Rule
+
+```bash
+if [ -f knip.json ] || [ -f knip.jsonc ] || [ -f pnpm-workspace.yaml ] || [ -f turbo.json ] \
+   || grep -q '"workspaces"' package.json 2>/dev/null; then
+  echo "DEAD-CODE TOOL: knip"        # monorepo-aware: unused files, exports, deps
+elif [ -f tsconfig.json ]; then
+  echo "DEAD-CODE TOOL: ts-prune"    # single-package TS
+elif [ -f pyproject.toml ] || [ -f setup.py ]; then
+  echo "DEAD-CODE TOOL: vulture"
+else
+  echo "DEAD-CODE TOOL: NOT RUN — no applicable tool for this stack"
+fi
+```
+
+**Gate rule:** never skip silently. A stack with no applicable tool records `NOT RUN`, consistent with the security gate's semantics.
+
+### Step 1: Lint
 
 Run language-appropriate linters:
 
@@ -56,12 +108,44 @@ Run language-appropriate linters:
 | PHP | `./vendor/bin/phpstan analyse` |
 | Java | `./mvnw checkstyle:check` |
 
-### Step 3: Type Check (if applicable)
+### Step 2: Type Check (if applicable)
 
 | Stack | Type Check Command |
 |-------|-------------------|
 | TypeScript | `npx tsc --noEmit` |
 | Python | `mypy .` or `pyright` |
+
+### Step 3: Build
+
+The build a check-only gate needs is proof the project compiles/bundles cleanly — not the signed, packaged, or containerized artifact the variant skills produce for shipping. Run the stack-appropriate compile step:
+
+```bash
+set -euo pipefail
+
+# Every branch is guarded by its own stack marker. An UNGUARDED
+# `npm run build || npx vite build` is a trap under `set -e`: the command after
+# the final `||` is not exempt from errexit, so on a Go/Rust/Python project —
+# where both halves fail because there is no package.json — the whole block
+# terminates and the lines below never run. (A bare `[ -f x ] && cmd` is exempt,
+# because the failing test is not the final command in the list.)
+
+# Cloud / web (see pipeline-full-build-cloud Step 7 for the full release build)
+if [ -f package.json ] && grep -q '"electron"' package.json; then
+  # Desktop / Electron (see pipeline-full-build-desktop Steps 7-8 for native rebuilds, signing)
+  [ -f tsconfig.node.json ] && npx tsc -p tsconfig.node.json --noEmit   # main process, if split config exists
+  [ -f tsconfig.web.json ]  && npx tsc -p tsconfig.web.json  --noEmit   # renderer, if split config exists
+  npm run build || npx electron-vite build
+elif [ -f package.json ]; then
+  npm run build || npx vite build
+fi
+[ -f "pyproject.toml" ] && python -m build
+[ -f "go.mod" ]        && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" ./...
+[ -f "Cargo.toml" ]    && cargo build --release
+
+echo "Build: OK"   # a trailing guard so a false final `[ -f ]` test is not the block exit status
+```
+
+**Gate rule:** a build failure here blocks before any reasoning pass runs — it is cheap and fails fast. This step proves the code compiles; native module ABI rebuilds, code signing, notarization, and container/SBOM work belong to `pipeline-full-build-desktop` and `pipeline-full-build-cloud` respectively, not here.
 
 ### Step 4: Security Gate
 
@@ -154,7 +238,7 @@ git diff --name-only "$base"...HEAD | grep -Ev '(test|spec)'
 pytest --cov --cov-report=term-missing --cov-branch   # Python: branch coverage exposes untaken paths
 npx vitest run --coverage                              # Node/TS
 go test ./... -cover                                   # Go
-cargo tarpaulin --out Stdout                           # Rust
+cargo tarpaulin --out Stdout                            # Rust
 ```
 
 **Assertion quality check** — a test that runs but asserts nothing is worse than no test, because it reads as coverage:
@@ -168,7 +252,43 @@ grep -rnE 'assert\s*\(\s*(True|true|1)\s*\)|expect\(true\)\.toBe\(true\)' --incl
 
 **Gate rule:** any behavior changed in the diff that lacks a non-happy-path **or** an edge case test fails this step. Record each gap explicitly — "no edge cases apply" is a claim that must be justified in the report, not a default.
 
-### Step 7: Dead Code Detection
+### Step 7: Local E2E (Playwright)
+
+The **full** suite, against a server this step starts and owns. Never against production.
+
+```bash
+PORT="${E2E_PORT:-4099}"     # dedicated, not the dev port
+
+# 1. Kill stale listeners FIRST. On a shared box a suite can silently pass
+#    against a sibling app's server — the failure mode is a green run that
+#    proved nothing about this code.
+lsof -ti :"$PORT" | xargs -r kill -9
+
+# 2. Start the app and refuse to run specs until it is genuinely up
+# `npm run start` is a WRAPPER: $! is the npm process, not the server it
+# spawns. Killing the wrapper leaves the server holding $PORT, and the next
+# run's stale-listener sweep is the only thing that notices. Enable job
+# control so the wrapper gets its own process group, then kill the GROUP.
+set -m
+npm run start -- --port "$PORT" &
+APP_PGID=$!          # with `set -m`, the background job's PID is its process-group id
+trap 'kill -TERM -"$APP_PGID" 2>/dev/null; sleep 2; kill -KILL -"$APP_PGID" 2>/dev/null;
+      npm run e2e:teardown 2>/dev/null || true;
+      lsof -ti :"$PORT" | xargs -r kill -9' EXIT
+
+timeout 60 bash -c "until curl -fs localhost:$PORT/health >/dev/null; do sleep 1; done" \
+  || { echo "ABORT: app never became healthy on :$PORT"; exit 1; }
+
+# 3. Seed throwaway accounts in a scratch database
+npm run e2e:seed
+
+# 4. Run
+npx playwright test --config playwright.config.ts
+```
+
+**Gate rule:** the health assertion is not optional. A suite that starts before the server is ready either flakes or — worse on a shared host — connects to whatever else is listening. Teardown runs via `trap` so a failed run still cleans up. If the project has no local E2E suite, record `NOT RUN`, not `SKIP`.
+
+### Step 8: Dead Code Detection
 
 Find unused exports, variables, imports, and unreachable code:
 
@@ -186,12 +306,13 @@ Find unused exports, variables, imports, and unreachable code:
 | Java | SpotBugs (unused) | `./mvnw spotbugs:check` |
 
 **Notes:**
+- Use the tool selected by Step 0d's knip decision rule as the primary signal for Node/TS; the table above lists fallbacks by stack.
 - For Python: prefer `vulture` for comprehensive dead code, `ruff --select F401,F841` for just unused imports/variables
-- For Node/TS: prefer `knip` for monorepo-aware analysis (unused files, exports, dependencies); fall back to `ts-prune` for simpler unused export detection; use ESLint `no-unused-vars` as baseline
+- For Node/TS: `knip` when the Step 0d rule selects it (monorepo-aware: unused files, exports, dependencies); fall back to `ts-prune` for simpler unused export detection; use ESLint `no-unused-vars` as baseline
 - For Rust: the compiler already warns on dead code by default; just check build output
 - Semgrep also catches some dead code patterns via `p/javascript` and `p/python` rulesets (already run in Step 4)
 
-### Step 8: Dependency Audit
+### Step 9: Dependency Audit
 
 | Stack | Audit Command |
 |-------|--------------|
@@ -202,6 +323,235 @@ Find unused exports, variables, imports, and unreachable code:
 | Ruby | `bundle audit check --update` |
 | PHP | `composer audit` |
 
+## Reasoning Phase (Steps 10–11)
+
+Steps 1–9 are deterministic shell gates. Steps 10–11 are the **judgment passes** an agent performs over the diff — the reasoning counterpart absorbed into this skill from the former standalone reasoning skill. They run only after Steps 1–9 pass, because there is no reason to spend a reasoning pass on a diff that does not lint, build, or pass its tests.
+
+**THE INVOKING AGENT APPLIES EDITS.** Steps 10–11 recommend and, where the invoking agent has write access, apply changes. The `code-reviewer` agent — the primary operator for this phase — declares `tools: Read, Grep, Glob, Bash` and has **no `Edit` or `Write` tool**. It cannot modify files itself. When `code-reviewer` runs Steps 10–11 standalone, its output is a report the invoking agent or a human applies; do not expect `code-reviewer` to have silently patched the diff. An orchestrator that wants edits applied automatically must delegate to an agent with `Edit`/`Write` (e.g. a framework specialist or `qa-engineer`) or apply the recommendations itself.
+
+### Step 10: Parallel Analysis — One Message
+
+Run the simplification lens and the review lens over the same diff in parallel, not sequentially — they read the same code and produce independent, non-overlapping findings, so there is no dependency forcing a second pass to wait on the first.
+
+**Scope detection** (shared by both lenses). Default to the working-tree/branch diff, not the whole repo:
+
+```bash
+# Prefer the branch diff against the default branch
+base=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null)
+git diff --stat "$base"...HEAD 2>/dev/null || git diff --stat HEAD
+
+# Fall back to unstaged + staged changes if not on a feature branch
+git diff --stat && git diff --cached --stat
+```
+
+If there is no diff (e.g. reviewing an existing file set), review the explicitly named files only.
+
+#### Lens 1: Simplification (behavior-preserving, five lenses)
+
+Quality-only cleanup. **Does not hunt for bugs** — it makes correct code clearer. Every change must preserve behavior; tests must still pass afterward.
+
+Review the diff for:
+
+1. **Reuse** — Is this reimplementing something the codebase already provides? Replace with the existing helper/util/component.
+2. **Simplification** — Unnecessary complexity, nested conditionals that flatten, redundant intermediate variables, dead branches.
+3. **Efficiency** — Obvious wasteful work (repeated lookups, needless allocations, O(n²) where O(n) is trivial) — only when the fix is clear and behavior-preserving.
+4. **Altitude** — Code sitting at the wrong abstraction level; logic that belongs in an existing layer.
+5. **Naming & readability** — Unclear names, comments that restate the code, missing names for magic values.
+
+**Constraint:** the *minimal* set of edits. Do not reformat untouched code, do not rename for taste, do not change public APIs. After edits are applied (by an agent with write access — see above), confirm the test suite still passes (Step 5).
+
+**Output:** list of simplifications recommended (file:line → what changed → why), or "No simplifications needed."
+
+#### Lens 2: Review (severity-rated, six dimensions)
+
+The judgment pass. Delegate to the **`code-reviewer` agent** for a rigorous, security-aware review; it routes deep security/performance/refactor concerns to specialist sub-agents (`cyber-sentinel`, `performance-optimizer`). When running inline, evaluate each dimension below.
+
+| Dimension | What to check |
+|-----------|---------------|
+| **Correctness** | Logic errors, off-by-one, wrong conditionals, unhandled return values, race conditions, incorrect assumptions about inputs |
+| **Security** | Input validation, injection (SQL/command/XSS), authn/authz gaps, secrets in code, unsafe deserialization, SSRF — prefer secure-by-default libraries over hand-rolled crypto/sanitizers |
+| **Error handling** | Swallowed exceptions, silent failures, missing error paths, single-path detection (see `silent-failure-audit`) |
+| **Performance** | N+1 queries, unbounded loops/memory, blocking I/O on hot paths, missing pagination/indexes |
+| **Maintainability** | SOLID / DRY / KISS violations, leaky abstractions, hidden coupling, untestable seams |
+| **Test adequacy** | New logic without tests, missing edge/boundary/error cases, assertions that don't assert |
+
+**Severity scale** (four levels, used everywhere in this pipeline):
+
+| Severity | Meaning | Gate |
+|----------|---------|------|
+| 🔴 **Critical** | Security hole, data loss, or guaranteed incorrect behavior | **Blocks** |
+| 🟠 **High** | Likely bug or real risk under realistic conditions | **Blocks** |
+| 🟡 **Medium** | Maintainability/perf concern; should fix soon | Non-blocking |
+| 🟢 **Low** | Nit, style, optional improvement | Non-blocking |
+
+**Gate rule:** any 🔴 Critical or 🟠 High finding fails the review. A finding that was never evaluated (the reviewer ran out of scope, a dimension above was skipped) is recorded as `NOT RUN` for that dimension — never folded into "no findings."
+
+### Step 11: Remediation Including Pre-Existing
+
+Apply the findings from both lenses. Two distinct buckets, both in scope:
+
+1. **Findings on the changed diff** — the direct output of Step 10.
+2. **Pre-existing issues surfaced incidentally** — a Critical or High finding in code the diff merely touches (not authored by this change) still blocks Step 12. The zero-debt gate does not grandfather debt just because this diff didn't create it; it does require the finding to be **named**, not silently absorbed into scope creep.
+
+**Constraint restated: the invoking agent applies edits.** `code-reviewer` (Read/Grep/Glob/Bash only) reports; it does not patch. Remediation happens either by the orchestrator applying the recommended diff, or by handing the report to an agent that holds `Edit`/`Write`.
+
+**Output:** remediation applied (file:line → what changed), or the reason a finding was deferred (feeds Step 12's named-deferral rule).
+
+### Step 12: Zero-Debt Gate
+
+Every severity blocks. Debt is defined concretely so this is enforceable rather than aspirational.
+
+| Blocks | Detection |
+|--------|-----------|
+| `TODO`/`FIXME` with no linked task id | shell block below |
+| `as any` / `# type: ignore` with no justification comment | shell block below |
+| Empty `catch` blocks | `/silent-failure-audit` |
+| `.backup` / `.old` / `.deprecated` files | shell block below |
+| Hardcoded secrets, mock data on production paths | Semgrep (step 4) + grep |
+| Dead code | step 8 output |
+| Any review finding, Critical through Low | step 10 output |
+
+The first three run here. They live in a fenced block, **not** in the table
+above: a markdown table forces `|` to be written `\|`, and a command copied out
+of a table cell therefore searches for a literal backslash — `(TODO\|FIXME)`
+matches nothing, and the `because`-justification filter never fires, so a
+properly-justified `as any` blocks anyway while a bare `TODO` sails through.
+
+```bash
+SRC_INCLUDES=(--include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx'
+              --include='*.py' --include='*.go' --include='*.rs' --include='*.rb'
+              --include='*.php' --include='*.java' --include='*.cs')
+EXCL=(--exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist --exclude-dir=vendor)
+
+# 1. TODO / FIXME with no linked task id (#123 or ABC-123)
+grep -rnE '(TODO|FIXME)' "${SRC_INCLUDES[@]}" "${EXCL[@]}" . \
+  | grep -vE '#[0-9]+|[A-Z]+-[0-9]+' && echo "BLOCK: unlinked TODO/FIXME"
+
+# 2. Escape hatches with no justification comment on the same line
+grep -rnE 'as any|# type: ignore|@ts-ignore|@ts-expect-error|# noqa' "${SRC_INCLUDES[@]}" "${EXCL[@]}" . \
+  | grep -viE '(//|#).*(because|justif)' && echo "BLOCK: unjustified type escape hatch"
+
+# 3. Abandoned-file suffixes
+find . -path ./node_modules -prune -o -path ./.git -prune -o \
+     \( -name '*.backup' -o -name '*.old' -o -name '*.deprecated' \) -print
+```
+
+**Named deferral, never silent.** A deferral is permitted only when it is (a) justified in this run's report and (b) written to `PLAN.md`. An undocumented deferral is a gate failure. The principle is the same one the security gate uses: nothing is carried quietly. Any of the checks above that could not run for lack of a tool records `NOT RUN` and is not treated as a pass.
+
+### Step 13: No-Regression Gate
+
+Five sub-checks. Each either runs for real or is recorded as `NOT RUN` — never as a silent pass, and never as a bare comment describing a check that does not execute.
+
+```bash
+prev_tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
+
+# 1. Test count must not fall versus the previous release. Count test
+#    DECLARATIONS in test files, stack-adaptively — not lines of a manifest,
+#    which measures nothing about test coverage.
+#
+#    Filtering is done with grep, NOT with a pathspec: `git ls-tree` does not
+#    honour glob pathspecs (it matches them as literal path prefixes and
+#    rejects `:(glob)` magic), so `git ls-tree -r --name-only $ref -- '*test*'`
+#    silently returns nothing and the whole check degrades to `0 -lt 0` — a
+#    fabricated measurement that reads as a pass. `git diff` DOES honour
+#    globs, which is why sub-check 2 below may still use a pathspec.
+TEST_NAME_RE='(test|spec|Test|Spec)'
+TEST_LANG_RE='\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|rb|php|java|cs|kt|swift)$'
+TEST_DECL_RE='\b(it|test|describe)[[:space:]]*\(|\bdef[[:space:]]+test_|\bfunc[[:space:]]+Test|#\[test\]|\[TestMethod\]|\bpublic[[:space:]]+void[[:space:]]+test'
+
+list_test_files() {   # <ref>|WORKTREE -> paths
+  if [ "$1" = "WORKTREE" ]; then
+    git ls-files --cached --others --exclude-standard
+  else
+    git ls-tree -r --name-only "$1"
+  fi | grep -E "$TEST_NAME_RE" | grep -E "$TEST_LANG_RE" || true
+}
+
+count_tests() {       # <ref>|WORKTREE -> integer count of test declarations
+  local ref="$1" f
+  list_test_files "$ref" | while IFS= read -r f; do
+    if [ "$ref" = "WORKTREE" ]; then cat -- "$f" 2>/dev/null
+    else git show "$ref:$f" 2>/dev/null; fi
+  done | grep -cE "$TEST_DECL_RE" || true
+}
+
+# HEAD is the WRONG comparison point: both release variants call this gate at
+# their Step 2 and do not commit until Step 4, so at gate time HEAD is the
+# pre-change state. Compare the WORKING TREE — the state actually being gated.
+if [ "$(list_test_files WORKTREE | wc -l)" -eq 0 ]; then
+  echo "1. Test count:  NOT RUN — no test-counting rule for this stack (no test/spec files in a countable language)"
+elif [ -z "$prev_tag" ]; then
+  echo "1. Test count:  NOT RUN — no previous tag to compare against (first release)"
+else
+  prev_count=$(count_tests "$prev_tag")
+  head_count=$(count_tests WORKTREE)
+  echo "test declarations: previous($prev_tag)=$prev_count working-tree=$head_count"
+  [ "$head_count" -lt "$prev_count" ] \
+    && { echo "ABORT: test count dropped ($prev_count -> $head_count)"; exit 1; }
+fi
+
+# 2. No newly-skipped or newly-focused tests without a justification comment.
+#    `git rev-list --max-parents=0` emits one line PER ROOT; take the last.
+#    Diff against the working tree (no `...HEAD`), same reason as sub-check 1.
+base_ref="${prev_tag:-$(git rev-list --max-parents=0 HEAD | tail -1)}"
+merge_base=$(git merge-base "$base_ref" HEAD 2>/dev/null || echo "$base_ref")
+newly_skipped=$( {
+  git diff "$merge_base" -- '*test*' '*spec*' '*Test*'
+  # brand-new test files are untracked and invisible to `git diff`; every line
+  # in them is an added line, so render them that way before the same filter.
+  git ls-files --others --exclude-standard \
+    | grep -E "$TEST_NAME_RE" | grep -E "$TEST_LANG_RE" \
+    | while IFS= read -r f; do sed 's/^/+/' -- "$f"; done
+} | awk '
+  BEGIN {
+    just = "(because|#[0-9]+|[A-Z]+-[0-9]+)"
+    # anchored on the call parens so `.onlyChild` / `.skipped` do not match
+    skip = "(\\.skip[ \t]*\\(|\\.only[ \t]*\\(|[^A-Za-z0-9_]xit[ \t]*\\(|[^A-Za-z0-9_]xdescribe[ \t]*\\(|@pytest\\.mark\\.skip|[^A-Za-z0-9_]t\\.Skip[ \t]*\\()"
+  }
+  { p2 = p1; p1 = cur; cur = $0 }
+  cur ~ /^\+/ && cur ~ skip {
+    # justification may sit on the skip line or on either of the two lines above it
+    if (cur ~ just || p1 ~ just || p2 ~ just) next
+    print cur
+  }')
+if [ -n "$newly_skipped" ]; then
+  echo 'ABORT: newly skipped/focused tests with no justification (a because-note or an issue id):'
+  echo "$newly_skipped"
+  exit 1
+fi
+echo "2. Newly-skipped tests: none without justification"
+
+# 3-5. These genuinely need per-project wiring; emit as NOT RUN rather than
+#      silently absent, so they surface in the report as unexecuted checks.
+echo "3. Coverage vs. previous release:      NOT RUN — requires per-project wiring: a coverage threshold plus a stored baseline (previous release's coverage %) to diff against"
+echo "4. Previously-green E2E specs:         NOT RUN — requires per-project wiring: a record of which Step 7 specs passed on the previous release, to detect specs that flipped or were silently removed"
+echo "5. Artifact size vs. previous release: NOT RUN — requires per-project wiring: a stored baseline artifact/bundle size and an acceptable-drift threshold"
+```
+
+**Gate rule:** a suite that shrank is a regression even when every remaining test passes. Deleting a failing test is the cheapest way to make a pipeline green, and sub-check 1 exists to make it visible — by counting actual test declarations, not a proxy. If there is no previous tag to compare against (first release), sub-check 1 records `NOT RUN` rather than a vacuous pass. Sub-checks 3–5 are unimplementable without project-specific configuration (a coverage tool's threshold, a baseline artifact size); recording them as `NOT RUN` with the exact wiring they need is the same principle Step 4's security gate already applies — an unexecuted check is never reported as passing.
+
+### Step 14: Local Worker Purge
+
+```bash
+# Stale dev servers, orphaned test runners and detached build jobs left by
+# earlier runs. Scope by WORKING DIRECTORY — a CPU threshold alone lists
+# sibling projects' processes, and "review, then kill by PID" on that list is
+# how someone else's build dies. A blind pkill is a defect even when it works.
+proc_cwd() {   # pid -> working directory (Linux /proc, macOS lsof fallback)
+  readlink -e "/proc/$1/cwd" 2>/dev/null \
+    || lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1
+}
+
+PROJ=$(pwd -P)
+ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50 {print $1}' | while read -r pid; do
+  cwd=$(proc_cwd "$pid"); [ -n "$cwd" ] || continue          # unreadable /proc -> not ours
+  case "$cwd" in "$PROJ"|"$PROJ"/*) ps -p "$pid" -o pid=,pcpu=,args= ;; esac
+done | head -20
+# Every PID printed above has its cwd inside this project. Review, then kill.
+```
+
+**Gate rule:** never `pkill -f node`. On a machine running sibling projects that stops someone else's work.
+
 ## Output Format
 
 ```markdown
@@ -209,22 +559,38 @@ Find unused exports, variables, imports, and unreachable code:
 
 | Step | Status | Details |
 |------|--------|---------|
-| Stack Detection | [stack] | Auto-detected: [languages/frameworks] |
+| 0a Stack Detection | [stack] | Auto-detected: [languages/frameworks] |
+| 0c Version Consistency | PASS/FAIL | ./scripts/check-version-consistency.sh result |
+| 0d knip Decision | [tool]/NOT RUN | tool selected for this stack |
 | Lint | PASS/FAIL | [error count] errors, [warning count] warnings |
-| Type Check | PASS/FAIL/SKIP | [error count] type errors |
+| Type Check | PASS/FAIL/NOT RUN | [error count] type errors |
+| Build | PASS/FAIL | compile/bundle result |
 | security-guidance | ARMED/NOT RUN | hooks armed; agent SDK importable |
-| Semgrep SAST | PASS/FAIL/**NOT RUN** | [finding count] findings ([critical]/[high]/[medium]) |
-| Security Review | PASS/FAIL/**NOT RUN** | [n] HIGH, [n] MEDIUM — HIGH blocks |
+| Semgrep SAST | PASS/FAIL/NOT RUN | [finding count] findings ([critical]/[high]/[medium]) |
+| Security Review | PASS/FAIL/NOT RUN | [n] HIGH, [n] MEDIUM — HIGH blocks |
 | Tests | PASS/FAIL | [passed]/[total] tests, [coverage]% coverage |
 | Test Case Matrix | PASS/FAIL | [n] behaviors changed: [n] happy, [n] non-happy, [n] edge — [n] gaps |
-| Dead Code | PASS/FAIL/SKIP | [count] unused exports/vars/imports found |
+| Local E2E | PASS/FAIL/NOT RUN | [passed]/[total] specs |
+| Dead Code | PASS/FAIL/NOT RUN | [count] unused exports/vars/imports found |
 | Dependency Audit | PASS/FAIL | [vuln count] vulnerabilities found |
+| Simplification (Lens 1) | DONE | [n] simplifications recommended/applied |
+| Review (Lens 2) | PASS/FAIL | 🔴[n] 🟠[n] 🟡[n] 🟢[n] |
+| Zero-Debt Gate | PASS/FAIL | [n] debt items, [n] named deferrals |
+| No-Regression Gate | PASS/FAIL/NOT RUN | test count / coverage / bundle size vs. previous release |
+| Worker Purge | DONE | [n] stale processes reviewed |
 
 ### Test Case Matrix Detail
 
 | Changed Behavior | Happy | Non-Happy | Edge | Gap |
 |------------------|-------|-----------|------|-----|
 | [function/endpoint] | ✅ | ✅ | ❌ | Missing empty-input and max-length cases |
+
+### Review Findings
+
+| # | Severity | Dimension | File:Line | Finding | Suggested Fix |
+|---|----------|-----------|-----------|---------|---------------|
+| 1 | 🔴 Critical | Security | api/upload.ts:88 | Unvalidated path → traversal | Resolve + allowlist base dir |
+| 2 | 🟡 Medium | Perf | db/users.ts:30 | N+1 on roles | Eager-load with join |
 
 ### Gate Result: PASS / FAIL
 
@@ -236,65 +602,21 @@ Find unused exports, variables, imports, and unreachable code:
 - [Non-blocking suggestions]
 ```
 
-## Desktop Variant (Electron + Python)
+## CI/CD Integration
 
-For Electron/desktop projects, add these checks:
-
-```bash
-# Electron-specific
-npx electron-builder --check  # Validate build config
-npm run typecheck              # Full TS check including main/renderer
-
-# Python backend (if hybrid)
-ruff check . --fix
-semgrep scan --config auto --error .
-pytest -x --tb=short
-```
-
-## Cloud Variant (Web/API)
-
-For cloud/web projects, add infrastructure checks:
-
-```bash
-# Infrastructure validation
-[ -f "terraform" ] && terraform validate
-[ -f "Dockerfile" ] && docker build --check .
-[ -f "k8s/" ] && kubectl apply --dry-run=client -f k8s/
-
-# API contract validation
-[ -f "openapi.yaml" ] && npx @redocly/cli lint openapi.yaml
-```
-
-## CI/CD Template (GitHub Actions)
+Invoke the gate as **one opaque step** — never re-list its individual checks in a workflow file:
 
 ```yaml
-name: Quality Gate
-on: [pull_request]
-
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Lint
-        run: |  # Stack-specific lint command
-
-      - name: Security Gate (Semgrep SAST)
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: p/default p/owasp-top-ten p/secrets
-
-      - name: Tests
-        run: |  # Stack-specific test command
-
-      - name: Test Case Matrix (branch coverage)
-        run: |  # e.g. pytest --cov --cov-branch --cov-fail-under=80
-
-      - name: Dependency Audit
-        run: |  # Stack-specific audit command
+- name: Quality Gate
+  run: |  # invoke /pipeline-quality (or the project's equivalent gate command)
 ```
+
+A partial copy of Steps 0–14 is a second, lossy definition of the gate: it silently stops covering whatever check is added here later, the same drift `pr-ready` must guard against. If you need a fuller GitHub Actions template — matrix builds, caching, artifact upload — see the `github-actions` skill; it should still call this gate as a single step, not re-implement it.
 
 ## Position in the Release Chain
 
-This skill is **Step 1 of the Verify phase** in `/pipeline-full-build`. It runs before `/pipeline-review` because it is cheap and fails fast — no reason to spend reasoning passes on a diff that does not lint or compile.
+This skill is the **checks-only gate** that precedes release automation. It is called by `pipeline-full-build-cloud` and `pipeline-full-build-desktop` as their pre-build quality gate, and can be invoked standalone for a diff review or simplification pass.
+
+- **`pipeline-full-build-cloud`** and **`pipeline-full-build-desktop`** are the two callers: each runs this skill's Steps 0–14 before proceeding to its own Phase 3 build (native compilation, container/SBOM, signing, deploy). Neither variant re-implements lint, security, or test logic — they consume this skill's PASS/FAIL result.
+- **The invoking agent applies edits.** `code-reviewer`, the primary operator for Steps 10–11, declares `tools: Read, Grep, Glob, Bash` and has no `Edit` or `Write` tool — it cannot write the simplifications or remediations it recommends. An orchestrator or an agent with write access applies them; do not expect `code-reviewer` alone to leave the working tree changed.
+- This skill stops at Step 14. Commit, merge, tag, release, and deploy are entirely out of scope here and belong to the variant skills.

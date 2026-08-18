@@ -415,7 +415,6 @@ def fetch_url(user_url):
 
 ## Additional Resources
 
-For more detailed guidance, see:
-- [penetration-testing.md](penetration-testing.md) - Penetration testing procedures
-- [compliance.md](compliance.md) - GDPR, HIPAA, SOC 2 compliance
-- [incident-response.md](incident-response.md) - Security incident response plan
+- `/semgrep-sast` — automated SAST scanning via the Semgrep MCP plugin
+- `/silent-failure-audit` — swallowed errors, hardcoded status, no-op handlers
+- `/pipeline-quality` step 4 — the three-part security gate this skill feeds

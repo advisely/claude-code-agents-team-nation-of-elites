@@ -10,10 +10,10 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 
 [![Agents](https://img.shields.io/badge/agents-74-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
 [![Divisions](https://img.shields.io/badge/divisions-12-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
-[![Skills](https://img.shields.io/badge/skills-32-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
+[![Skills](https://img.shields.io/badge/skills-33-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-3.13.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-5-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-opus-5)
 [![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-sonnet-5)
 
@@ -137,7 +137,7 @@ Nation of Elites is a third-party plugin, so you add its marketplace first, then
 /plugin install nation-of-elites@nation-of-elites
 ```
 
-All 74 agents become available as scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`), plus the 35 skills.
+All 74 agents become available as scoped subagents (e.g. `nation-of-elites:03_Engineering_Division:backend-developer`), plus the 33 skills.
 
 To hack on the plugin locally without installing, load it straight from a clone:
 
@@ -467,7 +467,7 @@ agents/
 | **Official Plugins** | Auto-detection and setup of Anthropic official plugins (GitHub, Slack, Jira, etc.) |
 | **Semgrep SAST** | Automated security scanning via CLI and MCP plugin integration |
 | **Universal Pipelines** | Stack-adaptive quality gates and full build pipelines |
-| **Claude Cowork** (research preview) | Full 74-agent roster + 35 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
+| **Claude Cowork** (research preview) | Full 74-agent roster + 33 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
 
 ### Thinking Policies & Budgets
 
@@ -506,7 +506,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 ## Agent Skills System
 
-**35 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
+**33 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
 
 ### How Skills Work
 
@@ -552,14 +552,15 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 </details>
 
 <details>
-<summary><strong>Security & DevOps (7 skills)</strong></summary>
+<summary><strong>Security & DevOps (8 skills)</strong></summary>
 
 | Skill | Purpose | Preloaded By |
 |:---|:---|:---|
 | security-audit | OWASP Top 10 checklist | cyber-sentinel |
 | semgrep-sast | SAST scanning + MCP plugin | cyber-sentinel, code-reviewer, qa-engineer |
-| pipeline-quality | Universal quality gate | code-reviewer, qa-engineer, devops-engineer |
-| pipeline-full-build | Universal build pipeline | devops-engineer |
+| pipeline-quality | Universal quality gate — lint, types, build, 3-part security gate, tests, happy/non-happy/edge matrix, dead code, dep audit, simplify + severity-rated review. Stops before git | code-reviewer, qa-engineer, devops-engineer |
+| pipeline-full-build-cloud | Standalone release chain for web/API apps on a VPS or container platform — failsafe backup with remote DB dump, quality gate, container build with SBOM and CVE gate, staging validation against a restored production schema, deploy over SSH, production smoke, one-command rollback, app-scoped cleanup | devops-engineer, qa-engineer |
+| pipeline-full-build-desktop | Standalone release chain for installable desktop apps — failsafe backup, quality gate, native module rebuilds against the Electron ABI, code signing and notarization, packaged-binary launch/offline/clean-VM validation, staged update-feed publish, telemetry gate, local cleanup | devops-engineer, qa-engineer |
 | github-actions | CI/CD templates | devops-engineer |
 | kubernetes-deployment | K8s patterns, autoscaling | devops-engineer |
 | terraform-patterns | IaC modules, state mgmt | cloud-architect |
@@ -679,7 +680,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v3.14.0** -- Claude Opus 5 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v4.0.0** -- Claude Opus 5 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

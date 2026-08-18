@@ -5,7 +5,7 @@ description: Expert cybersecurity specialist focused on vulnerability identifica
 tools: Read, Grep, Glob, Bash
 model: opus
 memory: project
-skills: [security-audit, semgrep-sast]
+skills: [security-audit, silent-failure-audit, semgrep-sast]
 ---
 
 # Cyber Sentinel

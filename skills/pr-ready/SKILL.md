@@ -9,56 +9,21 @@ Complete pre-PR checklist with automated git operations.
 
 ## Workflow Phases
 
-### Phase 1: Quality Checks
+### Phase 1: Quality Gate
 
-#### Step 1: Run Tests
-```bash
-# Auto-detect and run test suite
-npm test || yarn test || pnpm test || pytest || go test ./... || bundle exec rspec || cargo test
-```
-- All tests must pass before proceeding
-- Report coverage if available
-
-#### Step 2: Run Linter
-```bash
-# Auto-detect and run linter
-npm run lint || yarn lint || ruff check . || golangci-lint run || rubocop || cargo clippy
-```
-- Auto-fix what's possible
-- Report remaining issues
-
-#### Step 3: Type Check (if applicable)
-```bash
-# TypeScript/Python type checking
-npx tsc --noEmit || mypy . || pyright
-```
-
-#### Step 4: Security Scan
-Run Semgrep SAST scan (if available):
-```bash
-semgrep scan --config auto --error .
-```
-
-Check for:
-- [ ] Semgrep findings (ERROR severity blocks merge)
-- [ ] Hardcoded secrets (API keys, passwords, tokens)
-- [ ] SQL injection vulnerabilities
-- [ ] XSS vulnerabilities
-- [ ] Insecure dependencies (`npm audit` / `pip-audit`)
-- [ ] Sensitive files in .gitignore
-
-#### Step 5: Simplification + Review Pass
-Delegate the behavior-preserving cleanup and the severity-rated review to the dedicated reasoning skill instead of inlining the checklist:
+#### Step 1: Run the Gate
 
 ```
-/pipeline-review
+/pipeline-quality
 ```
 
-This runs Pass 1 (simplification: reuse, redundancy, naming, efficiency — tests still pass) and Pass 2 (review: correctness, security, error handling, performance, maintainability via the `code-reviewer` agent). Any 🔴 Critical / 🟠 High finding blocks the PR until resolved.
+Runs the entire gate — lint, type check, build, the three-part security gate, tests, the test case matrix, local E2E, dead code, dependency audit, the parallel review fan-out, and the zero-debt and no-regression gates.
+
+**Do not inline these checks here.** A check added to `/pipeline-quality` must take effect everywhere it is used; a duplicated list silently stops running the new check while continuing to report a pass.
 
 ### Phase 2: Documentation
 
-#### Step 6: Documentation Check
+#### Step 2: Documentation Check
 - [ ] Code comments for complex logic (only where needed)
 - [ ] README updated if API/usage changed
 - [ ] CHANGELOG entry added with version
@@ -66,14 +31,14 @@ This runs Pass 1 (simplification: reuse, redundancy, naming, efficiency — test
 
 ### Phase 3: Git Operations
 
-#### Step 7: Stage Changes
+#### Step 3: Stage Changes
 ```bash
 git status
 git diff --stat
 git add -p  # Interactive staging (or specific files)
 ```
 
-#### Step 8: Create Commit
+#### Step 4: Create Commit
 ```bash
 git commit -m "$(cat <<'EOF'
 feat(scope): Brief description of change
@@ -94,7 +59,7 @@ Follow conventional commits:
 - `test:` - Adding tests
 - `chore:` - Maintenance
 
-#### Step 9: Push to Remote
+#### Step 5: Push to Remote
 ```bash
 git push origin HEAD
 # Or create new branch and push
@@ -104,7 +69,7 @@ git push -u origin feature/branch-name
 
 ### Phase 4: Create Pull Request
 
-#### Step 10: Create PR with GitHub CLI
+#### Step 6: Create PR with GitHub CLI
 ```bash
 gh pr create \
   --title "feat(scope): Brief description" \
@@ -129,7 +94,7 @@ EOF
 )"
 ```
 
-#### Step 11: Add PR Comments (Optional)
+#### Step 7: Add PR Comments (Optional)
 ```bash
 # Add review comments for specific lines
 gh pr comment --body "Note: This section handles edge case X"
@@ -140,31 +105,13 @@ gh pr edit --add-reviewer username1,username2
 
 ### Phase 5: Release (Optional)
 
-#### Step 12: Create Release Version
-Only if user requests release:
+#### Step 8: Route to the Full Release Chain
 
-```bash
-# Bump version (detect package manager)
-npm version patch|minor|major || poetry version patch|minor|major
+Only if the user requests a release. Do not hand-roll the version bump and tag here — route to the full chain, which carries the failsafe backup, the post-rebase gate re-run and the post-deploy verification that this phase previously lacked:
 
-# Create git tag
-git tag -a v1.2.3 -m "Release v1.2.3: Brief description"
-git push --tags
-
-# Create GitHub release
-gh release create v1.2.3 \
-  --title "v1.2.3" \
-  --notes "$(cat <<'EOF'
-## What's Changed
-- Feature 1
-- Fix 2
-
-## Contributors
-- @username
-
-**Full Changelog**: https://github.com/owner/repo/compare/v1.2.2...v1.2.3
-EOF
-)"
+```
+/pipeline-full-build-cloud      # or
+/pipeline-full-build-desktop
 ```
 
 ## Output Format
@@ -179,7 +126,7 @@ EOF
 | Lint | ✅ PASS | 0 errors, 2 warnings (ignored) |
 | Types | ✅ PASS | No type errors |
 | Security | ✅ PASS | No vulnerabilities |
-| Simplify + Review | ✅ PASS | Removed 12 lines; 0 blocking findings (/pipeline-review) |
+| Simplify + Review | ✅ PASS | Removed 12 lines; 0 blocking findings (/pipeline-quality steps 10-11) |
 
 ### Documentation
 - [x] Comments adequate
