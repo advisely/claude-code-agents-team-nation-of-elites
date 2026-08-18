@@ -1,298 +1,586 @@
 ---
 name: pipeline-full-build-cloud
-description: Cloud release variant for web/API apps - container build with SBOM and CVE gate, migration dry-run, staging deploy with contract and load validation, canary/rolling production deploy, live health and version assertion, and one-command rollback. Supplies Phase 3 and Step 12 of pipeline-full-build.
+description: Complete standalone release chain for web/API apps deployed to a VPS or container platform - preflight, failsafe backup including a remote database dump, the full quality gate, commit/merge/push, container or compose build, GitHub release, deploy over SSH with an image-ID rollback target, production Playwright smoke with temporary accounts, post-deploy verification, documentation, worker purge and app-scoped cleanup.
 ---
 
-# Pipeline Full Build — Cloud Variant
+# Pipeline Full Build — Cloud
 
-The **cloud** half of `/pipeline-full-build`. Supplies the build, test, validation, and deploy steps for containerized web and API services.
+A complete, standalone release chain for web/API apps and background services deployed to infrastructure you operate — a VPS running `docker compose` over SSH, or (as a documented secondary path) a Kubernetes cluster. This skill references no parent skill: it runs preflight through cleanup on its own, Steps 0–13.
 
-Where the desktop variant validates an artifact that will run on machines you do not control, the cloud variant validates a service **you do control but that is live for everyone at once**. The consequence: cloud gets a staging environment and a reversible rollout, and in exchange it must validate things desktop never faces — schema migrations, contract compatibility with existing clients, and behavior under load.
-
-## Division of Labor
-
-| Skill | Owns |
-|-------|------|
-| `pipeline-full-build` | The shared spine — Steps 0–7, 11, 13–16 (backup, verify, integrate, release, docs, reclaim) |
-| **`pipeline-full-build-cloud`** (this) | **Steps 8–10 and 12 for web/API, plus the cloud-specific gate additions** |
-| `pipeline-full-build-desktop` | The same steps for Electron/desktop targets |
+**Primary deploy target: a VPS reached over SSH, running `docker compose`.** That is the operator's real environment — not a cluster. Kubernetes is supported as a secondary branch inside Step 8, but every default command in this skill assumes compose-over-SSH. Every destructive or resource-claiming command in this skill is scoped to *this app*; host-wide commands (`docker system prune -a`, any `--volumes` prune, `pkill -f node`) are forbidden throughout, because the target box is shared with other applications' containers, volumes, and nginx config.
 
 ## When to Use This Skill
 
 - Releasing a web app, API, or background service to a container platform
-- Any build whose output is an **image deployed to infrastructure you operate**
-- Serverless and PaaS targets (adapt Step 12; Steps 8–10 apply unchanged)
+- Any build whose output is an image deployed to infrastructure you operate
+- Shipping to a shared multi-app VPS via `docker compose`, or a Kubernetes cluster as the secondary path
+- Serverless and PaaS targets (adapt Step 8's deploy mechanics; the rest applies unchanged)
 
 ## Target Agents
 
-- `devops-engineer` - Primary pipeline operator
-- `sre-specialist` - Deploy, rollout strategy, rollback gate
-- `cloud-architect` - Infrastructure changes
-- `cyber-sentinel` - Image CVE gate and SBOM review
-- `qa-engineer` - Staging validation and contract tests
+- `devops-engineer` — Primary pipeline operator
+- `sre-specialist` — Deploy, rollback gate, post-deploy verification
+- `cloud-architect` — Infrastructure changes
+- `cyber-sentinel` — Image CVE gate and SBOM review
+- `qa-engineer` — Staging and production E2E validation
+- `documentation-specialist` — Project and Claude doc updates
+
+## Configuration
+
+These environment variables are assumed throughout. Set them per app before running the chain — never hardcode one app's values into a shared skill.
+
+| Var | Meaning | Example |
+|-----|---------|---------|
+| `VPS_HOST` | SSH target for the production box | `deploy@72.60.115.212` |
+| `REMOTE_APP_DIR` | This app's directory on the VPS | `/srv/clearpath` |
+| `COMPOSE_FILE` | Compose file for this app | `docker-compose.prod.yml` |
+| `APP_CONTAINER` | Running container name for this app | `clearpath-api` |
+| `APP_IMAGE` | Image repo:tag base for this app | `registry.example.com/clearpath` |
+| `APP_PREFIX` | Container-name prefix that scopes this app on a shared box | `clearpath-` |
+| `DB_CONTAINER`, `DB_USER`, `DB_NAME` | Postgres container and credentials for the remote dump | `clearpath-db`, `clearpath`, `clearpath_prod` |
+| `DOMAIN` | Public hostname for health checks and production E2E | `app.example.com` |
+| `E2E_ADMIN_TOKEN` | Teardown credential for production E2E accounts; absent → that step records `NOT RUN` | — |
+
+**Why this table exists.** A real Hostinger VPS running this pattern hosts several unrelated apps behind one nginx — clearpath, resumeflex, and others each get their own `APP_CONTAINER`/`APP_PREFIX`/`REMOTE_APP_DIR`. Every scoped command below depends on these being set correctly for *this* app; an unset or wrong `APP_PREFIX` is how a cleanup step reaches into a neighbor.
 
 ## Stack Detection
 
 ```bash
-[ -f "Dockerfile" ] || [ -f "docker-compose.yml" ] && echo "CLOUD"
-[ -d "k8s/" ] || [ -f "helm/Chart.yaml" ]          && echo "CLOUD"
-[ -d "terraform/" ]                                 && echo "CLOUD"
+[ -f "docker-compose.yml" ] || [ -f "docker-compose.prod.yml" ] && echo "CLOUD (compose — primary path)"
+[ -f "Dockerfile" ]                                             && echo "CLOUD (container)"
+[ -d "k8s/" ] || [ -f "helm/Chart.yaml" ]                        && echo "CLOUD (Kubernetes — secondary path)"
+[ -d "terraform/" ]                                              && echo "CLOUD (Terraform-managed infra)"
 [ -f "vercel.json" ] || [ -f "fly.toml" ] || [ -f "render.yaml" ] && echo "CLOUD (PaaS)"
-[ -f "serverless.yml" ] || [ -f "template.yaml" ]  && echo "CLOUD (serverless)"
+```
+
+## Pipeline Overview
+
+Seven phases, fourteen steps (0–13). Same safety contract as any release chain: nothing is deleted before it is backed up, nothing ships before it is verified, and nothing is reclaimed before the release is confirmed healthy.
+
+```
+Phase 0 — SAFEGUARD
+  Step 0:  Preflight
+  Step 1:  Failsafe Backup & Retention Proof (+ remote database dump)
+
+Phase 1 — VERIFY
+  Step 2:  Quality Gate            → /pipeline-quality (Steps 0–14; simplify + review included)
+
+Phase 2 — INTEGRATE
+  Step 3:  Version Bump
+  Step 4:  Commit
+  Step 5:  Merge to main (post-rebase gate re-run)
+  Step 6:  Push to GitHub
+
+Phase 3 — BUILD & RELEASE
+  Step 7:  Build, Container Image, SBOM/CVE Gate, Staging Validation, Release Version
+
+Phase 4 — SHIP
+  Step 8:  Deploy to Production (VPS + docker compose; Kubernetes secondary)
+  Step 9:  Production E2E (critical path only)
+  Step 10: Post-Deploy Verification & Rollback Gate
+
+Phase 5 — DOCUMENT
+  Step 11: Documentation (project docs, then Claude docs)
+
+Phase 6 — RECLAIM
+  Step 12: Purge CPU-Eating Workers (local + VPS)
+  Step 13: Cleanup — app-scoped (backup retention enforced)
+```
+
+## Versioning Scheme
+
+CalVer: `vYYYY.MM.DD`. `package.json` stores `2026.04.04`; the git tag is `v2026.04.04`. A same-day re-release appends a suffix: `v2026.04.04.2`.
+
+---
+
+# Phase 0 — SAFEGUARD
+
+## Step 0: Preflight
+
+Refuse to start on a dirty tree or a branch behind origin. A release built from a tree that does not match the remote is unreproducible.
+
+```bash
+[ -z "$(git status --porcelain)" ] || { echo "ABORT: uncommitted changes"; exit 1; }
+git fetch origin --quiet
+behind=$(git rev-list --count HEAD..origin/main)
+[ "$behind" = "0" ] || { echo "ABORT: $behind commits behind origin/main"; exit 1; }
+```
+
+## Step 1: Failsafe Backup & Retention Proof
+
+Runs first, always. **The pipeline must not proceed if this step cannot prove a restorable copy exists.**
+
+```bash
+set -euo pipefail
+STAMP=$(date +%Y%m%d-%H%M%S)
+BACKUP_ROOT="${BACKUP_ROOT:-$HOME/.backups/$(basename "$PWD")}"
+mkdir -p "$BACKUP_ROOT"
+
+# 1. Code: the git bundle is a complete, restorable repo in one file
+git bundle create "$BACKUP_ROOT/repo-$STAMP.bundle" --all
+git bundle verify "$BACKUP_ROOT/repo-$STAMP.bundle"   # must exit 0
+
+# 2. Untracked-but-needed local state (env files, local config) — never committed
+tar -czf "$BACKUP_ROOT/local-state-$STAMP.tar.gz" \
+  $(git ls-files --others --exclude-standard | grep -E '\.env|config/local' || true) 2>/dev/null || true
+
+# 3. Production database — dumped from the VPS itself, before any deploy touches it.
+#    Cloud runs against a live shared database; unlike the desktop variant, this
+#    dump is not optional and is not commented out.
+ssh "$VPS_HOST" "docker exec $DB_CONTAINER pg_dump -U $DB_USER -Fc $DB_NAME" \
+  > "$BACKUP_ROOT/db-$STAMP.dump"
+[ -s "$BACKUP_ROOT/db-$STAMP.dump" ] || { echo "ABORT: empty database dump"; exit 1; }
+```
+
+**Retention rule — the failsafe invariant:**
+
+> At least **one** verified backup must exist at all times. Cleanup (Step 13) prunes *older* backups only, and only after confirming a newer verified one is present. If exactly one backup exists, it is never deleted, regardless of age.
+
+```bash
+BACKUP_COUNT=$(find "$BACKUP_ROOT" -name 'repo-*.bundle' | wc -l)
+[ "$BACKUP_COUNT" -ge 1 ] || { echo "ABORT: no verified backup present"; exit 1; }
+echo "Failsafe OK: $BACKUP_COUNT backup(s), newest repo-$STAMP.bundle (verified)"
+```
+
+**Gate rule:** a failed `git bundle verify`, an unwritable `$BACKUP_ROOT`, or a zero-byte dump **halts the pipeline**. Never proceed to Phase 4 or 6 on an unverified backup.
+
+**Restore drill** (know this works *before* you need it):
+
+```bash
+git clone "$BACKUP_ROOT/repo-$STAMP.bundle" /tmp/restore-check && rm -rf /tmp/restore-check
 ```
 
 ---
 
-## Cloud Additions to Step 1 (Quality Gate)
+# Phase 1 — VERIFY
 
-`/pipeline-quality` runs the universal gate. Cloud adds checks for things that only exist once a service is deployed:
+## Step 2: Quality Gate
+
+```
+/pipeline-quality
+```
+
+Runs stack detection, lint, type check, build, the three-part security gate, tests, the happy/non-happy/edge case matrix, local E2E, dead code detection, dependency audit, and the reasoning phase (parallel simplification + severity-rated review with remediation) — Steps 0–14 of that skill, in full. This step does not inline any of those checks; it consumes the PASS/FAIL result.
+
+**Gate rule:** any 🔴 Critical or 🟠 High finding, any Semgrep ERROR, any HIGH `/security-review` finding, or any changed behavior missing a non-happy-path or edge case test blocks the pipeline. `NOT RUN` is recorded and carried forward — it is never treated as a pass.
+
+---
+
+# Phase 2 — INTEGRATE
+
+## Step 3: Version Bump
 
 ```bash
-# Infrastructure is code and gets the same gate
-terraform validate && terraform fmt -check
-kubectl apply --dry-run=server -f k8s/     # server-side catches admission failures client-side misses
-helm lint helm/ && helm template helm/ | kubeconform -strict
+current=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+new=$(date +%Y.%m.%d)
 
+git rev-parse "v$new" >/dev/null 2>&1 && new="$new.$(( $(git tag -l "v$(date +%Y.%m.%d)*" | wc -l) + 1 ))"
+echo "Version: $current -> $new"
+
+npm version "$new" --no-git-tag-version --allow-same-version
+```
+
+## Step 4: Commit
+
+Conventional Commits, deliberate staging, a secret scan on the staged set, and a hard rule against committing directly to the default branch.
+
+```bash
+# Never `git add -A` blind: inspect what is about to enter history
+git status --short
+git diff --stat
+
+# Stage deliberately — exclude build output, local config, and secrets
+git add package.json 2>/dev/null || true
+
+# Refuse to commit if a secret slipped into the staged set
+git diff --cached | grep -nEi '(api[_-]?key|secret|password|token|BEGIN [A-Z ]*PRIVATE KEY)\s*[=:]' \
+  && { echo "BLOCKED: possible secret staged"; exit 1; }
+```
+
+**Message format** — Conventional Commits, imperative mood, *why* over *what*:
+
+```
+<type>(<scope>): <subject>
+
+<body: the problem this solves and any non-obvious decision>
+
+<footer: Refs #123 / BREAKING CHANGE: ...>
+```
+
+**Gate rule:** never commit directly on `main`/`master`. If `git branch --show-current` returns the default branch, branch first. Never commit over unresolved 🔴/🟠 findings from Step 2.
+
+```bash
+[ "$(git branch --show-current)" = "main" ] && git checkout -b "release/v$new"
+git commit -m "release: v$new"
+```
+
+## Step 5: Merge to main
+
+```bash
+BRANCH=$(git branch --show-current)
+git fetch origin --prune
+
+# Rebase onto the latest main first so the merge is a fast-forward and CI
+# validates the code as it will actually exist on main
+git rebase origin/main || { echo "ABORT: resolve rebase conflicts, then re-run"; exit 1; }
+
+# Re-run the gate after rebasing — a clean merge can still be a broken build.
+# Semantic conflicts (two independently-correct changes that break combined)
+# pass `git merge` and fail the build; this is the most commonly skipped gate.
+/pipeline-quality || { echo "ABORT: gate failed post-rebase"; exit 1; }
+
+git checkout main
+git merge --no-ff "$BRANCH" -m "merge: $BRANCH into main (v$new)"
+```
+
+Prefer a PR-based merge where branch protection is configured:
+
+```bash
+gh pr create --fill --base main
+gh pr checks --watch
+gh pr merge --merge --delete-branch
+```
+
+## Step 6: Push to GitHub
+
+```bash
+git push origin main
+
+git fetch origin
+[ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] \
+  || { echo "ABORT: local and origin/main diverged after push"; exit 1; }
+```
+
+**Gate rule:** verify the push landed. A rejected non-fast-forward push that scrolls past in the log is how a "released" version ends up never leaving the laptop.
+
+---
+
+# Phase 3 — BUILD & RELEASE
+
+## Step 7: Build, Container Image, SBOM/CVE Gate, Staging Validation, Release
+
+### 7a — Application Build
+
+```bash
+set -euo pipefail
+npm run build || npx vite build
+[ -f "pyproject.toml" ] && python -m build
+[ -f "go.mod" ]        && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" ./...
+[ -f "Cargo.toml" ]    && cargo build --release
+
+# Reproducibility: the same commit must produce the same artifact
+export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+```
+
+### 7b — Container & Infra Hygiene
+
+Checks specific to a containerized/compose deploy that the universal quality gate has no reason to know about.
+
+```bash
 # Dockerfile lint — non-root user, pinned base, no secrets in layers
 hadolint Dockerfile
 grep -qE '^USER ' Dockerfile || echo "BLOCK: container runs as root"
 grep -nE '^(ENV|ARG).*(SECRET|PASSWORD|TOKEN|KEY)=' Dockerfile && echo "BLOCK: secret baked into image"
 
-# API contract: the new spec must not break existing clients
-npx @redocly/cli lint openapi.yaml
-oasdiff breaking openapi.base.yaml openapi.yaml \
-  && { echo "BLOCK: breaking API change without a version bump"; exit 1; }
+# Compose file sanity for the target that actually ships this
+docker compose -f "$COMPOSE_FILE" config -q || { echo "ABORT: invalid compose file"; exit 1; }
 
 # Migrations must be reversible and non-locking
-ls migrations/*.sql | while read -r m; do
+ls migrations/*.sql 2>/dev/null | while read -r m; do
   grep -qi "down\|rollback" "$m" || echo "WARNING: $m has no down migration"
 done
+
+# Kubernetes secondary path only
+[ -d "k8s/" ] && kubectl apply --dry-run=server -f k8s/
+[ -f "helm/Chart.yaml" ] && { helm lint helm/ && helm template helm/ | kubeconform -strict; }
 ```
 
-**Gate rule:** a container running as root, a secret baked into an image layer, or a breaking API change without a version bump blocks the release.
+**Gate rule:** a container running as root, a secret baked into an image layer, or an invalid compose file blocks the release.
 
-### Multi-tenant scope check (cloud-specific)
-
-A hosted service answers several tenants from one fleet, so the highest-impact vulnerability class here is not injection — it is a request authorized against one tenant and answered with another's data. Step 4c (`/security-review`) is where this gets caught; give it the shape to look for:
+### 7c — Container Build, SBOM & CVE Gate
 
 ```bash
-# Routes taking a tenant id in the PATH. Each must query the tenant it AUTHORIZED, not the
-# one the URL names. Middleware resolving the tenant from a header while the handler reads
-# req.params is the canonical form of this bug — and it type-checks, lints and tests clean.
-grep -rnE "params\.(workspaceId|tenantId|orgId|accountId)" \
-  --include='*.ts' --include='*.py' --include='*.go' src/ app/ 2>/dev/null
-```
-
-Every hit needs one answer: **which value proved authorization, and which value reaches the `WHERE` clause?** If they can differ, that is a cross-tenant read.
-
-**Gate rule:** any route where the authorizing and querying identifiers can diverge blocks the release until they are reconciled — preferably in shared middleware, because a check each handler has to remember is a check that eventually is not run.
-
----
-
-# Phase 3 — BUILD (cloud)
-
-## Step 8: Build
-
-```bash
-set -euo pipefail
-
-# Frontend
-npm run build || npx vite build
-
-# Backend
-[ -f "pyproject.toml" ] && python -m build
-[ -f "go.mod" ]        && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" ./...
-[ -f "Cargo.toml" ]    && cargo build --release
-
-# Reproducibility: the same commit must produce the same artifact, or you
-# cannot reason about what is actually running in production
-export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
-```
-
-## Step 9: Container Build, SBOM & CVE Gate
-
-```bash
-# ── Build with provenance ───────────────────────────────────────────────────
 docker build \
   --build-arg VCS_REF="$(git rev-parse HEAD)" \
   --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
   --label "org.opencontainers.image.version=$new" \
-  -t "app:$new" .
+  -t "$APP_IMAGE:$new" .
 
-# Multi-arch where clients need it
-# docker buildx build --platform linux/amd64,linux/arm64 -t "app:$new" .
-
-# ── Size and layer hygiene ──────────────────────────────────────────────────
-docker images "app:$new" --format "{{.Size}}"
-docker history "app:$new" --no-trunc | grep -iE 'SECRET|PASSWORD|TOKEN' \
+docker images "$APP_IMAGE:$new" --format "{{.Size}}"
+docker history "$APP_IMAGE:$new" --no-trunc | grep -iE 'SECRET|PASSWORD|TOKEN' \
   && { echo "ABORT: credential visible in image history"; exit 1; }
 
-# ── SBOM: you cannot respond to a CVE disclosure without one ────────────────
-syft "app:$new" -o spdx-json > "dist/sbom-$new.spdx.json"
+syft "$APP_IMAGE:$new" -o spdx-json > "dist/sbom-$new.spdx.json"
 
-# ── CVE gate ────────────────────────────────────────────────────────────────
-trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed "app:$new" \
+trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed "$APP_IMAGE:$new" \
   || { echo "ABORT: HIGH/CRITICAL CVE in image"; exit 1; }
-docker scout cves "app:$new" || true
 
-# ── Sign the image so the cluster can verify provenance ─────────────────────
-cosign sign --yes "registry.example.com/app:$new"
+cosign sign --yes "$APP_IMAGE:$new" 2>/dev/null || echo "NOT RUN: cosign unavailable — recorded, not a pass"
 ```
 
-**Gate rule:** a HIGH or CRITICAL fixable CVE blocks the release. Scanning *after* deploy is a notification, not a gate. `--ignore-unfixed` is deliberate — blocking on vulnerabilities with no available patch stalls releases without improving security.
+**Gate rule:** a HIGH or CRITICAL fixable CVE blocks the release. `--ignore-unfixed` is deliberate — blocking on vulnerabilities with no available patch stalls releases without improving security.
 
-## Step 10: Staging Validation
+### 7d — Staging Validation
 
-Cloud's equivalent of desktop's packaged-binary testing: run the **real image** in a **real environment** before production sees it.
-
-### 10a — Container smoke
+Run the **real image** in a **real environment** before production sees it.
 
 ```bash
-# The image must start standalone, become healthy, and shut down cleanly
-docker run -d --name smoke -p 8080:8080 --env-file .env.staging "app:$new"
+# Container smoke — must start standalone, become healthy, shut down cleanly
+docker run -d --name smoke -p 8080:8080 --env-file .env.staging "$APP_IMAGE:$new"
 timeout 60 bash -c 'until curl -fs localhost:8080/health >/dev/null; do sleep 2; done' \
   || { docker logs smoke; echo "ABORT: container never became healthy"; exit 1; }
-
-curl -fs localhost:8080/ready    # readiness must be distinct from liveness
+curl -fs localhost:8080/ready
 curl -fs localhost:8080/version | grep -q "$new"
-
-# SIGTERM handling — a container that ignores it drops in-flight requests
-# on every rolling deploy, forever
 docker stop --time=30 smoke
 [ "$(docker inspect -f '{{.State.ExitCode}}' smoke)" = "0" ] \
   || echo "WARNING: unclean shutdown — in-flight requests will be dropped on deploy"
 docker rm -f smoke
-```
 
-### 10b — Migration dry-run
-
-```bash
-# Run migrations against a restored copy of production, never against a
-# synthetic schema. Drift between the two is exactly what breaks deploys.
-pg_restore -d staging_db "$BACKUP_ROOT/db-$STAMP.sql.gz"
+# Migration dry-run against a RESTORED copy of production — never a synthetic schema
+pg_restore -d staging_db "$BACKUP_ROOT/db-$STAMP.dump"
 npm run migrate:up   || { echo "ABORT: migration fails on production schema"; exit 1; }
 npm run migrate:down || { echo "ABORT: migration is not reversible"; exit 1; }
 npm run migrate:up
-
-# Lock check: a migration that locks a large table takes the service down
 psql staging_db -c "SELECT relname, mode FROM pg_locks l JOIN pg_class c ON c.oid=l.relation WHERE mode LIKE '%Exclusive%';"
+
+# Deploy to staging over the same SSH+compose path used for production, then validate
+ssh "$STAGING_HOST" "cd $REMOTE_APP_DIR && docker compose -f docker-compose.staging.yml pull && docker compose -f docker-compose.staging.yml up -d"
+npm run test:smoke -- --base-url="https://staging.$DOMAIN"
+npx pact-broker can-i-deploy --pacticipant app --version "$new" --to-environment production 2>/dev/null || echo "NOT RUN: no contract broker configured"
+k6 run --vus 50 --duration 2m load/smoke.js \
+  --threshold 'http_req_duration{p(95)}<500' --threshold 'http_req_failed<0.01'
 ```
 
-### 10c — Deploy to staging and validate
+**Gate rule:** production deploy is blocked until the image runs healthy standalone, migrations apply *and* reverse against a production-shaped schema, contract tests pass (or are named `NOT RUN`), and p95 latency plus error rate hold against the previous release.
+
+### 7e — Release Version
+
+Tag only a commit that already passed staging validation above — that ordering is what makes the release trustworthy.
 
 ```bash
-kubectl --context staging set image deployment/app "app=registry.example.com/app:$new"
-kubectl --context staging rollout status deployment/app --timeout=5m
-
-# Smoke: happy path AND the critical non-happy paths
-npm run test:smoke -- --base-url=https://staging.example.com
-
-# Contract tests — existing clients must keep working
-npx pact-broker can-i-deploy --pacticipant app --version "$new" --to-environment production
-
-# Load sanity: not a full perf suite, just "did this release fall off a cliff"
-k6 run --vus 50 --duration 2m load/smoke.js \
-  --threshold 'http_req_duration{p(95)}<500' \
-  --threshold 'http_req_failed<0.01'
+git tag -a "v$new" -m "Release v$new"
+git push origin "v$new"
+gh release create "v$new" --title "v$new" --generate-notes
 ```
 
-**Gate rule:** production deploy is blocked until the image runs healthy standalone, migrations apply *and* reverse against a production-shaped schema, contract tests pass, and p95 latency plus error rate hold against the previous release.
+**Gate rule:** tag only a commit that is already on `origin/main` and green through 7a–7d. Tagging local or unvalidated work produces a release nobody else can reproduce.
 
 ---
 
-# Phase 4 — SHIP (cloud Step 12)
+# Phase 4 — SHIP
 
-## Step 12: Production Deploy
+## Step 8: Deploy to Production (VPS + docker compose)
 
-Unlike desktop, this **is** reversible — and the entire strategy is built around keeping it that way.
-
-**Security precondition.** Restate the Step 4 outcome before pushing the image — Semgrep, `/security-review`, and `security-guidance` readiness, each PASS or NOT RUN. A HIGH finding blocks. A `NOT RUN` ships only as a named decision, never as an unnoticed gap: a fleet deploy reaches every tenant at once, so an absent check is at its most expensive right here.
+The first irreversible-feeling step — irreversible only if the rollback target is captured wrong. This is a recorded failure mode, not a hypothetical: `resumeflex/deploy-cloud.sh` carries a comment recording a real incident on 2026-07-30 where a cleanup pass counted image *rows* (`docker images`, one row per tag) instead of image *IDs*, and deleted its own rollback target because a repository with three tags pointing at two images made the third row look like a distinct, disposable image. Capturing and cleaning up **by image ID**, not by tag, is not a style preference — it is the fix for that incident.
 
 ```bash
-# Refuse to deploy without the Step 0 failsafe
+# Capture the rollback target BY IMAGE ID, not by tag row.
+ROLLBACK_ID=$(ssh "$VPS_HOST" "docker inspect --format='{{.Image}}' $APP_CONTAINER")
+ssh "$VPS_HOST" "docker tag $ROLLBACK_ID $APP_IMAGE:rollback-previous"
+echo "$ROLLBACK_ID" > .previous-deployed-version
+
+# Refuse to deploy without a verified backup and without a passing Step 2 gate
 [ -f "$BACKUP_ROOT/repo-$STAMP.bundle" ] || { echo "ABORT: no failsafe backup"; exit 1; }
 
-# Record the rollback target explicitly
-kubectl get deployment/app -o jsonpath='{.spec.template.spec.containers[0].image}' \
-  > .previous-deployed-version
-echo "Rollback target: $(cat .previous-deployed-version)"
+# Sync and bring up. Two shapes, both supported — pick one per app:
+#   a) rsync source, build on the VPS
+rsync -avz --delete "${RSYNC_EXCLUDES[@]}" ./ "$VPS_HOST:$REMOTE_APP_DIR/"
+ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker compose -f $COMPOSE_FILE up -d --build"
+#   b) build locally, push to a registry, pull remotely
+#      docker push "$APP_IMAGE:$new" && ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker compose -f $COMPOSE_FILE pull && docker compose -f $COMPOSE_FILE up -d"
 
-# Push the signed image
-docker tag  "app:$new" "registry.example.com/app:$new"
-docker push "registry.example.com/app:$new"
+# Health-gate before declaring success
+timeout 120 bash -c "until [ \"\$(ssh $VPS_HOST \"docker inspect -f '{{.State.Health.Status}}' $APP_CONTAINER\")\" = healthy ]; do sleep 5; done" \
+  || { echo "ABORT: container never became healthy"; exit 1; }
 ```
 
-### Migrations first, and backward-compatible
+**Rollback — one command, and it is real because the image is retained by ID:**
 
 ```bash
-# Expand/contract: this release only ever ADDS. Columns and tables the old
-# code still reads stay until the NEXT release removes them. That is what
-# makes the rollback below actually safe.
-npm run migrate:up
+ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"
 ```
 
-### Canary → rolling
+**Security precondition.** Restate the Step 2 outcome before deploying — Semgrep, `/security-review`, and `security-guidance` readiness, each PASS or `NOT RUN`. A HIGH finding blocks. A `NOT RUN` ships only as a named decision, never as an unnoticed gap.
+
+**Kubernetes (secondary).** Where the target is a cluster rather than a VPS, substitute `kubectl set image` / `kubectl rollout status` / `kubectl rollout undo` for the compose commands above, staged through a canary before the full rollout. The gate rules — image-ID rollback capture, health gate before success, one-command reversibility — are unchanged; only the transport differs.
+
+## Step 9: Production E2E (critical path only)
+
+This is **not** a re-run of Step 2's local E2E. **Admission rule: a spec earns a place here only if it can fail in production while passing locally.** Everything else stays local. Local tests cannot observe real TLS termination, the real `X-Forwarded-For` chain, the real database, or real email dispatch — the class of bug this step exists to catch.
+
+Scope: login, one authenticated write, one authenticated read, logout. Nothing more.
 
 ```bash
-# Canary: 10% of traffic, watched, before the fleet moves
-kubectl set image deployment/app-canary "app=registry.example.com/app:$new"
-kubectl rollout status deployment/app-canary --timeout=5m
-sleep 300   # one telemetry cycle
+RUN_ID=$(git rev-parse --short HEAD)
+export E2E_ACCOUNT="e2e+${RUN_ID}@example.com"
 
-CANARY_ERR=$(curl -fsS "$PROM/api/v1/query?query=rate(http_requests_total{job='app-canary',status=~'5..'}[5m])" | jq -r '.data.result[0].value[1] // 0')
-awk -v e="$CANARY_ERR" 'BEGIN{exit !(e>0.01)}' && { kubectl rollout undo deployment/app-canary; echo "ABORT: canary error rate"; exit 1; }
+# Refuse to start without teardown credentials. Creating accounts you cannot
+# remove is worse than skipping the check.
+[ -n "${E2E_ADMIN_TOKEN:-}" ] || { echo "SKIP: no teardown credentials — recorded as NOT RUN"; exit 0; }
 
-# Full rollout with automatic revert
-kubectl set image deployment/app "app=registry.example.com/app:$new"
-kubectl rollout status deployment/app --timeout=10m \
-  || { kubectl rollout undo deployment/app; echo "ROLLED BACK"; exit 1; }
+# Sweep orphans from earlier failed runs BEFORE creating new ones
+npm run e2e:sweep-orphans -- --pattern 'e2e+*@example.com' --older-than 1h
 
-echo "$new" > .last-deployed-version
+trap 'npm run e2e:teardown -- --account "$E2E_ACCOUNT"' EXIT
+
+npx playwright test --config playwright.prod.config.ts \
+  --grep @critical-path \
+  --base-url "https://$DOMAIN"
 ```
 
-### Terraform / PaaS
+All test traffic carries an analytics-exclusion header so the run does not pollute production metrics.
+
+**Gate rule:** a failure here triggers the rollback gate below. It cannot block in the ordinary sense, because the tag and release from Step 7e already exist — instead of deleting the published tag (which would break anyone who already fetched it), the release is marked **SUPERSEDED**:
 
 ```bash
-# Plan is reviewed, never blind-applied
-( cd terraform && terraform plan -out=tfplan && terraform show tfplan && terraform apply tfplan )
+ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"
 
-# VPS via compose
-# ssh "$VPS" "cd /srv/app && docker compose pull && docker compose up -d --remove-orphans"
+gh release edit "v$new" --title "v$new (SUPERSEDED $(date -u +%FT%TZ))" \
+  --notes "$(gh release view "v$new" --json body -q .body)
+
+⚠️ Superseded: production E2E failed post-deploy. Rolled back to $(cat .previous-deployed-version)."
 ```
-
-**Rollback** — one command, and it works because migrations only expanded:
-
-```bash
-kubectl rollout undo deployment/app
-# or pin explicitly:
-kubectl set image deployment/app "app=$(cat .previous-deployed-version)"
-```
-
-**Gate rule:** if rollback requires a rebuild, a migration reversal, or more than one command, the deploy is not production-ready. Migrations must be backward-compatible with the previous release — that is the precondition that makes the rollback real rather than theoretical.
 
 ---
 
-## Cloud Additions to Step 13 (Post-Deploy Verification)
+## Step 10: Post-Deploy Verification & Rollback Gate
 
-Unlike desktop's hours-long telemetry lag, cloud verification is immediate — and so is the rollback.
+Verification is immediate here — and so is the rollback.
 
 ```bash
-curl -f  "https://app.example.com/health"
-curl -fs "https://app.example.com/version" | grep -q "$new" \
-  || { kubectl rollout undo deployment/app; echo "ABORT: live version mismatch"; exit 1; }
+curl -f  "https://$DOMAIN/health"
+curl -fs "https://$DOMAIN/version" | grep -q "$new" \
+  || { ssh "$VPS_HOST" "cd $REMOTE_APP_DIR && docker tag $APP_IMAGE:rollback-previous $APP_IMAGE:latest && docker compose -f $COMPOSE_FILE up -d"; echo "ABORT: live version mismatch"; exit 1; }
 
-npm run test:smoke:prod -- --base-url=https://app.example.com
-kubectl get pods -l app=app --field-selector=status.phase!=Running
+ssh "$VPS_HOST" "docker ps --filter name=$APP_PREFIX --format '{{.Names}}\t{{.Status}}'" | grep -v healthy && echo "WARNING: unhealthy sibling container under this app's prefix"
 ```
 
 | Signal | Healthy | Act |
 |--------|---------|-----|
-| 5xx rate | ≤ pre-deploy baseline | Above → `kubectl rollout undo` |
+| 5xx rate | ≤ pre-deploy baseline | Above → run the Step 8 rollback command |
 | p95 latency | within 20% of baseline | Sustained regression → roll back |
-| Pod restarts | 0 after rollout settles | CrashLoopBackOff → roll back, read logs |
-| Saturation (CPU/mem) | below limits | At limit → the new build regressed resource use |
+| Container health | `healthy`, 0 restarts after settling | Unhealthy/restarting → roll back, read `docker logs` |
+| Disk / memory on the VPS | below limits | At limit → the new build regressed resource use |
 
-**Gate rule:** soak for 15 minutes against the pre-deploy baseline before declaring success. Phases 5 and 6 do not run on a failed deploy — Step 16 must never prune the image the rollback needs.
+**Gate rule:** soak for 15 minutes against the pre-deploy baseline before declaring success. Phases 5 and 6 do not run on a failed deploy — Step 13 must never prune the image the rollback needs.
+
+---
+
+# Phase 5 — DOCUMENT
+
+## Step 11: Documentation
+
+Written while the release context is fresh, and before anything is cleaned up.
+
+### 11a — Project Documents
+
+| Document | Update |
+|----------|--------|
+| `CHANGELOG.md` | New `## v$new — YYYY-MM-DD` section: Added / Changed / Fixed / Removed / Security |
+| `README.md` | Version badge, install commands, any changed prerequisites |
+| `docs/**/*.md` | Behavior that changed this release; delete instructions for removed features |
+| `API.md` / `openapi.yaml` | New, changed, or deprecated endpoints and fields |
+| `MIGRATION.md` | Required steps for breaking changes |
+| `PLAN.md` | Tick off shipped items; carry the 🟡/🟢 review follow-ups forward |
+
+```bash
+{ echo "## v$new - $(date +%Y-%m-%d)"; echo; git log "v$current..v$new" --pretty='- %s' --no-merges; echo; cat CHANGELOG.md; } > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+grep -rn "$current" --include='*.md' . | grep -v CHANGELOG.md
+```
+
+**Gate rule:** no doc may describe behavior this release removed.
+
+### 11b — Claude Docs
+
+The agent-facing memory layer.
+
+| File | Update | Optimize for |
+|------|--------|-------------|
+| `CLAUDE.md` | Identity, rule index, version-specific notes | Brevity — loaded every session |
+| `docs/rules/*.md` | Domain canon changed by this release | Depth is fine; move detail out of `CLAUDE.md` and into these |
+| `.claude/agents/*.md` | Frontmatter, capability text | Accuracy — a stale description causes silent misrouting |
+| `skills/*/SKILL.md` | Steps changed by this release | Progressive disclosure |
+
+```bash
+grep -rhoE '\]\(([^)]+\.md)\)' CLAUDE.md docs/rules/*.md 2>/dev/null | sed -E 's/.*\((.*)\)/\1/' \
+  | while read -r f; do [ -e "$f" ] || echo "BROKEN LINK: $f"; done
+wc -w CLAUDE.md
+```
+
+**Gate rule:** every agent, skill, and file path named in `CLAUDE.md` or `docs/rules/*.md` must resolve.
+
+---
+
+# Phase 6 — RECLAIM
+
+## Step 12: Purge CPU-Eating Workers (local + VPS)
+
+```bash
+# Local
+ps -eo pid,pcpu,args --sort=-pcpu | awk 'NR>1 && $2>50' | head -20
+
+# VPS — scope to THIS app's containers. The box is multi-app.
+ssh "$VPS_HOST" "docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}' \
+  | grep '^${APP_PREFIX}'"
+```
+
+**Gate rule:** identify, then kill by PID or container name within this app's scope. Never `pkill -f node`, never a host-wide sweep — sibling apps share this machine.
+
+## Step 13: Cleanup — app-scoped
+
+Runs **only** after Step 10 confirmed the deploy is healthy. Everything here is scoped by app, and the failsafe invariant is re-proved before a single deletion.
+
+```bash
+# ── Precondition: the failsafe must still hold ───────────────────────────────
+BACKUPS=$(find "$BACKUP_ROOT" -name 'repo-*.bundle' | wc -l)
+[ "$BACKUPS" -ge 1 ] || { echo "ABORT: cleanup would leave zero backups"; exit 1; }
+git bundle verify "$(ls -t "$BACKUP_ROOT"/repo-*.bundle | head -1)" >/dev/null \
+  || { echo "ABORT: newest backup fails verification"; exit 1; }
+
+# ── Dangling layers only. Always safe: they are orphaned by rebuilds. ────────
+ssh "$VPS_HOST" "docker image prune -f"
+ssh "$VPS_HOST" "docker builder prune -f --filter 'until=168h'"
+
+# ── Tagged images: keep current AND rollback, matched by image ID ────────────
+# Matched by ID, not by tag row — see Step 8 for why a row-count is unsafe.
+KEEP_IDS=$(ssh "$VPS_HOST" "docker inspect --format='{{.Image}}' $APP_CONTAINER; \
+                            docker images -q $APP_IMAGE:rollback-previous")
+ssh "$VPS_HOST" "docker images '$APP_IMAGE' --format '{{.ID}} {{.Tag}}'" \
+  | while read -r id tag; do
+      echo "$KEEP_IDS" | grep -q "$id" || ssh "$VPS_HOST" "docker rmi ${APP_IMAGE}:${tag}" || true
+    done
+```
+
+**Never run** `docker system prune -a` or any `--volumes` prune. Volumes hold the database and uploads, and a host-wide prune reaches every sibling app on the box — clearpath, resumeflex, and anything else sharing this VPS.
+
+### VPS housekeeping (host-level, non-destructive to app data)
+
+```bash
+ssh "$VPS_HOST" bash -s <<'REMOTE'
+journalctl --vacuum-time=14d
+find /var/log -name '*.gz' -mtime +30 -delete
+REMOTE
+
+# This app's release directories only — keep the newest 3
+ssh "$VPS_HOST" "ls -1dt ${REMOTE_APP_DIR}/releases/* 2>/dev/null | tail -n +4 | xargs -r rm -rf"
+```
+
+### Backup retention — the failsafe rule
+
+```bash
+cd "$BACKUP_ROOT"
+TOTAL=$(ls -1 repo-*.bundle 2>/dev/null | wc -l)
+if [ "$TOTAL" -gt 5 ]; then
+  ls -t repo-*.bundle | tail -n +6 | while read -r old; do
+    [ "$(ls -1 repo-*.bundle | wc -l)" -gt 1 ] && rm -f "$old" && echo "pruned $old"
+  done
+else
+  echo "Retention: $TOTAL backup(s) — below threshold, nothing pruned"
+fi
+[ "$(ls -1 repo-*.bundle | wc -l)" -ge 1 ] || { echo "FAILSAFE VIOLATED"; exit 1; }
+```
+
+**Gate rule:** cleanup deletes only regenerable artifacts (dangling layers, rotated logs, surplus backups) and this app's own superseded images. It never touches the current release, the rollback target, Docker volumes, another app's containers/images, or the last remaining backup.
 
 ---
 
@@ -303,29 +591,34 @@ kubectl get pods -l app=app --field-selector=status.phase!=Running
 
 | Step | Status | Duration | Details |
 |------|--------|----------|---------|
-| 8 Build | PASS | 40s | Vite + Go binary, reproducible |
-| 9 Image/SBOM/CVE | PASS | 85s | 142MB, SBOM written, 0 HIGH/CRITICAL, cosign signed |
-| 10a Container Smoke | PASS | 35s | healthy in 8s, clean SIGTERM |
-| 10b Migration | PASS | 50s | up/down/up on restored prod schema, no exclusive locks |
-| 10c Staging | PASS | 240s | smoke + contract OK; p95 310ms, err 0.2% |
-| 12 Prod Deploy | DONE | 420s | canary 10% 5min, then rolling; rollback target app:2026.07.25 |
-| 13 Verify | PASS | 900s | health OK, version match, 5xx nominal |
+| 0 Preflight | PASS | 2s | clean tree, up to date with origin/main |
+| 1 Failsafe Backup | DONE | 12s | repo bundle + db dump verified |
+| 2 Quality Gate | PASS | 210s | /pipeline-quality Steps 0–14 clean |
+| 3 Version Bump | DONE | 1s | v2026.07.25 -> v2026.07.26 |
+| 4 Commit | DONE | 3s | abc1234 release: v2026.07.26 |
+| 5 Merge to main | PASS | 30s | --no-ff; gate re-run post-rebase |
+| 6 Push to GitHub | DONE | 5s | origin/main == HEAD verified |
+| 7 Build/Image/SBOM/CVE/Staging/Release | PASS | 420s | 0 HIGH/CRITICAL CVE; staging p95 310ms err 0.2%; v2026.07.26 tagged |
+| 8 Deploy to Prod | DONE | 90s | compose up -d --build; rollback target image ID a1b2c3d |
+| 9 Production E2E | PASS | 45s | login/write/read/logout via temp account, torn down |
+| 10 Post-Deploy Verify | PASS | 900s | health OK, version match, 5xx nominal |
+| 11 Documentation | DONE | 25s | CHANGELOG, README, CLAUDE.md updated |
+| 12 Worker Purge | DONE | 5s | 0 stale workers in clearpath- scope |
+| 13 Cleanup | DONE | 20s | 2 dangling layers pruned, 3 backups kept |
 
 ### Artifacts
 - `registry.example.com/app:2026.07.26` (142MB, signed)
 - `dist/sbom-2026.07.26.spdx.json`
 
 ### Rollback
-- `kubectl rollout undo deployment/app` → app:2026.07.25 (image retained)
-- Migrations expand-only; previous release runs against current schema
+- One command: `docker tag app:rollback-previous app:latest && docker compose up -d` on `$VPS_HOST`
+- Rollback target captured by image ID, not tag row
 ```
 
 ## Relationship to Other Skills
 
 | Skill | Role |
 |-------|------|
-| `/pipeline-full-build` | Parent — owns Steps 0–7, 11, 13–16 and routes here |
-| `/pipeline-full-build-desktop` | Sibling — same steps for Electron/desktop targets |
-| `/pipeline-quality` | Step 1 gate; this skill adds the infra/container checks above |
-| `/pipeline-review` | Steps 2, 3, 5 — simplify, review, commit |
-| `/kubernetes-deployment`, `/terraform-patterns` | Deeper reference for Step 12 targets |
+| `/pipeline-quality` | Step 2 gate — deterministic checks plus simplify/review; this skill adds no duplicate checks |
+| `/pipeline-full-build-desktop` | Sibling — same phase order, different Steps 7–8 for Electron/desktop targets |
+| `/kubernetes-deployment`, `/terraform-patterns` | Deeper reference for the Kubernetes secondary path in Step 8 |
