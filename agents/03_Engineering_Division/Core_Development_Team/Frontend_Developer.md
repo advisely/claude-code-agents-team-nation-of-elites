@@ -73,6 +73,7 @@ Provide structured output for the implemented UI:
 * **Performance** - Minimize re-renders, optimize bundle sizes, and improve perceived performance
 * **Maintainability** - Write clean, well-documented code with clear patterns
 * **Consistency** - Follow design system and component usage guidelines
+* **Name the Defaults to Avoid** - With no design direction, output drifts to a few stock styles, and "avoid a generic AI look" only swaps one default for another. When the brief is thin, list the specific patterns to avoid (e.g. cream or off-white backgrounds, italic accent words in headlines, numbered "01/02/03" section labels, monospace labels, pill-shaped buttons), check which styles the first result used instead, and extend the list
 
 ## Thinking Policy
 

@@ -78,6 +78,7 @@ Provide clear security assessment reports that developers can act on immediately
 * **Continuous Monitoring** - Maintain ongoing vigilance for new vulnerabilities
 * **Secure by Design** - Promote security-focused architecture and coding practices
 * **Education** - Foster a culture of security awareness among developers
+* **Safeguard-Aware** - Opus 5.5 runs cybersecurity, biology, and reasoning-extraction classifiers. Finding vulnerabilities in source code is allowed; high-risk dual-use offensive work can come back as `stop_reason: "refusal"`. For authorized pentest or red-team engagements, enrol the org in the [Cyber Verification Program](https://claude.com/form/cyber-use-case) rather than rephrasing a request to get past the classifier
 
 ## Thinking Policy
 

@@ -2,20 +2,21 @@
 
 The orchestrator enforces explicit, budgeted internal reasoning across roles. Agents use an internal scratchpad only when triggered and surface concise rationale summaries (no raw chain-of-thought) in outputs.
 
-**Claude Opus 5 alignment:** the token budgets below are scratchpad-bytes, not SDK `thinking.budget_tokens` (removed in 4.7 and still removed on Opus 5 — it returns HTTP 400). They map onto the current effort levels:
+**Claude Opus 5.5 alignment:** the token budgets below are scratchpad sizes, not SDK `thinking.budget_tokens` (removed since Opus 4.7, and a 400 on Opus 5.5 at every effort level). The "scratchpad" is the model's own adaptive thinking, never text in the response. The budgets map onto effort levels:
 
 | Scratchpad Budget | Effort Level | Typical Use |
 |-------------------|--------------|-------------|
-| 600–800 tokens | `xhigh` / `max` | Architects, hard design tradeoffs |
-| 400–600 tokens | `high` | Analysts, planners, AI strategy |
+| 600–800 tokens | `high` / `xhigh` | Architects, hard design tradeoffs |
+| 400–600 tokens | `medium` / `high` | Analysts, planners, AI strategy |
 | 200–300 tokens | `medium` | Framework specialists, orchestrator |
 | 100–200 tokens | `low` / `medium` | Developers, QA engineer, performance |
 
-Default effort is `high` on all surfaces (API + Claude Code). Two Opus 5 changes affect how to read this table:
+Opus 5.5 changes how to read this table:
 
-- **Thinking is on by default.** Omitting `thinking` now runs adaptive, reversing Opus 4.8. Agents that previously ran thinking-off by omission now think — and since `max_tokens` caps thinking *plus* output, check that any tight budget still fits.
-- **`low` and `medium` punch above their weight.** Opus 5 holds quality at low effort far better than 4.8, so the lower rows of this table are cheaper than the mapping implies. Treat the effort column as a **starting point to sweep down from**, not a floor. Raise to `xhigh` for agentic coding and hard architecture work; tune per-agent via `effort:` frontmatter only when warranted.
-- **Disabling thinking is capped at `high` effort.** `thinking: disabled` paired with `xhigh`/`max` returns HTTP 400. Prefer low effort with thinking on over disabling it.
+- **Default effort is `medium`** on Opus 5.5 (API and Claude Code). Sonnet 5 stays at `high`. Opus 5.5 at `medium` matches or beats Opus 5 at `high`, so the effort column sits one notch lower than it did under Opus 5. Reserve `xhigh`/`max` for measured gains, because Opus 5.5 thinks more per turn at the same level.
+- **Thinking is always on.** It can't be disabled (HTTP 400; Claude Code's toggle and `MAX_THINKING_TOKENS=0` are ignored). To spend less, lower effort. That works more reliably than "think less" instructions.
+- **Never surface the scratchpad.** Prompts that push the model to reproduce its reasoning in the response can be declined as `reasoning_extraction`. The guardrail below (concise rationale bullets, no raw chain-of-thought) is what keeps agents compliant.
+- Tune per-agent via `effort:` frontmatter only when warranted. No roster agent sets it today.
 
 ## Reasoning Complexity Levels
 
