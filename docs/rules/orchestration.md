@@ -82,16 +82,15 @@ Subagents are **temporary, task-specific spawns** that exist only for the durati
 - **Discard**: Verbose explanations, duplicate information, resolved issues
 - **API Feature (Beta)**: Anthropic offers server-side context compaction that can supplement manual compaction
 
-## Adaptive Thinking (Claude Opus 5)
+## Adaptive Thinking (Claude Opus 5.5)
 
-Opus 5 dynamically decides when and how much reasoning is required. Extended-thinking budgets are gone — adaptive thinking is the only thinking-on mode.
+Opus 5.5 dynamically decides when and how much reasoning is required, and **thinking is always on**. `thinking: disabled` and `budget_tokens` both return HTTP 400 at every effort level. In Claude Code, the thinking toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` do nothing on Opus 5.5.
 
-- **Thinking is now ON by default** — omitting the `thinking` parameter runs adaptive. This reverses Opus 4.8, where omitting it meant no thinking. Because `max_tokens` caps thinking **plus** response text, any tightly-sized budget carried over from 4.8 can now truncate mid-answer
-- **Effort Levels**: `low` → `medium` → `high` → `xhigh` → `max`; default `high`
-- **Start `xhigh` for coding and agentic work**, `high` elsewhere — then sweep *downward*. `low` and `medium` are unusually strong on Opus 5 and are the primary cost/latency lever. Effort settings inherited from Opus 4.8 are rarely the right ones
-- At `xhigh`/`max`, allow `max_tokens` ≥ 64K so the model has room to think and act across tool calls
-- **Reserve `max`** for genuinely hard, isolated problems — it can over-think and spend tokens without equivalent quality gains
-- Orchestrator can set effort levels per agent based on task complexity (see `effort:` frontmatter field)
+- **Effort is the only control**: `low` → `medium` → `high` → `xhigh` → `max`. The **default is `medium`**, one level below Opus 5's `high`. Claude Code does not carry an Opus 5 effort setting over, and starts Opus 5.5 at `medium` until it gets its own `modelSettings` entry
+- **Level names don't map 1:1.** Opus 5.5 at `medium` matches or beats Opus 5 at `high` on coding and knowledge work, and `low` comes close on several coding evals. Start at `medium` and move only on measured evidence
+- **At a given level it thinks more per turn than Opus 5**, most of all at `xhigh`/`max`. Reserve those for measured gains, and give `max_tokens` room (64K+) for long agentic turns
+- **To cut thinking, lower effort first.** It is more reliable than "think less" instructions
+- Orchestrator can set effort levels per agent based on task complexity (see `effort:` frontmatter field). No roster agent sets one today, which is deliberate: `medium` is the right baseline
 
 ## Task Budgets (Beta)
 
@@ -119,6 +118,7 @@ For long-running agentic loops where cost must be bounded, set a task budget via
 - The Chief Operations Orchestrator can hand a monitoring brief to `/loop` (e.g. *"every 15m, check SLO burn and page sre-specialist if error budget < 20%"*) instead of holding an agent open.
 - Keep loop prompts **idempotent and bounded** — each tick should do one check + one conditional action, not open-ended work, so cost stays predictable across the 7-day window.
 - Pair with **Task Budgets** when a loop drives heavy agentic work per tick.
+- **Don't mistake a report for completion.** On Opus 5.5, some progress updates end the turn with text. A tick that ends with open checklist items and no stated blocker should be re-prompted with those items by name, capped at 2–3 continuations, so a stuck tick surfaces instead of looping.
 
 **Agents whose work is inherently recurring** (each carries a `Recurring Work (/loop)` note):
 
@@ -134,23 +134,24 @@ For long-running agentic loops where cost must be bounded, set a task budget via
 | `market-intelligence-analyst` | 11 BD | Monitor competitor moves / market news |
 | `social-media-strategist` | 11 BD | Run content-calendar cadence; check campaign metrics |
 
-## Opus 5 Steering Notes
+## Opus 5.5 Steering Notes
 
-Apply these when writing orchestration prompts or agent instructions. **Two of them reverse the Opus 4.8 guidance this file previously carried** — they are marked ⚠️.
+Existing Opus 5 prompts perform well on Opus 5.5, so the Opus 5 steering below stays the starting point. Anthropic's guidance is to **re-test each Opus 5-specific instruction** (verbosity, verification, scope) on your own tasks rather than carry it forward untested. New Opus 5.5 items are marked 🆕.
 
-- **⚠️ Delegates to subagents *more* readily** — Opus 4.8 under-reached and needed "spawn N subagents in parallel" prompting. Opus 5 needs a **cap, not a nudge**. Delete any delegate-more scaffolding; see *Delegation Discipline* below
-- **⚠️ Verifies its own work unprompted** — instructions telling it to verify ("add a final verification step", "use a subagent to verify", "double-check your answer") now cause over-verification with no capability gain. **Delete them.** This inverts the usual self-check best practice, so a prompt library applying it uniformly needs a carve-out
-- **Longer user-facing responses** — add an explicit conciseness instruction. Lowering `effort` does **not** reliably shorten visible output; prompting is the lever
-- **Longer written deliverables** — files it writes to disk run long. Calibrate length explicitly where the agent ships documents
-- **Task scope expansion** — it may add steps that weren't requested. State the scope: deliver what was asked, flag a better approach in a sentence, don't quietly widen or transform
-- **More self-correction narration** — scope corrections to those that change the outcome; a follow-up question is not itself a signal of error
-- **More literal instruction following** — state requirements explicitly; don't rely on implicit generalization from one example to another
-- **Direct, less validation-forward tone** — the `humanizer` skill's core patterns are partially baked in natively
-- **Handles refusals** — elevated cyber safeguards mean benign security work can return `stop_reason: "refusal"`. Route via automatic fallbacks rather than retrying blind
+- **Delegation caps (from Opus 5)** — Opus 4.8 under-reached; Opus 5 needed a **cap, not a nudge**. Keep the caps in *Delegation Discipline* below. Opus 5.5 also sustains multi-hour audits and migrations with parallel subagents, so test before tightening further
+- **Self-verification (from Opus 5)** — instructions like "add a final verification step" or "double-check your answer" caused over-verification. Keep them out, and re-test before re-adding any
+- **Conciseness, deliverable length, scope** — still worth stating explicitly. Opus 5.5's reports are notably clearer (what it did, found, needs), so re-test how much length steering is still required
+- 🆕 **Unattended early stops** — some progress updates end the turn with text (`end_turn`). Harnesses (`/loop`, Agent Teams, pipeline skills) should treat a text-only end of turn as a *report*: keep the task in a checklist, re-prompt with the open items by name, cap at 2–3 auto-continuations, and wait for background commands/subagents to return. For fully unattended agents, a system-prompt addition that names the unwanted stops (next step announced but not taken, offers to continue, non-blocking decision lists, "good place to report") reduces them. Add it from the first request only, and keep confirmation for destructive actions
+- 🆕 **Time signals for agent teams** — give the lead a time budget and append `elapsed 340s / 1200s` to each message back to it. Teams finish sooner at comparable quality. Set the budget above your target, since it is advisory. With no sensible budget, show elapsed time plus: *"Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."*
+- 🆕 **Explore before acting in multi-app work** — Opus 5.5 gets to work quickly. BD/PMO agents working across email, docs, sheets, and CRM should open every source that could bear on the task first, including unnamed ones. The BD-wing agents carry this as an *Explore Before Acting* heuristic
+- 🆕 **Progress updates live in `thinking` blocks** — SDK clients need `display: "updates"` to see them. Ask in the system prompt for the cadence you want: a one-line intent up front and a short recap at the end
+- 🆕 **Frontend defaults** — name the specific styles to avoid instead of "no generic look". `ux-ui-architect` and `frontend-developer` carry this
+- 🆕 **Refusal categories widened** — biology joins cyber, plus `reasoning_extraction`. Never ask an agent to print its internal reasoning. The roster's "concise rationale bullets, no raw chain-of-thought" policy already complies. Route benign declines via automatic fallbacks rather than retrying blind
+- **More literal instruction following** — state requirements explicitly, and don't rely on implicit generalization from one example to another
 
 ### Delegation Discipline
 
-Each subagent re-establishes context, re-explores, reports back, and the coordinator re-reads the report. On Opus 5 that overhead compounds because it delegates freely. Bound it:
+Each subagent re-establishes context, re-explores, reports back, and the coordinator re-reads the report. That overhead compounds because Opus 5 and 5.5 delegate freely. Bound it:
 
 - **Delegate** genuinely independent, sizeable tracks — wide multi-file investigations, unrelated modules
 - **Don't delegate** work completable in a handful of tool calls, and **never delegate verification** — that belongs in the main agent loop
@@ -158,14 +159,14 @@ Each subagent re-establishes context, re-explores, reports back, and the coordin
 - Brief precisely the first time; commit to the delegation instead of re-deriving its findings
 - Launch parallel agents in a **single message with multiple tool uses** so they actually run concurrently
 
-## Claude Code Harness Changes (2.1.181 – 2.1.219)
+## Claude Code Harness Changes (2.1.181 – 2.1.280)
 
 The harness itself changed substantially alongside the model. These affect how the roster runs, independent of any agent file:
 
 | Change | Impact on the roster |
 |--------|---------------------|
 | **Subagents run in the background by default** | The orchestrator keeps working while they run and is notified on completion. The 2-agent WIP limit is now about *attention*, not blocking |
-| **Nested subagents to depth 3** (was 1) | A spawned specialist can itself delegate. Configurable via `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` — combined with Opus 5's delegation eagerness, this is the setting to lower if fan-out runs away |
+| **Nested subagents to depth 3** (was 1) | A spawned specialist can itself delegate. Configurable via `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` — combined with eager delegation, this is the setting to lower if fan-out runs away |
 | **Per-session subagent cap: 200** | `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` |
 | **Concurrent subagent cap: 20** | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` — the practical ceiling for orchestrator fan-out |
 | **`/subtask`** | Spawns an in-session subagent (took over the old `/fork` subagent behavior) |
@@ -175,15 +176,17 @@ The harness itself changed substantially alongside the model. These affect how t
 | **Subagents inherit session thinking config** | Effort/thinking set once at session level now propagates |
 | **Sandbox settings** | `sandbox.network.strictAllowlist`, `sandbox.filesystem.disabled`, `sandbox.credentials`, `sandbox.allowAppleEvents` — relevant to `cyber-sentinel` and `devops-engineer` |
 | **Permission mode rename** | "default" → **"Manual"** across CLI, VS Code, and JetBrains. The `permissionMode: default` frontmatter value is unchanged |
+| **Opus 5.5 is the default model (2.1.280)** | On every plan, Pro and Team Standard included. `opus` resolves to Opus 5.5 except on Microsoft Foundry (still Opus 4.6; set `ANTHROPIC_DEFAULT_OPUS_MODEL`). Effort starts at `medium` and is not carried over from Opus 5 |
+| **Thinking can't be turned off on Opus 5.5** | The session toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` have no effect. Control depth with the session effort level or `effort:` frontmatter instead |
 | **Skill frontmatter tolerance** | `display-name`, `default-enabled`, `fallback`, `metadata.*` accept kebab-case, snake_case, **and** camelCase; a malformed `SKILL.md` now loads with empty metadata instead of failing outright |
 
 ## Dynamic Workflows
 
 Claude plans a task, then spins up parallel subagents in a single session, with each subagent's output verified before it is reported back. This scales the orchestrator pattern beyond the 2-agent WIP limit for large, decomposable tasks — repo-wide audits, large-scale migrations, broad multi-file refactors.
 
-**Size guideline (2.1.219):** workflows now default to **medium — aim for fewer than 15 agents**. Change it via the `workflowSizeGuideline` settings key or *Dynamic workflow size* in `/config`. Given Opus 5's delegation eagerness, treat the medium default as the right starting point rather than a limit to raise reflexively.
+**Size guideline (2.1.219):** workflows now default to **medium — aim for fewer than 15 agents**. Change it via the `workflowSizeGuideline` settings key or *Dynamic workflow size* in `/config`. Given eager delegation on Opus 5 and 5.5, treat the medium default as the right starting point rather than a limit to raise reflexively. Opus 5.5's long-run strength shows on exactly these tasks, and a time budget in the brief tends to speed them up more than a bigger team does.
 
-The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build-cloud` / `pipeline-full-build-desktop` skills are natural beneficiaries. Decompose explicitly, keep subagent tasks independent, and rely on the built-in verification of returned outputs — **do not add your own verification stage on top**, which Opus 5 makes redundant.
+The Chief Operations Orchestrator and the `pipeline-quality` / `pipeline-full-build-cloud` / `pipeline-full-build-desktop` skills are natural beneficiaries. Decompose explicitly, keep subagent tasks independent, and rely on the built-in verification of returned outputs — **do not add your own verification stage on top**. The model already self-verifies.
 
 ## Subagent Advanced Features
 
@@ -246,7 +249,7 @@ Sub-agents and hooks are the two components that **run only in Cowork and Claude
 - **Plugins are saved locally per machine.** Org-wide sharing and private marketplaces are announced but not yet shipped; treat per-seat install as the current distribution model
 - **Enterprise admin controls** may restrict available plugins or disable local MCP servers entirely
 - Cowork ships **built-in** `pdf`, `docx`, `pptx`, `xlsx`, and `canvas-design` skills that load automatically. Do not duplicate them — the Content & Localization and Business Development wings should lean on these for file production and reserve custom skills for judgment (e.g. `humanizer`)
-- Cowork parallelizes across sub-agents natively; the roster's fan-out patterns apply, subject to the same Opus 5 delegation cap above
+- Cowork parallelizes across sub-agents natively; the roster's fan-out patterns apply, subject to the same delegation cap above
 
 ### Which wings benefit most
 

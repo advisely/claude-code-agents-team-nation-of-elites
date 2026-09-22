@@ -5,6 +5,54 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-09-22] - Claude Opus 5.5 Alignment (v4.1.0)
+
+Claude Opus 5.5 (`claude-opus-5-5`) was released today. The `opus` alias now
+resolves to it, so all 25 `opus` agents moved without a frontmatter sweep. It
+costs $4/$20 per Mtok (Opus 5: $5/$25), cache reads are $0.20, it performs at
+Fable 5.1 level on most work, and it generates output more than 30% faster. It
+needs Claude Code v2.1.280+ and is now the `default` model on every plan.
+
+### Changed
+- **Effort guidance rebased on `medium`.** Opus 5.5 defaults to `medium`, one level
+  below Opus 5, and Claude Code does not carry the Opus 5 setting over. Opus 5.5
+  at `medium` matches or beats Opus 5 at `high`, so the roster still sets no
+  `effort:` frontmatter. The "start at `xhigh` and sweep down" advice is replaced
+  with "start at `medium`, reserve `xhigh`/`max` for measured gains", because Opus
+  5.5 thinks more per turn than Opus 5 at the same level. The thinking-policy
+  table moves down one notch to match.
+- **Opus 5 steering is kept but marked re-test.** Delegation caps and the ban on
+  self-verification prompts carry over as defaults, per Anthropic's guidance to
+  re-evaluate Opus 5-specific instructions instead of dropping them.
+- `sdk-compliance.md`: the Opus 5 feature section becomes an Opus 5.5 section. It
+  covers four breaking changes (thinking can't be disabled, forced `tool_choice`
+  returns 400, preserved thinking, and the computer-use toolset), progress updates
+  arriving as `thinking` blocks, the new refusal categories (`bio`,
+  `reasoning_extraction`), pricing and caching, fast mode at $8/$40, and a note
+  that on Microsoft Foundry `opus` still resolves to Opus 4.6.
+- `orchestration.md`: adds Opus 5.5 steering notes, a "don't mistake a report for
+  completion" rule for `/loop`, and harness rows for 2.1.280.
+- `standards.md`: Opus 5.5 migration notes and prompt-authoring rules for agent
+  files (never ask an agent to print its reasoning, drop "think carefully" lines,
+  name concrete anti-patterns).
+
+### Added
+- `chief-operations-orchestrator`: **time signals** for agent teams (an
+  `elapsed Ns / Ms` budget) and an **unattended-run** rule (treat a text-only end
+  of turn as a report, re-prompt with open items, cap at 2–3 continuations).
+- `business-development-manager`, `client-success-manager`,
+  `lead-generation-specialist`: an *Explore Before Acting* heuristic for work
+  across connected apps (email, docs, CRM).
+- `ux-ui-architect`, `frontend-developer`: a *Name the Defaults to Avoid*
+  heuristic for design work with no design direction.
+- `cyber-sentinel`: a *Safeguard-Aware* heuristic covering the Opus 5.5
+  classifiers and the Cyber Verification Program.
+
+### Notes
+- Sonnet 5.5 and Haiku 5.5 are announced for "the coming weeks". The `sonnet`
+  alias will follow automatically. With Opus 5.5 at ~1.33× Sonnet 5's price, the
+  sonnet/opus split is due for an eval-based review when Sonnet 5.5 lands.
+
 ## [2026-08-18] - Plugin Renamed to `noe` (v4.0.2)
 
 ### Breaking — the plugin id is now `noe`

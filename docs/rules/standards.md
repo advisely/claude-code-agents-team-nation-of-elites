@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # alias — resolves to current generation. opus → claude-opus-5, sonnet → claude-sonnet-5. (Haiku is not used — see note below.)
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-5-5, sonnet → claude-sonnet-5. (Haiku is not used — see note below.)
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -37,7 +37,7 @@ skills: [skill-name-1, skill-name-2]
 maxTurns: 20             # Cap agentic turns for cost control
 background: false        # Run as background task
 isolation: worktree      # Git worktree isolation for parallel dev
-effort: high             # Opus 5 levels: low | medium | high (default) | xhigh | max
+effort: medium           # low | medium | high | xhigh | max — Opus 5.5 default: medium; Sonnet 5 default: high
 
 # MCP servers scoped to this agent (optional)
 mcpServers:
@@ -73,12 +73,12 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
 | `model: sonnet` | Default for specialists, developers, and fast read-only work (resolves to `claude-sonnet-5` — 1M context, near-Opus quality) |
-| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-5`) |
+| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-5-5`) |
 | `model: haiku` | **Never.** Haiku is not used in this roster — use `sonnet` as the floor for lightweight work. |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |
-| `effort: high` | Default effort on Opus 5 (all surfaces); raise to `xhigh` for agentic coding and hard design/architecture. Sweep *down* to `medium`/`low` where evals hold — Opus 5 stays strong at low effort |
+| `effort: <level>` | Usually **omit**. `opus` agents then run at Opus 5.5's `medium`, which matches or beats Opus 5 at `high`. Set it only on measured evidence: `low` for routine or latency-sensitive agents, `xhigh`/`max` only where evals show a gain (Opus 5.5 thinks more per turn than Opus 5 at the same level) |
 
 ## Automatic Documentation Updates
 
@@ -110,22 +110,29 @@ For production agents, add `strict: true` to tool definitions:
 ```
 This guarantees schema conformance — no type mismatches or missing fields.
 
-## Claude Opus 5 Migration Notes (SDK Users Only)
+## Claude Opus 5.5 Migration Notes (SDK Users Only)
 
-The Claude Code harness handles these automatically. Only apply when calling the Messages API directly. Opus 5 keeps Opus 4.8's request surface with **two breaking changes**, both about thinking:
+The Claude Code harness handles these automatically. Only apply them when calling the Messages API directly. Coming from Opus 4.8 or older, apply the Opus 5 changes first (thinking on by default, `budget_tokens`/sampling/prefill removed). Then, for Opus 5.5:
 
-- **⚠️ Breaking:** thinking is now **on by default** — omitting `thinking` runs adaptive (Opus 4.8 ran without thinking). `max_tokens` caps thinking *plus* response text, so a budget sized for a thinking-off 4.8 call can truncate mid-answer. Raise `max_tokens` or pass `thinking={"type":"disabled"}`.
-- **⚠️ Breaking:** `thinking={"type":"disabled"}` with `effort` of `xhigh`/`max` returns HTTP 400 (accepted at `high` or below). Validated **per request** — audit every call site, not just the first.
-- **New:** mid-conversation **tool changes** via beta `mid-conversation-tool-changes-2026-07-01` — add/remove tools between turns without invalidating the prompt cache.
-- **New:** automatic refusal fallbacks — beta `server-side-fallback-2026-07-01` with `fallbacks="default"`. Check `stop_reason` before reading `content`; a refusal returns HTTP 200.
-- **New:** prompt-cache minimum lowered to **512 tokens** (from 1,024) — short prompts now cache with no code change.
-- **Unchanged from 4.8:** `budget_tokens` returns HTTP 400 (use adaptive + `effort`); non-default `temperature`/`top_p`/`top_k` return HTTP 400; assistant prefill returns HTTP 400 (use `output_config.format`); `thinking.display` defaults to `"omitted"` — set `"summarized"` to stream reasoning; same tokenizer, so token counts are roughly unchanged when coming from 4.7/4.8.
+- **⚠️ Breaking:** thinking **can't be disabled**. `thinking={"type":"disabled"}` and `budget_tokens` return HTTP 400 at every effort level. Remove them, pick an `effort` (start `low` for routes that ran thinking-off), size `max_tokens` for thinking plus reply, and read blocks by `type`.
+- **⚠️ Breaking:** forced `tool_choice` (`any` / `tool`) returns HTTP 400, including on Batches and `count_tokens`. Use `auto` + `strict: true` + a prompt line naming the tool, and check the call happened. Or use structured outputs.
+- **⚠️ Breaking:** **preserved thinking**. Blocks are bound to the model and to an unchanged prefix. Accounts created on/after 2026-08-31 get HTTP 400 on edited history. Keep harnesses append-only (mid-conversation system messages, `tool_addition`, server-side compaction). A fallback to Opus 5/4.8 runs without 5.5's reasoning.
+- **⚠️ Breaking:** computer use needs `computer_toolset_20260801` on the Claude API / Google Cloud (`computer_20251124` returns 400).
+- **Silent:** text between tool calls arrives as `thinking` blocks (empty by default). Set `display: "updates"` (beta `thinking-display-updates-2026-08-18`) if a UI shows progress.
+- **Default effort is `medium`** (Opus 5: `high`). Set it explicitly.
+- **Refusals:** new `bio` and `reasoning_extraction` categories. Check `stop_reason` first, and ship `fallbacks="default"` (beta `server-side-fallback-2026-07-01`).
+- **Pricing:** $4/$20 per Mtok, cache reads $0.20, fast mode $8/$40 (Claude API only).
+- **Unchanged from Opus 5:** mid-conversation system messages and tool changes, per-message effort, task budgets, 512-token cache minimum, tokenizer, 1M/128K, `display` default `"omitted"`.
 
 ### Prompt-Authoring Notes for Agent Files
 
-Two Opus 5 behaviors change what belongs in an agent's Markdown body:
+What belongs in an agent's Markdown body under Opus 5.5:
 
-- **Do not instruct agents to verify their own work.** Opus 5 does it unprompted; "add a final verification step" or "double-check before responding" now produces over-verification with no capability gain. Delete such lines rather than rewording them.
-- **Do not instruct agents to delegate more.** Opus 5 reaches for subagents freely. Where an agent fans out, state a **ceiling** instead (see [orchestration.md](orchestration.md) → *Delegation Discipline*).
+- **Do not instruct agents to verify their own work** (carried over from Opus 5). The model self-verifies, and "add a final verification step" or "double-check before responding" produced over-verification. Re-test before re-adding any.
+- **Do not instruct agents to delegate more.** Where an agent fans out, state a **ceiling** instead (see [orchestration.md](orchestration.md) → *Delegation Discipline*).
+- **Never ask an agent to write out its internal reasoning.** Opus 5.5 can decline that as `reasoning_extraction`. The standard *Thinking Policy* wording ("internal scratchpad… surface only concise rationale bullets… no raw chain-of-thought") is compliant. Keep it that way.
+- **Drop "think carefully / step by step" lines.** Effort decides thinking depth. Such lines add latency without a clear quality gain.
+- **Name concrete anti-patterns rather than vague ones.** Opus 5.5 responds best to specific lists ("no cream backgrounds, no pill buttons") over general ones ("avoid a generic look").
+- **Agents working across connected apps** (CRM, email, docs) should explore relevant sources before acting.
 
-Conciseness, deliverable length, and scope discipline are the instructions worth *adding* — Opus 5 runs long on all three by default.
+Conciseness, deliverable length, and scope discipline are still worth *adding*. Opus 5.5 reports more clearly than Opus 5, so re-test how much of that steering an agent still needs.

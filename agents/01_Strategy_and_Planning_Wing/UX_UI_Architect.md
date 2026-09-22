@@ -86,6 +86,7 @@ Provide comprehensive design documentation that developers can implement:
 * **Visual Hierarchy** - Create clear information hierarchy through typography and layout
 * **Feedback & Affordance** - Provide clear feedback for user actions and indicate interactive elements
 * **Simplicity** - Strive for simplicity and avoid unnecessary complexity
+* **Name the Defaults to Avoid** - With no design direction, output drifts to a few stock styles, and "avoid a generic AI look" only swaps one default for another. When the brief is thin, list the specific patterns to avoid (e.g. cream or off-white backgrounds, italic accent words in headlines, numbered "01/02/03" section labels, monospace labels, pill-shaped buttons), check which styles the first result used instead, and extend the list
 
 ## Thinking Policy
 
