@@ -172,7 +172,12 @@ function Invoke-Native {
     $previous = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        $output = & $Exe @Arguments 2>&1
+        # Stderr lines arrive as ErrorRecords, which Out-String renders with a
+        # PowerShell position block ("At ...ps1:175 char:19"). Keep only their
+        # message text, and drop the empty RemoteException placeholder record.
+        $output = & $Exe @Arguments 2>&1 | ForEach-Object {
+            if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { "$_" }
+        } | Where-Object { $_ -and $_ -ne 'System.Management.Automation.RemoteException' }
         $code = $LASTEXITCODE
     } catch {
         $output = $_.Exception.Message
@@ -187,6 +192,16 @@ function Invoke-Native {
         ExitCode = if ($null -eq $code) { 0 } else { $code }
         Output   = ($output | Out-String).Trim()
     }
+}
+
+# [Environment]::UserInteractive stays true under `powershell -NonInteractive`,
+# where Read-Host throws and aborts the run. Treat that flag, and redirected
+# stdin, as non-interactive.
+function Test-Interactive {
+    if (-not [Environment]::UserInteractive) { return $false }
+    if ([Console]::IsInputRedirected) { return $false }
+    $nonInteractiveFlag = [Environment]::GetCommandLineArgs() | Where-Object { $_ -match '^-noni' }
+    return -not $nonInteractiveFlag
 }
 
 # A .git directory can exist yet be unusable - an interrupted clone, a corrupted
@@ -699,7 +714,7 @@ if ($claudeCmd) {
     }
     Write-Host ""
 
-    if ([Environment]::UserInteractive) {
+    if (Test-Interactive) {
         $answer = Read-Host "  Install official plugins interactively? [y/N]"
         if ($answer -match '^[yY]') {
             $installed = 0
@@ -734,7 +749,7 @@ Write-Banner "Semgrep SAST Check"
 $semgrepCmd = Get-Command semgrep -ErrorAction SilentlyContinue
 if ($semgrepCmd) {
     $sg = Invoke-Native semgrep @("--version") -Quiet
-    $sgVersion = ($sg.Output -split "`n" | Where-Object { $_ -match '\d' } | Select-Object -First 1)
+    $sgVersion = if ($sg.Output -match '\b\d+\.\d+\.\d+\b') { $Matches[0] } else { $null }
     if ($sg.ExitCode -eq 0 -and $sgVersion) {
         Write-Ok "Semgrep installed: v$($sgVersion.Trim())"
 

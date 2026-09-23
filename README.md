@@ -13,7 +13,7 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 [![Skills](https://img.shields.io/badge/skills-33-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-4.1.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.1.1-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-5.5-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-opus-5-5)
 [![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-sonnet-5)
 
@@ -680,7 +680,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v4.1.0** -- Claude Opus 5.5 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v4.1.1** -- Claude Opus 5.5 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

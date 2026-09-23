@@ -5,6 +5,22 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-09-22] - PowerShell Deploy Fixes (v4.1.1)
+
+### Fixed
+- **`scripts/deploy_agents.ps1` crashed at the end of a non-interactive run.**
+  The plugin prompt was gated on `[Environment]::UserInteractive`, which stays
+  true under `powershell -NonInteractive`, so `Read-Host` threw and the run
+  aborted before the Semgrep check and the completion summary. Agents and skills
+  had already been deployed. A new `Test-Interactive` helper also treats
+  `-NonInteractive` and redirected stdin as non-interactive.
+- **The Semgrep check printed `Semgrep installed: vAt C:\...:175 char:19`.**
+  Semgrep writes an update notice to stderr, and PowerShell wraps each stderr
+  line in an `ErrorRecord`, which `Out-String` renders with a position block.
+  The version parser took the first line containing a digit. `Invoke-Native`
+  now keeps only the message text of stderr records, which also cleans up git's
+  progress output, and the version is matched as `x.y.z`.
+
 ## [2026-09-22] - Claude Opus 5.5 Alignment (v4.1.0)
 
 Claude Opus 5.5 (`claude-opus-5-5`) was released today. The `opus` alias now
