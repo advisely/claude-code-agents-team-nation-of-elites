@@ -171,9 +171,9 @@ set_target_paths() {
 # Fancy colors (fallback to plain if not a TTY)
 if [[ -t 1 ]]; then
   BOLD='\033[1m'; DIM='\033[2m'; RESET='\033[0m'
-  GREEN='\033[32m'; YELLOW='\033[33m'; BLUE='\033[34m'; MAGENTA='\033[35m'; CYAN='\033[36m'
+  GREEN='\033[32m'; YELLOW='\033[33m'; MAGENTA='\033[35m'; CYAN='\033[36m'
 else
-  BOLD=''; DIM=''; RESET=''; GREEN=''; YELLOW=''; BLUE=''; MAGENTA=''; CYAN=''
+  BOLD=''; DIM=''; RESET=''; GREEN=''; YELLOW=''; MAGENTA=''; CYAN=''
 fi
 
 banner() {
@@ -440,8 +440,6 @@ deploy_skills() {
 configure_official_plugins() {
   banner "🔌 Official Plugins — Autoconfiguration"
 
-  local MCP_FILE="$CLAUDE_DIR/.mcp.json"
-  local SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 
   # Check if Claude Code is installed
   if ! command -v claude >/dev/null 2>&1; then
@@ -540,6 +538,82 @@ check_semgrep() {
     info "Semgrep SAST skill is deployed but CLI scanning requires the semgrep binary."
     info "The Semgrep MCP plugin (if enabled in Claude Code) works independently."
   fi
+}
+
+# ---------------------------------------------------------------------------
+# v4.2.0 model-alias preflight. Both checks are advisory: they never fail the
+# deploy and never prompt. Results land in these globals for the final summary.
+# ---------------------------------------------------------------------------
+MIN_CLAUDE_VERSION="2.1.284"   # `sonnet` -> claude-sonnet-5-5 (opus needs >= 2.1.280)
+CLAUDE_VERSION_STATUS=""       # one-line result for the completion summary
+PROVIDER_PIN_STATUS=""
+
+# version_ge A B -> exit 0 when A >= B. Numeric per component (2.1.1000 > 2.1.284).
+# Returns 2 when either side is not a dotted-numeric version.
+version_ge() {
+  local re='^([0-9]+)\.([0-9]+)\.([0-9]+)'
+  local -a a b
+  [[ "$1" =~ $re ]] || return 2
+  a=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}")
+  [[ "$2" =~ $re ]] || return 2
+  b=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" "${BASH_REMATCH[3]}")
+  local i
+  for i in 0 1 2; do
+    if (( 10#${a[i]} > 10#${b[i]} )); then return 0; fi
+    if (( 10#${a[i]} < 10#${b[i]} )); then return 1; fi
+  done
+  return 0
+}
+
+check_claude_version() {
+  local raw="" ver=""
+  if ! command -v claude >/dev/null 2>&1; then
+    info "Claude Code CLI not found on PATH; skipping version check (need >= $MIN_CLAUDE_VERSION for the sonnet/opus aliases)."
+    CLAUDE_VERSION_STATUS="claude CLI not found (version check skipped)"
+    return 0
+  fi
+  raw="$(claude --version 2>/dev/null </dev/null || true)"
+  ver="$(printf '%s' "$raw" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+  if [[ -z "$ver" ]]; then
+    info "Could not parse 'claude --version' output; skipping version check."
+    CLAUDE_VERSION_STATUS="claude version unparseable (check skipped)"
+    return 0
+  fi
+  if version_ge "$ver" "$MIN_CLAUDE_VERSION"; then
+    success "Claude Code $ver supports the sonnet/opus 5.5 aliases (>= $MIN_CLAUDE_VERSION)"
+    CLAUDE_VERSION_STATUS="Claude Code $ver OK (>= $MIN_CLAUDE_VERSION)"
+  else
+    warn "Claude Code $ver is older than $MIN_CLAUDE_VERSION: 'sonnet'/'opus' agents will run on older models until you update (run: claude update)"
+    CLAUDE_VERSION_STATUS="WARN: Claude Code $ver < $MIN_CLAUDE_VERSION (run: claude update)"
+  fi
+  return 0
+}
+
+check_provider_pins() {
+  local providers="" missing=0
+  [[ -n "${CLAUDE_CODE_USE_BEDROCK:-}" ]] && providers+=" Bedrock"
+  [[ -n "${CLAUDE_CODE_USE_VERTEX:-}" ]] && providers+=" Vertex"
+  [[ -n "${CLAUDE_CODE_USE_FOUNDRY:-}" ]] && providers+=" Foundry"
+  if [[ -z "$providers" ]]; then
+    PROVIDER_PIN_STATUS="no third-party provider env detected (aliases resolve natively)"
+    return 0
+  fi
+  if [[ -z "${ANTHROPIC_DEFAULT_SONNET_MODEL:-}" ]]; then
+    local sonnet_id="claude-sonnet-5-5"
+    [[ -n "${CLAUDE_CODE_USE_BEDROCK:-}" ]] && sonnet_id="anthropic.claude-sonnet-5-5"
+    warn "Third-party provider detected (${providers# }): 'sonnet' stays on an older Sonnet until pinned. Add: export ANTHROPIC_DEFAULT_SONNET_MODEL=$sonnet_id"
+    missing=1
+  fi
+  if [[ -n "${CLAUDE_CODE_USE_FOUNDRY:-}" && -z "${ANTHROPIC_DEFAULT_OPUS_MODEL:-}" ]]; then
+    warn "Foundry detected: 'opus' stays on Opus 4.6 until pinned. Add: export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5"
+    missing=1
+  fi
+  if [[ "$missing" -eq 1 ]]; then
+    PROVIDER_PIN_STATUS="WARN: provider (${providers# }) missing model pin(s); see warnings above"
+  else
+    PROVIDER_PIN_STATUS="provider (${providers# }) model pins set"
+  fi
+  return 0
 }
 
 validate_install() {
@@ -669,10 +743,15 @@ main() {
 
   # Machine-wide, not per-target.
   check_semgrep
+  banner "Model Alias Preflight"
+  check_claude_version
+  check_provider_pins
   configure_official_plugins
 
   banner "🍽️ Dinner Is Served — Installation Complete"
   for t in "${targets[@]}"; do success "Deployed: $t"; done
+  info "Claude Code version: ${CLAUDE_VERSION_STATUS:-not checked}"
+  info "Provider model pins: ${PROVIDER_PIN_STATUS:-not checked}"
 
   # Files written as root inside another user's home are unreadable to them.
   if [[ "$(id -u)" -eq 0 ]]; then

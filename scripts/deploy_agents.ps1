@@ -204,6 +204,18 @@ function Test-Interactive {
     return -not $nonInteractiveFlag
 }
 
+# --- Model alias helpers (v4.2.0) ---
+# `sonnet` -> claude-sonnet-5-5 needs Claude Code >= 2.1.284 (`opus` needs >= 2.1.280).
+$MinClaudeVersion = [version]"2.1.284"
+
+# Returns $true/$false, or $null when the text holds no dotted-numeric version.
+# [version] compares numerically per component, so 2.1.1000 > 2.1.284.
+function Test-ClaudeVersionOk([string]$Text, [version]$Minimum) {
+    if ($Text -notmatch '\b(\d+)\.(\d+)\.(\d+)\b') { return $null }
+    try { $v = [version]"$($Matches[1]).$($Matches[2]).$($Matches[3])" } catch { return $null }
+    return ($v -ge $Minimum)
+}
+
 # A .git directory can exist yet be unusable - an interrupted clone, a corrupted
 # index, or a tree copied across filesystems. Test-Path alone is not enough;
 # ask git whether it can actually resolve the repository.
@@ -773,11 +785,62 @@ if ($semgrepCmd) {
 }
 
 
+# --- 7. Model Alias Preflight (advisory, never fails the deploy, never prompts) ---
+Write-Banner "Model Alias Preflight"
+
+$ClaudeVersionStatus = ""
+$ProviderPinStatus = ""
+
+# 7a. Claude Code version. Older builds resolve sonnet/opus to older models.
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+    $cv = Invoke-Native claude @("--version") -Quiet
+    $verMatch = if ($cv.Output -match '\b\d+\.\d+\.\d+\b') { $Matches[0] } else { $null }
+    $verOk = if ($cv.ExitCode -eq 0 -and $verMatch) { Test-ClaudeVersionOk $verMatch $MinClaudeVersion } else { $null }
+    if ($null -eq $verOk) {
+        Write-Info "Could not parse 'claude --version' output; skipping version check."
+        $ClaudeVersionStatus = "claude version unparseable (check skipped)"
+    } elseif ($verOk) {
+        Write-Ok "Claude Code $verMatch supports the sonnet/opus 5.5 aliases (>= $MinClaudeVersion)"
+        $ClaudeVersionStatus = "Claude Code $verMatch OK (>= $MinClaudeVersion)"
+    } else {
+        Write-Warn "Claude Code $verMatch is older than ${MinClaudeVersion}: 'sonnet'/'opus' agents will run on older models until you update (run: claude update)"
+        $ClaudeVersionStatus = "WARN: Claude Code $verMatch < ${MinClaudeVersion} (run: claude update)"
+    }
+} else {
+    Write-Info "Claude Code CLI not found on PATH; skipping version check (need >= $MinClaudeVersion for the sonnet/opus aliases)."
+    $ClaudeVersionStatus = "claude CLI not found (version check skipped)"
+}
+
+# 7b. Third-party providers do not move the aliases; models must be pinned.
+$providers = @()
+if ($env:CLAUDE_CODE_USE_BEDROCK) { $providers += "Bedrock" }
+if ($env:CLAUDE_CODE_USE_VERTEX)  { $providers += "Vertex" }
+if ($env:CLAUDE_CODE_USE_FOUNDRY) { $providers += "Foundry" }
+if ($providers.Count -eq 0) {
+    $ProviderPinStatus = "no third-party provider env detected (aliases resolve natively)"
+} else {
+    $pinMissing = $false
+    if (-not $env:ANTHROPIC_DEFAULT_SONNET_MODEL) {
+        $sonnetId = if ($env:CLAUDE_CODE_USE_BEDROCK) { "anthropic.claude-sonnet-5-5" } else { "claude-sonnet-5-5" }
+        Write-Warn "Third-party provider detected ($($providers -join ', ')): 'sonnet' stays on an older Sonnet until pinned."
+        Write-Info "Add: `$env:ANTHROPIC_DEFAULT_SONNET_MODEL = '$sonnetId'  (persist with: setx ANTHROPIC_DEFAULT_SONNET_MODEL $sonnetId)"
+        $pinMissing = $true
+    }
+    if ($env:CLAUDE_CODE_USE_FOUNDRY -and -not $env:ANTHROPIC_DEFAULT_OPUS_MODEL) {
+        Write-Warn "Foundry detected: 'opus' stays on Opus 4.6 until pinned."
+        Write-Info "Add: `$env:ANTHROPIC_DEFAULT_OPUS_MODEL = 'claude-opus-5-5'  (persist with: setx ANTHROPIC_DEFAULT_OPUS_MODEL claude-opus-5-5)"
+        $pinMissing = $true
+    }
+    $ProviderPinStatus = if ($pinMissing) { "WARN: provider ($($providers -join ', ')) missing model pin(s); see warnings above" } else { "provider ($($providers -join ', ')) model pins set" }
+}
+
 # --- 8. Done ---
 Write-Banner "Installation Complete"
 Write-Host ""
 Write-Info "Agents deployed to: $AgentsDst"
 Write-Info "Skills deployed to: $SkillsDst"
+Write-Info "Claude Code version: $ClaudeVersionStatus"
+Write-Info "Provider model pins: $ProviderPinStatus"
 Write-Host ""
 Write-Info "Works with both Claude Code CLI and VS Code extension."
 Write-Info "Run 'claude doctor' to verify your Claude Code installation."

@@ -13,9 +13,9 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 [![Skills](https://img.shields.io/badge/skills-33-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-4.1.1-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.2.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-5.5-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-opus-5-5)
-[![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/news/claude-sonnet-5)
+[![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5.5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-sonnet-5-5)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
@@ -315,7 +315,7 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 |:---:|:---|:---|:---:|
 | <img width="16" src="https://cdn.simpleicons.org/codereview/green"> | `code-reviewer` | Security-aware PR reviews (opus) | project |
 | <img width="16" src="https://cdn.simpleicons.org/files/green"> | `code-archaeologist` | Legacy codebase analysis (opus) | project |
-| <img width="16" src="https://cdn.simpleicons.org/readthedocs/green"> | `documentation-specialist` | READMEs, API docs, guides (opus) | -- |
+| <img width="16" src="https://cdn.simpleicons.org/readthedocs/green"> | `documentation-specialist` | READMEs, API docs, guides (sonnet) | -- |
 | <img width="16" src="https://cdn.simpleicons.org/speedtest/green"> | `performance-optimizer` | Bottleneck diagnosis | -- |
 | <img width="16" src="https://cdn.simpleicons.org/w3c/green"> | `accessibility-specialist` | WCAG 2.1 AA/AAA | -- |
 | <img width="16" src="https://cdn.simpleicons.org/visualstudiocode/green"> | `noe-general-purpose` | Versatile multi-language | -- |
@@ -402,7 +402,7 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 | <img width="16" src="https://cdn.simpleicons.org/bookstack/goldenrod"> | `book-author` | Drafting, ghostwriting, narrative voice | opus | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/grammarly/goldenrod"> | `book-editor` | Developmental editing, copy editing, proofread | opus | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/leanpub/goldenrod"> | `publishing-specialist` | KDP, IngramSpark, metadata, ISBNs | sonnet | humanizer |
-| <img width="16" src="https://cdn.simpleicons.org/googletranslate/goldenrod"> | `translation-localization-specialist` | Multilingual translation with cultural fidelity | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/googletranslate/goldenrod"> | `translation-localization-specialist` | Multilingual translation with cultural fidelity | sonnet | humanizer |
 
 </details>
 
@@ -412,11 +412,11 @@ claude "Setup production infrastructure with CI/CD pipeline on AWS"
 | | Agent | Role | Model | Skills |
 |:---:|:---|:---|:---:|:---|
 | <img width="16" src="https://cdn.simpleicons.org/salesforce/deepskyblue"> | `business-development-manager` | Pipeline strategy, deal lifecycle, win/loss | opus | humanizer |
-| <img width="16" src="https://cdn.simpleicons.org/mailchimp/deepskyblue"> | `lead-generation-specialist` | Prospecting, outreach, lead scoring | opus | humanizer |
+| <img width="16" src="https://cdn.simpleicons.org/mailchimp/deepskyblue"> | `lead-generation-specialist` | Prospecting, outreach, lead scoring | sonnet | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/docusign/deepskyblue"> | `proposal-architect` | RFP response, proposals, compliance matrices | opus | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/hubspot/deepskyblue"> | `client-success-manager` | Client lifecycle, retention, renewals | opus | humanizer |
 | <img width="16" src="https://cdn.simpleicons.org/statista/deepskyblue"> | `market-intelligence-analyst` | Competitive intel, market analysis, pricing | opus | -- |
-| <img width="16" src="https://cdn.simpleicons.org/buffer/deepskyblue"> | `social-media-strategist` | Social content, paid ads, campaigns | opus | humanizer, adspirer |
+| <img width="16" src="https://cdn.simpleicons.org/buffer/deepskyblue"> | `social-media-strategist` | Social content, paid ads, campaigns | sonnet | humanizer, adspirer |
 
 </details>
 
@@ -451,7 +451,7 @@ agents/
 | Feature | Description |
 |:---|:---|
 | **Claude Opus 5.5** | `opus` alias resolves to `claude-opus-5-5`. Fable 5.1-level on most work at $4/$20 (20% below Opus 5), >30% faster output, fewer tokens per task. Thinking always on, **default effort `medium`**, sharper vision and computer use, clearer progress reports. Needs Claude Code v2.1.280+ |
-| **Claude Sonnet 5** | `sonnet` alias resolves to `claude-sonnet-5` — the default workhorse: 1M context, near-Opus quality at lower cost, most agentic Sonnet yet, context awareness, lower hallucination/sycophancy. **Haiku is not used** — `sonnet` is the floor for lightweight work |
+| **Claude Sonnet 5.5** | `sonnet` alias resolves to `claude-sonnet-5-5` (Claude Code v2.1.284+, Anthropic API) — the default workhorse: same $2/$10 as Sonnet 5 (Opus 5.5 is exactly 2×), 1M context, >30% faster output, near-Opus on agentic coding, knowledge work, and computer use. **Default effort `medium`** in Claude Code. v4.2.0 moved four well-scoped agents to it (**21 `opus` / 53 `sonnet`**). On Bedrock, Vertex, Foundry, and Claude Platform on AWS the alias doesn't move: pin `ANTHROPIC_DEFAULT_SONNET_MODEL`. **Haiku is not used** — `sonnet` is the floor for lightweight work |
 | **Subagent Coordination** | Parallel processing with isolated context windows; background by default, nested to depth 3. The roster ships **delegation caps** rather than fan-out prompts, plus elapsed-time budgets that help Opus 5.5 teams finish sooner |
 | **Dynamic Workflows** | Plan a task, then spin up parallel verified subagents in one session. Defaults to a medium size guideline (<15 agents) via `workflowSizeGuideline` |
 | **Recurring Tasks (`/loop`)** | Session-level scheduler — repeat a prompt on a cadence (or self-paced), auto-expires after 7 days. Nine recurring agents (aiops, sre, observability, devops, BD wing) carry `Recurring Work (/loop)` notes |
@@ -481,7 +481,7 @@ Scratchpad token budgets (internal reasoning) mapped to Opus 5.5 effort levels:
 | Low | 100-200 | `low` / `medium` | Backend/Frontend Devs, QA Engineer, Performance |
 | Orchestration | <=300 | `medium` | Chief Operations Orchestrator, Team Configurator |
 
-On Opus 5.5, effort defaults to `medium` on all surfaces (API and Claude Code), and thinking can't be disabled, so effort is the only dial. Opus 5.5 at `medium` matches or beats Opus 5 at `high`. Reserve `xhigh`/`max` for measured gains, since it thinks more per turn at the same level. Override per-agent via `effort:` frontmatter only when warranted.
+On Opus 5.5, effort defaults to `medium` on all surfaces (API and Claude Code), and Sonnet 5.5 also defaults to `medium` in Claude Code. Thinking can't be disabled on either, so effort is the only dial. Opus 5.5 at `medium` matches or beats Opus 5 at `high`, and Sonnet 5.5 at `medium` beat Sonnet 5 at `high` on most agentic coding evals. Reserve `xhigh`/`max` for measured gains, since Opus 5.5 thinks more per turn at the same level. Override per-agent via `effort:` frontmatter only when warranted.
 
 ### Official Plugin Integrations
 
@@ -680,7 +680,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v4.1.1** -- Claude Opus 5.5 + Sonnet 5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v4.2.0** -- Claude Opus 5.5 + Sonnet 5.5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

@@ -168,7 +168,7 @@ Return structured JSON with:
 Format as JSON array."""
 
         response = await self.client.messages.create(
-            model="claude-sonnet-5",
+            model="claude-sonnet-5-5",
             max_tokens=4000,
             messages=[{
                 "role": "user",

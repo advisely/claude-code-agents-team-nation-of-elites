@@ -2,7 +2,7 @@
 # Assert every declared version and skill count agrees with plugin.json.
 # plugin.json is the single source of truth. Used by /pipeline-quality step 0.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 fail=0
 note() { printf '  %-5s %s\n' "$1" "$2"; }
 

@@ -159,7 +159,22 @@ Each subagent re-establishes context, re-explores, reports back, and the coordin
 - Brief precisely the first time; commit to the delegation instead of re-deriving its findings
 - Launch parallel agents in a **single message with multiple tool uses** so they actually run concurrently
 
-## Claude Code Harness Changes (2.1.181 – 2.1.280)
+## Sonnet 5.5 Steering Notes
+
+From Claude Code **v2.1.284** the `sonnet` alias resolves to `claude-sonnet-5-5` (released 2026-09-28) on the Anthropic API, so existing `sonnet` agents moved without a frontmatter sweep (four `opus` agents were moved to `sonnet` deliberately — see below). Default effort in Claude Code is `medium` for both tiers; don't carry Sonnet 5 effort settings over. At $2/$10 vs Opus 5.5's $4/$20, Opus is exactly 2× Sonnet per token.
+
+- **Tier routing** — Sonnet 5.5 is strongest at well-scoped everyday work: bug fixes and polished documents, slides, and spreadsheets. It sits near Opus on agentic coding and computer use. Opus 5.5 keeps a clear lead on the hardest code and on open-ended work that needs careful judgment. Route well-scoped execution to `sonnet` and open-ended judgment to `opus`. `opusplan` (Opus 5.5 plans, Sonnet 5.5 executes) is a valid session mode
+- **Tier moves (v4.2.0)** — four well-scoped `opus` agents moved to `sonnet`: `documentation-specialist`, `translation-localization-specialist`, `social-media-strategist`, `lead-generation-specialist`. The roster is now **21 `opus` / 53 `sonnet`**. Judgment roles (orchestrators, architects, `proposal-architect`, `business-development-manager`, `market-intelligence-analyst`, `client-success-manager`) stay on `opus`. Re-test the moves on real briefs; move one back only on a measured quality drop
+- **Check-ins at `low`/`medium`** — on long agentic tasks Sonnet 5.5 may stop to confirm a plan or ask whether to continue. For unattended work, add to the brief: *"Keep working until everything the user asked for is done, and only stop to ask when you can't go on without the user or before a risky step."* The 2–3 continuation cap above still applies
+- **Unrequested additions** — at every effort level it may add tests, docs, or small files nobody asked for. The four moved agents carry the scope line: *"When the work the user asked for is done and checked, stop and report. Don't add features, tests, files, docs or refactors that weren't asked for. If you think one would help, mention it at the end instead of doing it."*
+- **Reviewer sprawl at `xhigh`/`max`** — it may start its own review rounds and launch reviewer sub-agents. Unless a review was asked for, add: *"When the work the user asked for is done and its checks pass, stop and report. Don't start extra rounds of review or hardening on your own, and don't launch reviewer sub-agents unless the user asked for a review. If you think a deeper review is worth doing, say so at the end."* Quality gates stay with `code-reviewer`
+- **Verification at `low` effort** — it may report code done without a real check. Engineering agents in Claude Code are covered by the harness, so don't add this to agent files. When a coding agent is delegated at `low` effort, put this line in the brief: *"When you change code that can be run, built, or type-checked, run a real check that exercises the change before reporting it done: the project's tests, type-checker, or build, or the changed command itself. A syntax-only check, or a check command that failed to start, does not count; if all that is missing is the project's declared dependencies, install them with its own package manager and lockfile (e.g. npm install, pip install -r requirements.txt), never via sudo or the system package manager, unless told not to. Only if no real check can run here, say which one you did not run and why instead of reporting the change as done."* This is the one exception to "no verification prompts"
+- **Search instead of recalling** — in knowledge work it sometimes answers from training data. Drop "minimize tool calls" / "only use tools when strictly necessary" from briefs. The research-facing BD agents carry a *Check Current Sources* heuristic
+- **Mid-turn messages in Agent Teams** — user text placed inside a `tool_result`, or harness text after every tool result, can read as prompt injection. Deliver mid-turn input as a user text block after the last `tool_result`, keep harness notices in a separate system message, and skip per-step countdowns in interactive sessions
+- **Third-party providers** — the `sonnet` alias does **not** move there: Claude Platform on AWS stays on Sonnet 4.6, Bedrock / Vertex / Foundry on Sonnet 4.5. Pin with `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5` (Vertex, Foundry, Claude Platform on AWS) or `anthropic.claude-sonnet-5-5` (Bedrock)
+- **Haiku** — still unused. Haiku 5.5 is announced for the coming weeks and does not change the policy — `sonnet` stays the floor
+
+## Claude Code Harness Changes (2.1.181 – 2.1.284)
 
 The harness itself changed substantially alongside the model. These affect how the roster runs, independent of any agent file:
 
@@ -177,7 +192,8 @@ The harness itself changed substantially alongside the model. These affect how t
 | **Sandbox settings** | `sandbox.network.strictAllowlist`, `sandbox.filesystem.disabled`, `sandbox.credentials`, `sandbox.allowAppleEvents` — relevant to `cyber-sentinel` and `devops-engineer` |
 | **Permission mode rename** | "default" → **"Manual"** across CLI, VS Code, and JetBrains. The `permissionMode: default` frontmatter value is unchanged |
 | **Opus 5.5 is the default model (2.1.280)** | On every plan, Pro and Team Standard included. `opus` resolves to Opus 5.5 except on Microsoft Foundry (still Opus 4.6; set `ANTHROPIC_DEFAULT_OPUS_MODEL`). Effort starts at `medium` and is not carried over from Opus 5 |
-| **Thinking can't be turned off on Opus 5.5** | The session toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` have no effect. Control depth with the session effort level or `effort:` frontmatter instead |
+| **Thinking can't be turned off on Opus 5.5 or Sonnet 5.5** | The session toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` have no effect. Control depth with the session effort level or `effort:` frontmatter instead |
+| **Sonnet 5.5 behind `sonnet` (2.1.284)** | Anthropic API only; pin third-party providers with `ANTHROPIC_DEFAULT_SONNET_MODEL`. `CLAUDE_CODE_SUBAGENT_MODEL` covers agents without an explicit `model:`; frontmatter wins unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set |
 | **Skill frontmatter tolerance** | `display-name`, `default-enabled`, `fallback`, `metadata.*` accept kebab-case, snake_case, **and** camelCase; a malformed `SKILL.md` now loads with empty metadata instead of failing outright |
 
 ## Dynamic Workflows
@@ -220,6 +236,20 @@ Fine-grained hook filtering using permission-rule syntax:
 
 ### LSP Servers in Plugins
 Plugins now support `.lsp.json` for Language Server Protocol integrations, providing enhanced code intelligence (completions, diagnostics, go-to-definition) scoped to specific plugins.
+
+## Official Plugin Integrations
+
+**MCP connectors (v3.7.0).** Deploy scripts auto-detect and offer to configure official Anthropic connector plugins from the auto-available `claude-plugins-official` marketplace: GitHub, GitLab, Slack, Atlassian (Jira & Confluence ship as one `atlassian` plugin), Linear, Figma, Sentry, Vercel, Firebase, Supabase, Notion, Asana. The agent-plugin mapping follows below.
+
+**First-party dev-workflow & tooling plugins (v3.12.0).** The official marketplace has since grown well beyond connectors; these complement the workforce and are recommended alongside it:
+
+- **Code workflow** — `feature-dev` (guided feature development), `code-review`, `code-simplifier`, `pr-review-toolkit`, `code-modernization`, `commit-commands`.
+- **Security & quality** — `security-guidance` (secure-by-default library guidance), `hookify` (turn repeated instructions into hooks).
+- **Authoring & extensibility** — `skill-creator`, `plugin-dev`, `agent-sdk-dev`, `mcp-server-dev`, `claude-md-management`, `frontend-design`, `playground`, `session-report`, `claude-code-setup`.
+- **Language servers (LSP)** — first-party LSP plugins ship for TypeScript, Pyright, gopls, rust-analyzer, clangd, jdtls, kotlin, swift, php, ruby, lua, and C# — load via a plugin's `.lsp.json` (see the LSP note above).
+- **Output styles** — `learning-output-style`, `explanatory-output-style`.
+
+These overlap intentionally with Nation of Elites' own skills (e.g. `code-review`/`code-simplifier` vs. the review pass inside `pipeline-quality`, `feature-dev` vs. `feature-workflow`): the marketplace skills stay the curated, division-aware path; the official plugins are drop-in alternatives when a lighter, single-purpose tool is preferred.
 
 ## Claude Cowork (Research Preview)
 

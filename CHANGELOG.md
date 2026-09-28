@@ -5,6 +5,82 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-09-28] - Claude Sonnet 5.5 Alignment (v4.2.0)
+
+Claude Sonnet 5.5 (`claude-sonnet-5-5`) was released today. From Claude Code
+v2.1.284 the `sonnet` alias resolves to it on the Anthropic API, so the `sonnet`
+agents moved without a frontmatter sweep. It keeps Sonnet 5's price ($2/$10 per
+Mtok, cache reads $0.20), 1M context, and 128K output, generates output more than
+30% faster, and costs up to ~30% less per task. It is near-Opus on agentic coding,
+knowledge work, and computer use. Opus 5.5 is now exactly 2× Sonnet 5.5 per token.
+
+### Changed
+- **Targeted tier moves (opus → sonnet).** `documentation-specialist`,
+  `translation-localization-specialist`, `social-media-strategist`, and
+  `lead-generation-specialist` now run on `sonnet`. The roster is now 21 `opus` /
+  53 `sonnet`. Judgment roles stay on `opus`, and the borderline agents kept there
+  have documented re-test criteria in `sdk-compliance.md`. This resolves the
+  v4.1.0 note that the sonnet/opus split was "due for an eval-based review" when
+  Sonnet 5.5 landed.
+- **Third-party providers need a pin.** The `sonnet` alias does not move on
+  Bedrock, Vertex, Foundry, or Claude Platform on AWS (Sonnet 4.5 / 4.6 there), so
+  the moved agents would regress. Set `ANTHROPIC_DEFAULT_SONNET_MODEL`.
+- **Effort guidance covers both tiers.** Claude Code defaults to `medium` for Opus
+  5.5 and Sonnet 5.5, and the roster still sets no `effort:` frontmatter. Sonnet
+  5.5 at `medium` beat Sonnet 5 at `high` on most agentic coding evals.
+- `sdk-compliance.md`: the Sonnet 5 section becomes a Sonnet 5.5 section, with the
+  model table, third-party pinning, the tier-move table and re-test criteria, five
+  breaking changes for SDK users (`between_tools` thinking floor, forced
+  `tool_choice` rejected, preserved-thinking read matrix, computer-use toolset,
+  advisor pairings), progress-update `thinking` blocks, and steering notes.
+- `orchestration.md`: Sonnet 5.5 steering notes (tier routing, `opusplan`,
+  check-ins, reviewer sprawl, verification at `low`, mid-turn messages in Agent
+  Teams, third-party pinning) and harness rows for 2.1.284.
+- `standards.md`: model aliases, `effort:` guidance, and the `opus` row updated;
+  Sonnet 5.5 migration notes added.
+- `thinking-policies.md`: effort defaults and the thinking-can't-be-disabled note
+  now cover Sonnet 5.5.
+- `construction-ai-orchestrator`: SDK example pins `claude-sonnet-5-5`.
+- `CLAUDE.md`, `README.md`: Sonnet 5.5 section, badge, capability row, roster tier
+  labels, and version bumped to 4.2.0. The "coming soon" note in the Opus 5.5
+  section is removed.
+- `plugin.json`, `marketplace.json`: version 4.2.0, descriptions name Claude
+  Sonnet 5.5, keyword `sonnet-5-5`.
+
+### Added
+- `chief-operations-orchestrator`: tier-routing rule, a keep-working line against
+  Sonnet 5.5 check-ins, and a no-reviewer-sprawl line for `xhigh`/`max` briefs.
+- `documentation-specialist`, `translation-localization-specialist`,
+  `lead-generation-specialist`, `social-media-strategist`: a *Stop at Scope*
+  heuristic against unrequested additions.
+- `business-development-manager`, `lead-generation-specialist`,
+  `market-intelligence-analyst`, `proposal-architect`, `social-media-strategist`:
+  a *Check Current Sources* heuristic so research is searched, not recalled.
+
+### Release & Deploy
+- **`CLAUDE.md` is now a pointer file** (16.7 KB → 4.9 KB). The Opus 5.5, Sonnet 5.5,
+  Cowork, `/loop`, and subagent-feature sections already lived in `docs/rules/`, so
+  they were cut. What remains is identity, the rule index, a compact model and tier
+  policy, and links. The official-plugin list moved to `docs/rules/orchestration.md`,
+  next to its agent-plugin mapping.
+- **New `docs/rules/release-process.md`**: the maintainer release checklist
+  (consistency, script parse checks, roster, tag + GitHub release, local deploy
+  verification) and a lessons-learned table covering v4.0.0 through v4.2.0.
+- **Deploy preflight (`scripts/deploy_agents.sh`, `scripts/deploy_agents.ps1`).**
+  Both scripts now warn, without failing, when Claude Code is older than 2.1.284.
+  Below that version the `sonnet` and `opus` aliases resolve to older models. They
+  also warn when Bedrock, Vertex, or Foundry is selected without
+  `ANTHROPIC_DEFAULT_SONNET_MODEL` (plus `ANTHROPIC_DEFAULT_OPUS_MODEL` on Foundry)
+  and print the export line to add. Both results appear in the completion summary.
+- **Shellcheck clean.** Fixed the seven pre-existing warnings: unguarded `cd` in
+  both check scripts, an unquoted `@{u}`, and three unused variables in
+  `deploy_agents.sh`.
+- **Backfilled releases.** v4.1.0 and v4.1.1 were merged and pushed but never tagged
+  or released. They are now tagged on their merge commits.
+
+### Notes
+- Haiku 5.5 is announced for "the coming weeks". Haiku is still not used.
+
 ## [2026-09-22] - PowerShell Deploy Fixes (v4.1.1)
 
 ### Fixed
