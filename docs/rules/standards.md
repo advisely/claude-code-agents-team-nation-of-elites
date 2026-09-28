@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # alias — resolves to current generation. opus → claude-opus-5-5, sonnet → claude-sonnet-5. (Haiku is not used — see note below.)
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-5-5, sonnet → claude-sonnet-5-5. (Haiku is not used — see note below.)
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -37,7 +37,7 @@ skills: [skill-name-1, skill-name-2]
 maxTurns: 20             # Cap agentic turns for cost control
 background: false        # Run as background task
 isolation: worktree      # Git worktree isolation for parallel dev
-effort: medium           # low | medium | high | xhigh | max — Opus 5.5 default: medium; Sonnet 5 default: high
+effort: medium           # low | medium | high | xhigh | max — Claude Code default: medium for both Opus 5.5 and Sonnet 5.5; API default for Sonnet 5.5: high
 
 # MCP servers scoped to this agent (optional)
 mcpServers:
@@ -72,13 +72,13 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `skills: [...]` | Framework specialists with matching skills |
 | `permissionMode: acceptEdits` | Code-writing agents (developers, experts) |
 | `permissionMode: plan` | Read-only research/analysis agents |
-| `model: sonnet` | Default for specialists, developers, and fast read-only work (resolves to `claude-sonnet-5` — 1M context, near-Opus quality) |
-| `model: opus` | Orchestrators, strategy architects, BD/Content (resolves to `claude-opus-5-5`) |
+| `model: sonnet` | Default for specialists, developers, well-scoped templated deliverables, and fast read-only work (resolves to `claude-sonnet-5-5` — 1M context, near-Opus quality). On Bedrock, Vertex, Foundry, and Claude Platform on AWS the alias does not move, so pin `ANTHROPIC_DEFAULT_SONNET_MODEL` |
+| `model: opus` | Orchestrators, architects, security & code review, executive/strategy, and judgment-heavy BD/Content roles (resolves to `claude-opus-5-5`). Templated content and outreach production runs on `sonnet` since v4.2.0 — see [sdk-compliance.md](sdk-compliance.md) |
 | `model: haiku` | **Never.** Haiku is not used in this roster — use `sonnet` as the floor for lightweight work. |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |
-| `effort: <level>` | Usually **omit**. `opus` agents then run at Opus 5.5's `medium`, which matches or beats Opus 5 at `high`. Set it only on measured evidence: `low` for routine or latency-sensitive agents, `xhigh`/`max` only where evals show a gain (Opus 5.5 thinks more per turn than Opus 5 at the same level) |
+| `effort: <level>` | Usually **omit**. `opus` and `sonnet` agents then run at the Claude Code default, `medium`. Opus 5.5 at `medium` matches or beats Opus 5 at `high`, and Sonnet 5.5 at `medium` beat Sonnet 5 at `high` on most agentic coding evals. Set it only on measured evidence: `low` for routine or latency-sensitive agents, `xhigh`/`max` only where evals show a gain (Opus 5.5 thinks more per turn than Opus 5 at the same level) |
 
 ## Automatic Documentation Updates
 
@@ -122,6 +122,7 @@ The Claude Code harness handles these automatically. Only apply them when callin
 - **Default effort is `medium`** (Opus 5: `high`). Set it explicitly.
 - **Refusals:** new `bio` and `reasoning_extraction` categories. Check `stop_reason` first, and ship `fallbacks="default"` (beta `server-side-fallback-2026-07-01`).
 - **Pricing:** $4/$20 per Mtok, cache reads $0.20, fast mode $8/$40 (Claude API only).
+- **Sonnet 5.5 (`sonnet` agents), five SDK breaking changes — the same four as Opus 5.5 (except that thinking has a `between_tools` floor) plus restricted advisor pairings (full list in sdk-compliance.md).** Thinking can't be disabled and forced `tool_choice` returns HTTP 400, exactly as above, and preserved thinking and `computer_toolset_20260801` apply as above. **New:** the lowest thinking setting is `thinking={"type":"between_tools"}`, valid only at effort `high` or below, with no other `thinking` field and no per-message effort change. Every other model rejects it, so strip it before retrying or routing elsewhere. Prefer adaptive thinking at `low` first. Sonnet 5.5 reads Sonnet 5 / Opus 4.8 / Haiku 4.5 thinking blocks but **not** Opus 5 / Opus 5.5 / Fable / Mythos blocks, and no other model reads its blocks, so an Opus 5.5 to Sonnet 5.5 fallback loses prior reasoning in both directions. Advisor executors on Sonnet 5.5 accept only Opus 5 / Opus 5.5 / Sonnet 5.5 / Fable 5 / 5.1 / Mythos 5 / 5.1 advisors. Task budgets, mid-conversation system messages, and per-message effort are now available on Sonnet 5.5 too. Full detail: [sdk-compliance.md](sdk-compliance.md) → *Sonnet 5.5 Breaking Changes*.
 - **Unchanged from Opus 5:** mid-conversation system messages and tool changes, per-message effort, task budgets, 512-token cache minimum, tokenizer, 1M/128K, `display` default `"omitted"`.
 
 ### Prompt-Authoring Notes for Agent Files

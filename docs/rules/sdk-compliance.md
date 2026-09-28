@@ -1,23 +1,44 @@
 # Claude Agent SDK Alignment (v2.0.0+)
 
-The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices. It tracks the current Opus model, **Claude Opus 5.5** (`claude-opus-5-5`, released 2026-09-22), for orchestration and hard reasoning, and the default workhorse, **Claude Sonnet 5** (`claude-sonnet-5`, released 2026-06-30), for everything else.
+The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices. It tracks the current Opus model, **Claude Opus 5.5** (`claude-opus-5-5`, released 2026-09-22), for orchestration and hard reasoning, and the default workhorse, **Claude Sonnet 5.5** (`claude-sonnet-5-5`, released 2026-09-28), for everything else.
 
 ## Current Model Targets
 
 | Alias | Resolves To | Use |
 |-------|-------------|-----|
 | `opus` | `claude-opus-5-5` | Orchestration, complex reasoning, long-horizon agentic work, agentic coding. 1M context, 128K output, $4/$20 per Mtok (cache reads $0.20) |
-| `sonnet` | `claude-sonnet-5` | Default workhorse — tool use, framework specialists, fast read-only. 1M context, near-Opus quality at lower cost |
+| `sonnet` | `claude-sonnet-5-5` | Default workhorse — tool use, framework specialists, well-scoped everyday work, fast read-only. 1M context, 128K output, $2/$10 per Mtok (cache reads $0.20), near-Opus quality at lower cost |
 
-Agents use aliases — never hard-coded model IDs — so the harness tracks Anthropic releases automatically. The Opus 5 → Opus 5.5 move (like Opus 4.8 → Opus 5 before it) required **no frontmatter sweep**: all 25 `opus` agents inherited it on release day. The `opus` alias resolves to Opus 5.5 on the Anthropic API, Claude Platform on AWS, Bedrock, and Google Cloud. **On Microsoft Foundry it still resolves to Opus 4.6**; pin `ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5` there. Opus 5.5 needs Claude Code **v2.1.280+** and is now the `default` model on every plan (Pro and Team Standard included).
+Agents use aliases — never hard-coded model IDs — so the harness tracks Anthropic releases automatically. The Opus 5 → Opus 5.5 move (like Opus 4.8 → Opus 5 before it) required **no frontmatter sweep**: all 25 `opus` agents at the time (21 since v4.2.0) inherited it on release day. The `opus` alias resolves to Opus 5.5 on the Anthropic API, Claude Platform on AWS, Bedrock, and Google Cloud. **On Microsoft Foundry it still resolves to Opus 4.6**; pin `ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5` there. Opus 5.5 needs Claude Code **v2.1.280+** and is now the `default` model on every plan (Pro and Team Standard included). Sonnet 5.5 needs Claude Code **v2.1.284+** for the `sonnet` alias to resolve to it on the Anthropic API. `opusplan` now plans on Opus 5.5 and executes on Sonnet 5.5.
+
+**Third-party providers: the `sonnet` alias does not move.** It resolves to Sonnet 4.6 on Claude Platform on AWS and to Sonnet 4.5 on Bedrock, Vertex, and Foundry. Pin `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5` on Vertex, Foundry, and Claude Platform on AWS, or `anthropic.claude-sonnet-5-5` on Bedrock. Foundry serves it Azure-hosted, Global Standard only.
 
 **No agent sets `effort:` in frontmatter, and that stays deliberate.** Every `opus` agent now runs at Opus 5.5's `medium` default, which matches or beats Opus 5 at `high`. Adding `effort: high` across the roster would *raise* spend over the Opus 5 baseline for little measured gain.
 
-**Haiku is not used in the Nation of Elites.** There is no `haiku` tier in the roster: every agent runs on `opus` or `sonnet`. With Sonnet 5 closing most of the quality gap at a lower price, `sonnet` is the correct floor for "lightweight" work — never drop to Haiku for cost. Do not add `model: haiku` to any agent.
+**Haiku is not used in the Nation of Elites.** There is no `haiku` tier in the roster: every agent runs on `opus` or `sonnet`. With Sonnet 5.5 closing most of the quality gap at a lower price, `sonnet` is the correct floor for "lightweight" work — never drop to Haiku for cost. Do not add `model: haiku` to any agent. Haiku 5.5 is announced for "the coming weeks" but is not released, so the policy stands.
 
 **Rate limits: check your tier.** Opus 4.8/4.7/4.6/4.5 share one combined Opus pool, and Opus 5 has its own. Check your tier's Opus 5.5 limits before moving heavy orchestration volume, and don't assume it inherits Opus 5's headroom. Subscription plans got higher five-hour limits with the Opus 5.5 launch.
 
-**Tier gap narrowed.** At $4/$20, Opus 5.5 costs about 1.33× Sonnet 5's standard $3/$15, down from 1.67× for Opus 5. It also tends to use fewer tokens per task. The sonnet/opus split below is unchanged for now. Revisit it with evals when Sonnet 5.5 lands (announced for "the coming weeks").
+**Tier gap: Opus 5.5 is now exactly 2× Sonnet 5.5 per token** ($4/$20 vs $2/$10). Sonnet 5.5 keeps Sonnet 5's price while getting near-Opus on agentic coding, knowledge work, and computer use; Opus keeps a clear lead on the hardest, open-ended, long-horizon work. Anthropic positions Sonnet 5.5 for well-scoped everyday tasks, bug fixes, and polished documents, slides, and spreadsheets, and Opus 5.5 for complex work requiring careful judgment. v4.2.0 therefore made **targeted tier moves**: only clearly well-scoped `opus` agents moved to `sonnet`, and judgment roles stayed on `opus`.
+
+| Moved to `sonnet` in v4.2.0 | Why it fits Sonnet 5.5 |
+|-----------------------------|------------------------|
+| `documentation-specialist` | READMEs, API specs, manuals: polished documents; deep technical detail is delegated anyway |
+| `translation-localization-specialist` | Fixed source text, glossary-bound terminology: bounded content production |
+| `social-media-strategist` | Content calendars, ad creative, posts: templated, high-volume, design-sensitive |
+| `lead-generation-specialist` | Outreach sequences, scoring rubrics, nurture workflows: well-scoped templated deliverables |
+
+The roster is now **21 `opus` / 53 `sonnet`**. Orchestration, architecture, security, code review, executive, and strategy roles stay on `opus`. On Bedrock, Vertex, and Foundry the moved agents regress to Sonnet 4.5, and on Claude Platform on AWS to Sonnet 4.6, unless `ANTHROPIC_DEFAULT_SONNET_MODEL` is pinned (see above).
+
+Re-test a moved agent on `opus` if it starts under-delivering on open-ended judgment, or if Sonnet 5.5 checks in or stops early on long runs.
+
+**Borderline agents kept on `opus`, and the eval that would justify moving them:**
+
+- `book-editor`: blind-graded edit passes on 3+ manuscripts show no gap in structural and pacing findings.
+- `code-archaeologist`: risk and hotspot findings on 2–3 legacy repos match `opus` at `medium`/`high`.
+- `functional-analyst`, `business-analyst`: spec completeness and gap detection on seeded-ambiguity briefs match `opus`.
+- `market-intelligence-analyst`: source-citation rate and factual accuracy match `opus` with the search-steering line in place.
+- `client-success-manager`: health-risk classification agrees with `opus` on historical accounts.
 
 ## ✅ Subagent Coordination
 - Chief Operations Orchestrator spawns 3-5 temporary, task-specific subagents for parallel information gathering
@@ -69,7 +90,7 @@ Agents use aliases — never hard-coded model IDs — so the harness tracks Anth
 - Recommended for production agents where invalid tool parameters would cause failures
 
 ## ✅ Server-Side Tools
-- `web_search_20260209` — web search with **dynamic filtering** (Claude filters results in-sandbox before they reach context). Supported on Opus 5.5 / 5 / 4.8 / 4.7 / 4.6 and Sonnet 5 / 4.6
+- `web_search_20260209` — web search with **dynamic filtering** (Claude filters results in-sandbox before they reach context). Supported on Opus 5.5 / 5 / 4.8 / 4.7 / 4.6 and Sonnet 5.5 / 5 / 4.6
 - `web_fetch_20260209` — URL content fetching with the same dynamic filtering
 - Do **not** separately declare `code_execution` alongside the `_20260209` variants — they run it under the hood, and a second execution environment confuses the model
 - Older models fall back to the basic `web_search_20250305` / `web_fetch_20250910` variants
@@ -196,17 +217,52 @@ Written for Opus 5's eager delegation, and still the default under Opus 5.5. Eac
 ### Dynamic Workflows
 Claude plans a task, then spins up parallel verified subagents in a single session. As of Claude Code 2.1.219 this **defaults to a medium size guideline (fewer than 15 agents)**, configurable via the `workflowSizeGuideline` setting or *Dynamic workflow size* in `/config`. Suited to large decomposable tasks such as migrations, repo-wide audits, and broad refactors, which is exactly where Opus 5.5's long-run gains show. Keep the medium default unless a measured run shows a larger team finishing better.
 
-## ✅ Claude Sonnet 5 Alignment (`sonnet` alias)
+## ✅ Claude Sonnet 5.5 Alignment (`sonnet` alias)
 
-Sonnet 5 (released 2026-06-30) is the most agentic Sonnet to date and is now what the `sonnet` alias resolves to. The ~51 `sonnet` agents inherit it automatically — no frontmatter sweep needed (alias-based policy). What changed, and how to exploit it:
+Sonnet 5.5 (released 2026-09-28) succeeds Sonnet 5 (2026-06-30) and is what the `sonnet` alias resolves to on the Anthropic API from Claude Code v2.1.284. `sonnet` agents inherit it with no frontmatter sweep (alias-based policy). What changed, and how to exploit it:
 
-- **1M-token context window** — matches Opus 5.5. `sonnet` agents can hold a large codebase or many long documents in a single request; widen file-handling expectations accordingly (a `sonnet` framework specialist no longer needs heavy pre-chunking for big repos).
-- **Near-Opus quality at lower cost** — close to the Opus tier on reasoning, tool use, coding, and knowledge work. Prefer `sonnet` as the default; reserve `opus` for orchestration, hardest reasoning, and long-horizon agentic loops. Opus 5.5 widens the gap on genuinely *hard* agentic coding, so the `opus` upgrade is now more clearly worth it for multi-file features and large refactors — but `sonnet` remains correct for the bulk of the roster.
-- **Context awareness** — Sonnet 5 tracks its remaining context window during a run, managing long agentic loops and compaction more effectively. Complements the 80% compaction trigger in orchestration.
-- **Adjustable effort levels** — same `low → medium → high → xhigh → max` scale as Opus 5.5, but Sonnet 5 defaults to `high` (Opus 5.5 defaults to `medium`). The `effort:` frontmatter field applies identically to `sonnet` agents. Other divergences: **Sonnet 5 accepts `thinking: disabled` and forced `tool_choice`** (Opus 5.5 rejects both), and does *not* support mid-conversation `role: "system"` messages (Opus 5.5 does).
-- **Updated tokenizer** — ~30% more tokens for the same text vs. Sonnet 4.6; `max_tokens` / compaction-trigger widening applies to `sonnet` too.
-- **Stronger safety defaults** — lower hallucination and sycophancy than its predecessor, better at refusing malicious requests and resisting prompt injection, with cyber safeguards on by default. Relevant to `cyber-sentinel`, `code-reviewer`, and any agent processing untrusted input.
-- **Pricing** — introductory $2/$10 per Mtok through 2026-08-31, then standard $3/$15.
+- **Same price, 1M context, 128K output, same tokenizer as Sonnet 5.** $2/$10 per Mtok, cache reads $0.20, 5-minute writes $2.50, 1-hour writes $4. Output is >30% faster than Sonnet 5, and cost per task falls by up to ~30% through fewer tokens and fewer tool calls, not a lower list price.
+- **Near-Opus on agentic work.** Official results (Sonnet 5.5 / Sonnet 5 / Opus 5.5): Terminal-Bench 4.0 70.6 / 10.3 / 66.4, OSWorld 2.1 80.1 / 57.0 / 81.8, GDPval-AA v2.1 1844 / 1449 / 1846, CursorBench 4.0 55.5 / 34.1 / 57.8, FrontierCode 1.1 (High) 46.2 / 42.4 / 54.4. Opus keeps its lead on the hardest code.
+- **Effort is recalibrated. Do not carry Sonnet 5 settings over.** Same `low → medium → high → xhigh → max` scale. The API default is `high`; **Claude Code defaults to `medium`** for both Opus 5.5 and Sonnet 5.5. At `medium`, Sonnet 5.5 beat Sonnet 5 at `high` on most agentic coding evals, typically at under a fifth of the cost. Start at `medium` for well-specified agentic coding and multistep tool use, `high` for harder or longer work, and `low`/`medium` for chat, content, classification, extraction, and search. Reserve `xhigh`/`max` for measured gains, and lower effort rather than prompting "think less".
+- **New vs Sonnet 5:** mid-conversation system messages (no beta), mid-conversation tool changes and inline tools, per-message effort (beta `mid-conversation-output-config-2026-07-01`, adaptive thinking only), task budgets (beta `task-budgets-2026-03-13`, not available on Sonnet 5), on-demand compaction, and a **512-token minimum cacheable prompt** (was 1,024). Own rate-limit pool, no Priority Tier. `fallbacks: "default"` (beta `server-side-fallback-2026-07-01`) is Claude API only, and only the `"default"` form.
+- **Safeguards.** First Sonnet with Opus 5.5-style cyber safeguards. Five refusal categories: `cyber`, `bio`, `frontier_llm`, `reasoning_extraction`, `general_harms`. Higher-risk cyber tasks visibly fall back to Sonnet 5, and server-side fallback retries only `cyber` and `frontier_llm` declines. Same guidance as Opus 5.5 above: check `stop_reason`, never ask for printed reasoning, and route authorized offensive work through the Cyber Verification Program.
+
+### ⚠️ Sonnet 5.5 Breaking Changes vs Sonnet 5 (SDK Users Only)
+
+The Claude Code harness handles these. Only apply them when calling the Messages API directly. Sonnet 5 accepted `thinking: disabled` and forced `tool_choice`; Sonnet 5.5 does not.
+
+1. **`thinking: disabled` returns HTTP 400** (as does `budget_tokens`). This is the one point that differs from Opus 5.5: Sonnet 5.5 has a floor, `thinking: {"type":"between_tools"}`. It is valid only at effort `high` or below, takes no other `thinking` field (no `display`, `budget_tokens`, or `block_binding`), and can't be combined with a per-message effort change. Every other model rejects it, so **strip it before retrying or routing to another model**. Migrate to adaptive thinking at `low` effort first, and use `between_tools` only where a route must stay thinking-off. Delete "don't think" instructions (they cause XML tag leakage). In Claude Code, the toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` have no effect.
+2. **Forced `tool_choice` (`any` / `tool`) returns HTTP 400**, including on `count_tokens` and Batches. Same fix as Opus 5.5 Breaking Change 2: `auto` + `strict: true` + a prompt line naming the tool, and check a call happened, or structured outputs.
+3. **Preserved thinking.** Same append-only and conversation-binding rules as Opus 5.5 Breaking Change 3 (enforced for accounts created on or after 2026-08-31; `block_binding.prefix_mismatch_behavior: "drop_block"` needs adaptive thinking; blocks are also account-bound on Bedrock and Google Cloud). The model-read matrix differs:
+
+   | Reader | Reads blocks from | Does not read |
+   |--------|-------------------|---------------|
+   | Sonnet 5.5 | Sonnet 5, Opus 4.8, Haiku 4.5 | Opus 5, Opus 5.5, Fable, Mythos |
+   | Any other model | not Sonnet 5.5 | Sonnet 5.5 |
+
+   A route or fallback between Sonnet 5.5 and Opus 5.5 therefore runs without the prior reasoning in **both** directions. `opusplan`-style handoffs and Opus-to-Sonnet routers lose it too.
+4. **Computer use.** Only `computer_toolset_20260801` on the Claude API and Google Cloud, as in Opus 5.5 Breaking Change 4. Bedrock still accepts `computer_20251124`.
+5. **Advisor tool pairings.** A Sonnet 5.5 executor accepts only Opus 5 / Opus 5.5 / Sonnet 5.5 / Fable 5 / 5.1 / Mythos 5 / 5.1 advisors. Advice returns encrypted (`advisor_redacted_result`).
+
+**Progress-update `thinking` blocks.** As on Opus 5.5, text between tool calls beyond a sentence or two returns as `thinking` blocks, empty under the default `display: "omitted"`. Use `display: "updates"` (beta `thinking-display-updates-2026-08-18`) with adaptive thinking to render them.
+
+### Sonnet 5.5 Steering Notes
+
+Anthropic's prompting guidance for Sonnet 5.5. Re-test each against your own evals, and remove workarounds for what improved (refusal steering, tool-call retry shims, "do not be lazy").
+
+| Shift | What to do |
+|-------|-----------|
+| **Check-ins at low/medium** | On long agentic tasks it may stop to confirm a plan. Add: *"Keep working until everything the user asked for is done, and only stop to ask when you can't go on without the user or before a risky step."* |
+| **Unrequested additions** | It adds tests, docs, and small files at every effort level. Add: *"When the work the user asked for is done and checked, stop and report. Don't add features, tests, files, docs or refactors that weren't asked for. If you think one would help, mention it at the end instead of doing it."* |
+| **Self-review sprawl at xhigh/max** | It may start review rounds and launch reviewer subagents. Add: *"When the work the user asked for is done and its checks pass, stop and report. Don't start extra rounds of review or hardening on your own, and don't launch reviewer sub-agents unless the user asked for a review."* |
+| **Ideas vs building** | Open-ended requests may start building. Add: *"When the user asks for ideas, options or a plan, give them that and stop. Don't start building or changing anything until they say to go ahead."* |
+| **Searching in chat and knowledge work** | It sometimes answers from training knowledge. Remove "only use tools when strictly necessary" and "minimize tool calls", and tell it to search for details that may have changed and to gather current sources for researched work |
+| **Verification at low effort** | It may report code done without a real check. Require a real check that exercises the change (tests, type-check, build, or the changed command). A syntax-only check, or one that failed to start, does not count |
+| **Mid-turn messages** | User text placed inside a `tool_result`, or harness text after every tool result, can read as prompt injection. Deliver mid-turn user input as a user text block after the last `tool_result`, keep harness notices in a separate system message, and skip per-step countdowns in interactive sessions |
+| **Tolerant tool calls** | It may call `bash` for `Bash` or use a near-miss parameter name. Accept unambiguous matches, or return `is_error` naming the exact expected name |
+| **Visuals** | Give crop/zoom/code tools for dense charts (helps at every effort) and technical drawings (helps from `high` up) |
+
+Opus 5.5 steering above stays in place.
 
 ## Quality Metrics
 
@@ -216,7 +272,7 @@ Sonnet 5 (released 2026-06-30) is the most agentic Sonnet to date and is now wha
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
 - **Complexity-Based Reasoning** - Tailored thinking budgets aligned with Opus 5.5 effort levels
-- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 5.5 + Sonnet 5)
+- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 5.5 + Sonnet 5.5)
 
 ## Surface Coverage
 

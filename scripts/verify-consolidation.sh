@@ -2,7 +2,7 @@
 # Acceptance criteria for the v4.0.0 pipeline consolidation.
 # Spec: docs/superpowers/specs/2026-08-18-pipeline-consolidation-design.md
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 fail=0
 note() { printf '  %-5s %s\n' "$1" "$2"; }
 
@@ -80,7 +80,7 @@ done
 # AC7 — clean tree, not behind origin
 [ -z "$(git status --porcelain)" ] && note ok "AC7 tree clean" \
   || { note FAIL "AC7 uncommitted changes present"; fail=1; }
-behind=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo 0)
+behind=$(git rev-list --count "HEAD..@{u}" 2>/dev/null || echo 0)
 [ "$behind" = "0" ] && note ok "AC7 not behind upstream" \
   || { note FAIL "AC7 branch is $behind commits behind upstream"; fail=1; }
 

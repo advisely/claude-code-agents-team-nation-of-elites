@@ -11,12 +11,12 @@ The orchestrator enforces explicit, budgeted internal reasoning across roles. Ag
 | 200–300 tokens | `medium` | Framework specialists, orchestrator |
 | 100–200 tokens | `low` / `medium` | Developers, QA engineer, performance |
 
-Opus 5.5 changes how to read this table:
+Opus 5.5 and Sonnet 5.5 change how to read this table:
 
-- **Default effort is `medium`** on Opus 5.5 (API and Claude Code). Sonnet 5 stays at `high`. Opus 5.5 at `medium` matches or beats Opus 5 at `high`, so the effort column sits one notch lower than it did under Opus 5. Reserve `xhigh`/`max` for measured gains, because Opus 5.5 thinks more per turn at the same level.
-- **Thinking is always on.** It can't be disabled (HTTP 400; Claude Code's toggle and `MAX_THINKING_TOKENS=0` are ignored). To spend less, lower effort. That works more reliably than "think less" instructions.
+- **Default effort is `medium`** on Opus 5.5 (API and Claude Code). Sonnet 5.5 also defaults to `medium` in Claude Code (its API default is `high`). Effort levels are recalibrated against Sonnet 5, so do not carry old settings over: Sonnet 5.5 at `medium` beat Sonnet 5 at `high` on most agentic coding evals. Opus 5.5 at `medium` matches or beats Opus 5 at `high`, so the effort column sits one notch lower than it did under Opus 5. Reserve `xhigh`/`max` for measured gains, because Opus 5.5 thinks more per turn at the same level.
+- **Thinking is always on.** It can't be disabled on Opus 5.5 or Sonnet 5.5 (HTTP 400; Claude Code's toggle and `MAX_THINKING_TOKENS=0` are ignored). SDK users on Sonnet 5.5 get a `between_tools` floor instead; see [sdk-compliance.md](sdk-compliance.md). To spend less, lower effort. That works more reliably than "think less" instructions.
 - **Never surface the scratchpad.** Prompts that push the model to reproduce its reasoning in the response can be declined as `reasoning_extraction`. The guardrail below (concise rationale bullets, no raw chain-of-thought) is what keeps agents compliant.
-- Tune per-agent via `effort:` frontmatter only when warranted. No roster agent sets it today.
+- Tune per-agent via `effort:` frontmatter only when warranted. No roster agent sets it today, and none should without measured evidence.
 
 ## Reasoning Complexity Levels
 
