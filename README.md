@@ -10,12 +10,13 @@ Supercharge your work with a complete, role-based AI team that takes projects fr
 
 [![Agents](https://img.shields.io/badge/agents-74-blueviolet?style=for-the-badge&logo=robot&logoColor=white)](agents/)
 [![Divisions](https://img.shields.io/badge/divisions-12-blue?style=for-the-badge&logo=sitemap&logoColor=white)](docs/rules/organization.md)
-[![Skills](https://img.shields.io/badge/skills-33-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
+[![Skills](https://img.shields.io/badge/skills-34-green?style=for-the-badge&logo=bookopen&logoColor=white)](SKILLS.md)
 [![SDK](https://img.shields.io/badge/SDK_compliance-10%2F10-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white)](docs/SDK_COMPLIANCE_REPORT.md)
 [![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE.md)
-[![Version](https://img.shields.io/badge/version-4.2.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.3.0-red?style=for-the-badge&logo=semanticrelease&logoColor=white)](CHANGELOG.md)
 [![Opus](https://img.shields.io/badge/Claude_Opus-5.5-9B59B6?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-opus-5-5)
 [![Sonnet](https://img.shields.io/badge/Claude_Sonnet-5.5-D97757?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-sonnet-5-5)
+[![Haiku](https://img.shields.io/badge/Claude_Haiku-5.5-2E86C1?style=for-the-badge&logo=anthropic&logoColor=white)](https://www.anthropic.com/claude-haiku-5-5)
 
 *Created by [Yassine Boumiza](https://boumiza.com)*
 
@@ -137,7 +138,7 @@ Nation of Elites is a third-party plugin, so you add its marketplace first, then
 /plugin install noe@noe
 ```
 
-All 74 agents become available as scoped subagents (e.g. `noe:03_Engineering_Division:backend-developer`), plus the 33 skills.
+All 74 agents become available as scoped subagents (e.g. `noe:03_Engineering_Division:backend-developer`), plus the 34 skills.
 
 To hack on the plugin locally without installing, load it straight from a clone:
 
@@ -451,7 +452,8 @@ agents/
 | Feature | Description |
 |:---|:---|
 | **Claude Opus 5.5** | `opus` alias resolves to `claude-opus-5-5`. Fable 5.1-level on most work at $4/$20 (20% below Opus 5), >30% faster output, fewer tokens per task. Thinking always on, **default effort `medium`**, sharper vision and computer use, clearer progress reports. Needs Claude Code v2.1.280+ |
-| **Claude Sonnet 5.5** | `sonnet` alias resolves to `claude-sonnet-5-5` (Claude Code v2.1.284+, Anthropic API) — the default workhorse: same $2/$10 as Sonnet 5 (Opus 5.5 is exactly 2×), 1M context, >30% faster output, near-Opus on agentic coding, knowledge work, and computer use. **Default effort `medium`** in Claude Code. v4.2.0 moved four well-scoped agents to it (**21 `opus` / 53 `sonnet`**). On Bedrock, Vertex, Foundry, and Claude Platform on AWS the alias doesn't move: pin `ANTHROPIC_DEFAULT_SONNET_MODEL`. **Haiku is not used** — `sonnet` is the floor for lightweight work |
+| **Claude Sonnet 5.5** | `sonnet` alias resolves to `claude-sonnet-5-5` (Claude Code v2.1.284+, Anthropic API) — the default workhorse: same $2/$10 as Sonnet 5 (Opus 5.5 is exactly 2×), 1M context, >30% faster output, near-Opus on agentic coding, knowledge work, and computer use. **Default effort `medium`** in Claude Code. v4.2.0 moved four well-scoped agents to it (**21 `opus` / 53 `sonnet`**). On Bedrock, Vertex, Foundry, and Claude Platform on AWS the alias doesn't move: pin `ANTHROPIC_DEFAULT_SONNET_MODEL` |
+| **[Claude Haiku 5.5](https://www.anthropic.com/claude-haiku-5-5)** | `haiku` alias resolves to `claude-haiku-5-5` (Claude Code v2.1.293+, Anthropic API) — **per-invocation only**, never in frontmatter (roster stays **21 `opus` / 53 `sonnet` / 0 `haiku`**). $0.10/$0.50 per Mtok at ≤100K-token prompts (20× cheaper than Sonnet 5.5), 1M context, 128K output, fastest Claude model at standard speed. Leads pass `model: haiku` for read-only sweeps, log/CI digests, bulk extraction or classification, and council pre-reads. Terminal-Bench 4.0 39.2% vs Sonnet 5.5's 70.6%, so never for edits, review, security, or architecture. Third-party providers: pin `ANTHROPIC_DEFAULT_HAIKU_MODEL` |
 | **Subagent Coordination** | Parallel processing with isolated context windows; background by default, nested to depth 3. The roster ships **delegation caps** rather than fan-out prompts, plus elapsed-time budgets that help Opus 5.5 teams finish sooner |
 | **Dynamic Workflows** | Plan a task, then spin up parallel verified subagents in one session. Defaults to a medium size guideline (<15 agents) via `workflowSizeGuideline` |
 | **Recurring Tasks (`/loop`)** | Session-level scheduler — repeat a prompt on a cadence (or self-paced), auto-expires after 7 days. Nine recurring agents (aiops, sre, observability, devops, BD wing) carry `Recurring Work (/loop)` notes |
@@ -467,7 +469,7 @@ agents/
 | **Official Plugins** | Auto-detection and setup of Anthropic official plugins (GitHub, Slack, Jira, etc.) |
 | **Semgrep SAST** | Automated security scanning via CLI and MCP plugin integration |
 | **Universal Pipelines** | Stack-adaptive quality gates and full build pipelines |
-| **Claude Cowork** (research preview) | Full 74-agent roster + 33 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
+| **Claude Cowork** (research preview) | Full 74-agent roster + 34 skills load in Cowork — Anthropic's agentic surface for non-technical knowledge work, now on web and mobile |
 
 ### Thinking Policies & Budgets
 
@@ -506,7 +508,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 
 ## Agent Skills System
 
-**33 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
+**34 custom skills** + 9 official Anthropic skills with progressive 3-level loading.
 
 ### How Skills Work
 
@@ -568,7 +570,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 </details>
 
 <details>
-<summary><strong>More Skills (10)</strong></summary>
+<summary><strong>More Skills (11)</strong></summary>
 
 | Skill | Category |
 |:---|:---|
@@ -582,6 +584,7 @@ The deploy script auto-detects and offers to configure these official Anthropic 
 | feature-workflow | Workflow Automation |
 | quick-fix | Workflow Automation |
 | pr-ready | Workflow Automation |
+| council-of-experts | Workflow Automation (convene a 3–5 agent panel: independent review, cross-critique, ranked verdict) |
 
 </details>
 
@@ -680,7 +683,7 @@ If you find this project useful:
 
 <div align="center">
 
-**Nation of Elites v4.2.0** -- Claude Opus 5.5 + Sonnet 5.5 | 74 Agents | 12 Divisions | 33 Skills | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
+**Nation of Elites v4.3.0** -- Claude Opus 5.5 + Sonnet 5.5 + Haiku 5.5 | 74 Agents | 12 Divisions | 34 Skills | Council of Experts | Claude Code + Cowork | Dynamic Workflows | /loop Recurring Tasks | Task Budgets | Adaptive Thinking | BD & Content Wings | Official Plugins | Agent Teams | Semgrep SAST
 
 *[Yassine Boumiza](https://boumiza.com)*
 

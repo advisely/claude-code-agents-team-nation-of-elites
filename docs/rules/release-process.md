@@ -32,4 +32,4 @@ Maintainer checklist for cutting a Nation of Elites release. This repo ships Mar
 
 ## Model-Release Alignment Pattern
 
-When Anthropic ships a model: research from official docs first (write a dated brief), update [sdk-compliance.md](sdk-compliance.md) / [standards.md](standards.md) / [thinking-policies.md](thinking-policies.md) / [orchestration.md](orchestration.md), keep agents on aliases (no frontmatter sweep unless a tier moves), keep CLAUDE.md to a pointer, and bump the minor version.
+When Anthropic ships a model: research from official docs first (write a dated brief), update [sdk-compliance.md](sdk-compliance.md) / [standards.md](standards.md) / [thinking-policies.md](thinking-policies.md) / [orchestration.md](orchestration.md), keep agents on aliases (no frontmatter sweep unless a tier moves), keep CLAUDE.md to a pointer, and bump the minor version. A new model can enter **per invocation** before it enters any frontmatter (Haiku 5.5 in v4.3.0); a frontmatter move needs the re-test data in sdk-compliance.md first.

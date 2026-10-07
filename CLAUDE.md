@@ -48,21 +48,22 @@ A multi-agent AI workforce that functions like a real-world company: 74 speciali
 
 ## Model & Tier Policy
 
-- **Aliases only** in frontmatter: `opus` → `claude-opus-5-5`, `sonnet` → `claude-sonnet-5-5` (Claude Code ≥ v2.1.284). Roster: **21 `opus` / 53 `sonnet`**. Never `haiku`.
+- **Aliases only** in frontmatter: `opus` → `claude-opus-5-5`, `sonnet` → `claude-sonnet-5-5`, `haiku` → `claude-haiku-5-5` (Claude Code ≥ v2.1.293). Roster: **21 `opus` / 53 `sonnet` / 0 `haiku`**.
+- **Haiku 5.5 is per-invocation only** (`model: haiku` on the Agent call, never frontmatter). Rules: [orchestration.md](docs/rules/orchestration.md) → *Haiku 5.5 per-invocation*.
 - **`opus`** for orchestration, architecture, security, code review, executive/strategy judgment; **`sonnet`** for well-scoped execution and templated deliverables. Opus 5.5 costs 2× Sonnet 5.5 per token.
-- **No `effort:` frontmatter** without measured evidence — both tiers default to `medium` in Claude Code; thinking can't be turned off on either.
-- **Third-party providers don't move aliases** — pin `ANTHROPIC_DEFAULT_SONNET_MODEL` (and `ANTHROPIC_DEFAULT_OPUS_MODEL` on Foundry). The deploy scripts warn when unpinned.
+- **No `effort:` frontmatter** without measured evidence — all three models default to `medium` in Claude Code; thinking can't be turned off on any.
+- **Third-party providers don't move aliases** — pin `ANTHROPIC_DEFAULT_SONNET_MODEL` and `ANTHROPIC_DEFAULT_HAIKU_MODEL` (plus `ANTHROPIC_DEFAULT_OPUS_MODEL` on Foundry). The deploy scripts warn when unpinned.
 - **Never ask an agent to print its reasoning** (`reasoning_extraction` refusals).
 
 Details, breaking changes, and re-test criteria: [sdk-compliance.md](docs/rules/sdk-compliance.md). Steering: [orchestration.md](docs/rules/orchestration.md).
 
 ## Skills & Plugins
 
-**33 custom skills** + 9 official Anthropic skills with 3-level progressive disclosure; specialists preload skills via `skills:` frontmatter. `pipeline-quality` is the single pre-merge gate; `pipeline-full-build-cloud` / `-desktop` are standalone release chains. See [SKILLS.md](SKILLS.md) and [skills-integration.md](docs/rules/skills-integration.md); official plugin integrations are in [orchestration.md](docs/rules/orchestration.md).
+**34 custom skills** + 9 official Anthropic skills with 3-level progressive disclosure; specialists preload skills via `skills:` frontmatter. `council-of-experts` is the standard way to convene a panel of experts; `pipeline-quality` is the single pre-merge gate; `pipeline-full-build-cloud` / `-desktop` are standalone release chains. See [SKILLS.md](SKILLS.md) and [skills-integration.md](docs/rules/skills-integration.md); official plugin integrations are in [orchestration.md](docs/rules/orchestration.md).
 
 ## Surfaces
 
-Runs in Claude Code (CLI / Desktop / IDE) and Claude Cowork. Skills (33) and slash commands also work in plain chat; agents and hooks need Claude Code or Cowork. See [orchestration.md](docs/rules/orchestration.md) → *Claude Cowork*.
+Runs in Claude Code (CLI / Desktop / IDE) and Claude Cowork. Skills (34) and slash commands also work in plain chat; agents and hooks need Claude Code or Cowork. See [orchestration.md](docs/rules/orchestration.md) → *Claude Cowork*.
 
 ## Setup & Release
 

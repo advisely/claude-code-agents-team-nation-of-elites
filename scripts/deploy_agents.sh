@@ -544,7 +544,7 @@ check_semgrep() {
 # v4.2.0 model-alias preflight. Both checks are advisory: they never fail the
 # deploy and never prompt. Results land in these globals for the final summary.
 # ---------------------------------------------------------------------------
-MIN_CLAUDE_VERSION="2.1.284"   # `sonnet` -> claude-sonnet-5-5 (opus needs >= 2.1.280)
+MIN_CLAUDE_VERSION="2.1.293"   # `haiku` -> claude-haiku-5-5 (sonnet needs >= 2.1.284, opus >= 2.1.280)
 CLAUDE_VERSION_STATUS=""       # one-line result for the completion summary
 PROVIDER_PIN_STATUS=""
 
@@ -568,7 +568,7 @@ version_ge() {
 check_claude_version() {
   local raw="" ver=""
   if ! command -v claude >/dev/null 2>&1; then
-    info "Claude Code CLI not found on PATH; skipping version check (need >= $MIN_CLAUDE_VERSION for the sonnet/opus aliases)."
+    info "Claude Code CLI not found on PATH; skipping version check (need >= $MIN_CLAUDE_VERSION for the sonnet/opus/haiku aliases)."
     CLAUDE_VERSION_STATUS="claude CLI not found (version check skipped)"
     return 0
   fi
@@ -580,10 +580,10 @@ check_claude_version() {
     return 0
   fi
   if version_ge "$ver" "$MIN_CLAUDE_VERSION"; then
-    success "Claude Code $ver supports the sonnet/opus 5.5 aliases (>= $MIN_CLAUDE_VERSION)"
+    success "Claude Code $ver supports the sonnet/opus/haiku 5.5 aliases (>= $MIN_CLAUDE_VERSION)"
     CLAUDE_VERSION_STATUS="Claude Code $ver OK (>= $MIN_CLAUDE_VERSION)"
   else
-    warn "Claude Code $ver is older than $MIN_CLAUDE_VERSION: 'sonnet'/'opus' agents will run on older models until you update (run: claude update)"
+    warn "Claude Code $ver is older than $MIN_CLAUDE_VERSION: 'sonnet'/'opus'/'haiku' aliases (agents and per-call model: haiku) will run on older models until you update (run: claude update)"
     CLAUDE_VERSION_STATUS="WARN: Claude Code $ver < $MIN_CLAUDE_VERSION (run: claude update)"
   fi
   return 0
@@ -602,6 +602,12 @@ check_provider_pins() {
     local sonnet_id="claude-sonnet-5-5"
     [[ -n "${CLAUDE_CODE_USE_BEDROCK:-}" ]] && sonnet_id="anthropic.claude-sonnet-5-5"
     warn "Third-party provider detected (${providers# }): 'sonnet' stays on an older Sonnet until pinned. Add: export ANTHROPIC_DEFAULT_SONNET_MODEL=$sonnet_id"
+    missing=1
+  fi
+  if [[ -z "${ANTHROPIC_DEFAULT_HAIKU_MODEL:-}" ]]; then
+    local haiku_id="claude-haiku-5-5"
+    [[ -n "${CLAUDE_CODE_USE_BEDROCK:-}" ]] && haiku_id="anthropic.claude-haiku-5-5"
+    warn "Third-party provider detected (${providers# }): 'haiku' (council-of-experts, per-call model: haiku) stays on an older Haiku until pinned. Add: export ANTHROPIC_DEFAULT_HAIKU_MODEL=$haiku_id"
     missing=1
   fi
   if [[ -n "${CLAUDE_CODE_USE_FOUNDRY:-}" && -z "${ANTHROPIC_DEFAULT_OPUS_MODEL:-}" ]]; then

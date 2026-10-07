@@ -22,7 +22,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 # disallowedTools: Write, Edit  # Alternative: blocklist pattern
 
 # Model selection (optional - default: inherit)
-model: sonnet  # alias — resolves to current generation. opus → claude-opus-5-5, sonnet → claude-sonnet-5-5. (Haiku is not used — see note below.)
+model: sonnet  # alias — resolves to current generation. opus → claude-opus-5-5, sonnet → claude-sonnet-5-5. (haiku → claude-haiku-5-5 exists but is per-invocation only, never in frontmatter — see sdk-compliance.md.)
 
 # Permission mode (optional - default: default)
 permissionMode: acceptEdits  # default | acceptEdits | dontAsk | plan
@@ -74,7 +74,7 @@ Mission, Workflow, Output Format, Heuristics, Thinking Policy, Delegation Cues
 | `permissionMode: plan` | Read-only research/analysis agents |
 | `model: sonnet` | Default for specialists, developers, well-scoped templated deliverables, and fast read-only work (resolves to `claude-sonnet-5-5` — 1M context, near-Opus quality). On Bedrock, Vertex, Foundry, and Claude Platform on AWS the alias does not move, so pin `ANTHROPIC_DEFAULT_SONNET_MODEL` |
 | `model: opus` | Orchestrators, architects, security & code review, executive/strategy, and judgment-heavy BD/Content roles (resolves to `claude-opus-5-5`). Templated content and outreach production runs on `sonnet` since v4.2.0 — see [sdk-compliance.md](sdk-compliance.md) |
-| `model: haiku` | **Never.** Haiku is not used in this roster — use `sonnet` as the floor for lightweight work. |
+| `model: haiku` | Not in frontmatter; per-invocation only (see [sdk-compliance.md](sdk-compliance.md)). Pass `model: haiku` on the Agent call for read-only sweeps, digests, and bulk extraction. No `effort:` frontmatter either, without measured evidence |
 | `maxTurns: N` | Agents with potentially unbounded loops (cost control) |
 | `isolation: worktree` | Agents doing parallel implementation work |
 | `mcpServers: {...}` | Agents needing scoped MCP server access |

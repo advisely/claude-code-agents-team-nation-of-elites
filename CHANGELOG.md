@@ -5,6 +5,99 @@ All notable changes to the Nation of Elites multi-agent system will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-10-07] - Claude Haiku 5.5 Alignment & Council of Experts (v4.3.0)
+
+Claude Haiku 5.5 (`claude-haiku-5-5`) was released today, the successor to Haiku
+4.5. From Claude Code v2.1.293 the `haiku` alias resolves to it on the Anthropic
+API. It costs $0.10/$0.50 per Mtok at prompts up to 100K tokens ($0.50/$2.50
+above), 20× less per token than Sonnet 5.5, with 1M context and 128K output. It
+scores 39.2% on Terminal-Bench 4.0 against Sonnet 5.5's 70.6%, so it joins the
+workforce as a per-call tool, not a tier. The roster stays **21 `opus` / 53
+`sonnet` / 0 `haiku`**. This release also adds `council-of-experts`, the standard
+way to convene a review panel.
+
+### Added
+- **`council-of-experts` skill** (`skills/council-of-experts/`: `SKILL.md`,
+  `panels.md`, `templates.md`). It picks 3-5 roster agents by artifact type (11
+  panel rows). Members give independent first opinions in parallel, then one
+  targeted cross-critique round covers disputed items, then the chair writes a
+  ranked verdict with recorded dissent. It runs in the main session, not as an
+  agent, with three user checkpoints. Review is read-only. It replaces ad-hoc
+  "council of experts" prompting. Skill count 33 → **34**.
+- **Haiku 5.5 per-invocation rules** (`orchestration.md` → *Haiku 5.5
+  per-invocation*). Leads pass `model: haiku` on the Agent call for read-only
+  sweeps, log/CI/diff digests, bulk extraction or classification, and council
+  pre-reads. Never for edits, mutating commands, customer-facing text, or
+  security or architecture calls.
+- `sdk-compliance.md`: `haiku` row in the model table, a Claude Haiku 5.5 section
+  (price, benchmarks, effort, five SDK breaking changes vs Haiku 4.5, forced
+  `tool_choice` accepted, no server-side refusal fallback, escalation, steering),
+  and **re-test criteria** that must be met before any agent moves to `haiku` in
+  frontmatter.
+- `chief-operations-orchestrator`: a per-call Haiku routing rule and a rule to
+  convene reviews through `council-of-experts`.
+
+### Changed
+- **`scripts/verify-consolidation.sh`**: AC1 asserted exactly 33 skills (the v4.0.0
+  consolidation count) and broke on the first new skill. It now checks a floor of
+  33 and leaves the exact count to `check-version-consistency.sh`.
+- **Haiku policy reversed from "never" to "per invocation only".** No agent or
+  skill sets `model: haiku` in frontmatter, and no agent sets `effort:`.
+- **Third-party providers need a third pin.** `haiku` stays Haiku 4.5 on Bedrock,
+  Vertex, Foundry, and Claude Platform on AWS. Set
+  `ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5` (Bedrock
+  `anthropic.claude-haiku-5-5`). The variable also sets the model for Claude Code
+  background functionality.
+- **Deploy preflight** (`scripts/deploy_agents.sh`, `scripts/deploy_agents.ps1`):
+  the minimum Claude Code version is now 2.1.293, and the scripts warn when a
+  third-party provider runs without `ANTHROPIC_DEFAULT_HAIKU_MODEL`.
+- `standards.md`: the `model: haiku` row and the frontmatter alias comment now
+  read "per-invocation only".
+- `thinking-policies.md`: Haiku 5.5 effort note (default `medium` in Claude Code,
+  thinking can't be turned off).
+- `orchestration.md`: harness table covers 2.1.181 – 2.1.293 with a Haiku 5.5 row.
+- `sdk-compliance.md`: Sonnet 5.5 cache reads are now $0.10 since the Haiku 5.5
+  launch.
+- `CLAUDE.md`: model and tier policy names all three aliases, Claude Code ≥
+  v2.1.293, the per-invocation Haiku rule, the Haiku pin, 34 skills, and
+  `council-of-experts` as the standard panel.
+- `README.md`: version 4.3.0, Claude Haiku 5.5 badge and capability row, skill
+  counts 34, `council-of-experts` in the skills list, footer.
+- `SKILLS.md`, `skills-integration.md`: `council-of-experts` in the workflow skills
+  and the agent-skill map.
+- `release-process.md`: the model-release pattern notes that a new model can
+  enter per invocation before it enters frontmatter.
+- `plugin.json`, `marketplace.json`: version 4.3.0, descriptions name Claude Haiku
+  5.5 and 34 skills, keyword `haiku-5-5`.
+
+### Notes
+- Resolves the v4.2.0 note that Haiku 5.5 was "announced for the coming weeks".
+- SDK users calling Haiku 5.5 directly: `budget_tokens`, non-default sampling
+  parameters, and assistant prefill now return 400. See `sdk-compliance.md`.
+- Haiku 5.5's new tokenizer emits about 30% more tokens for the same text, so the
+  per-task saving is smaller than the per-token price suggests.
+
+### Files Changed
+- `.claude-plugin/marketplace.json`
+- `.claude-plugin/plugin.json`
+- `CHANGELOG.md`
+- `CLAUDE.md`
+- `README.md`
+- `SKILLS.md`
+- `agents/07_Orchestrators/Chief_Operations_Orchestrator.md`
+- `docs/rules/orchestration.md`
+- `docs/rules/release-process.md`
+- `docs/rules/sdk-compliance.md`
+- `docs/rules/skills-integration.md`
+- `docs/rules/standards.md`
+- `docs/rules/thinking-policies.md`
+- `scripts/deploy_agents.ps1`
+- `scripts/deploy_agents.sh`
+- `scripts/verify-consolidation.sh`
+- `skills/council-of-experts/SKILL.md` (new)
+- `skills/council-of-experts/panels.md` (new)
+- `skills/council-of-experts/templates.md` (new)
+
 ## [2026-09-28] - Claude Sonnet 5.5 Alignment (v4.2.0)
 
 Claude Sonnet 5.5 (`claude-sonnet-5-5`) was released today. From Claude Code
