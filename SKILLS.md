@@ -312,7 +312,7 @@ See [templates/](templates/) for project scaffolding.
   - Environment-diversity test case templates
   - CLAUDE.md template for project-level enforcement
 
-#### Workflow Automation (3 skills) - NEW in v3.2.0
+#### Workflow Automation (4 skills) - NEW in v3.2.0 (`council-of-experts` added in v4.3.0)
 - **feature-workflow** - Complete 7-phase development workflow
   - Plan → Implement → Test → Validate Edge Cases → Simplify → Review → Document
   - User confirmation at quality gates
@@ -332,6 +332,14 @@ See [templates/](templates/) for project scaffolding.
   - Push to remote, create PR with GitHub CLI
   - Optional release creation with version bump
   - Invoke with `/pr-ready [--release minor]`
+
+- **council-of-experts** - Convene a panel of 3-5 roster specialists to audit, analyze and deliberate on one artifact (NEW in v4.3.0)
+  - Panels by artifact type: feature spec, bug fix, architecture/ADR, security change, API contract, data/ML, mobile, UI/UX, BD proposal, content, release plan
+  - Independent parallel first opinions → one targeted cross-critique round on disputed items → ranked verdict with recorded dissent
+  - Runs in the main session (not an agent) with three user checkpoints, so the user can steer; review is read-only
+  - Optional per-invocation `model: haiku` (Haiku 5.5) fact-gathering pre-read for large artifacts; panel seats keep their own models
+  - Replaces ad-hoc "council of experts" prompting; triggers on "council of experts", "panel of experts", "deliberate"
+  - Invoke with `/council-of-experts [artifact or question]`
 
 #### Core Language Patterns (7 skills) - NEW in v3.2.0
 - **nodejs-patterns** - Node.js server-side JavaScript
@@ -489,7 +497,12 @@ the PDF content into context.
 
 ### Orchestrators
 - `integration-specialist` → mcp-builder (primary user)
-- `chief-operations-orchestrator` → skill-creator (for new capabilities)
+- `chief-operations-orchestrator` → skill-creator (for new capabilities), council-of-experts (convenes complex or multi-artifact panels)
+
+### Council Seats (council-of-experts)
+- `functional-analyst` → council-of-experts (scribe for spec, AC, and traceability questions)
+- `code-reviewer` → council-of-experts (gate seat when code is in scope)
+- `cyber-sentinel` → council-of-experts (gate seat when security is in scope)
 
 ---
 
@@ -741,7 +754,11 @@ Before installing a skill:
 - 1 new skill bringing total to 32 custom skills
 - Updated agents: 9 agents across Content and BD wings preload humanizer
 
-### v4.0 (Next)
+### ✅ v4.3 (Released)
+- Council of experts skill: standard way to convene a 3-5 agent review panel (independent review, cross-critique, verdict)
+- 1 new skill bringing total to 34 custom skills
+
+### Next
 - Agent Teams integration in skill workflows (experimental: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
 - Skills marketplace and community submissions
 - Skill composition (skills that use other skills)

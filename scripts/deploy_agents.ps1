@@ -205,8 +205,8 @@ function Test-Interactive {
 }
 
 # --- Model alias helpers (v4.2.0) ---
-# `sonnet` -> claude-sonnet-5-5 needs Claude Code >= 2.1.284 (`opus` needs >= 2.1.280).
-$MinClaudeVersion = [version]"2.1.284"
+# `haiku` -> claude-haiku-5-5 needs Claude Code >= 2.1.293 (`sonnet` >= 2.1.284, `opus` >= 2.1.280).
+$MinClaudeVersion = [version]"2.1.293"
 
 # Returns $true/$false, or $null when the text holds no dotted-numeric version.
 # [version] compares numerically per component, so 2.1.1000 > 2.1.284.
@@ -800,14 +800,14 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
         Write-Info "Could not parse 'claude --version' output; skipping version check."
         $ClaudeVersionStatus = "claude version unparseable (check skipped)"
     } elseif ($verOk) {
-        Write-Ok "Claude Code $verMatch supports the sonnet/opus 5.5 aliases (>= $MinClaudeVersion)"
+        Write-Ok "Claude Code $verMatch supports the sonnet/opus/haiku 5.5 aliases (>= $MinClaudeVersion)"
         $ClaudeVersionStatus = "Claude Code $verMatch OK (>= $MinClaudeVersion)"
     } else {
-        Write-Warn "Claude Code $verMatch is older than ${MinClaudeVersion}: 'sonnet'/'opus' agents will run on older models until you update (run: claude update)"
+        Write-Warn "Claude Code $verMatch is older than ${MinClaudeVersion}: 'sonnet'/'opus'/'haiku' aliases (agents and per-call model: haiku) will run on older models until you update (run: claude update)"
         $ClaudeVersionStatus = "WARN: Claude Code $verMatch < ${MinClaudeVersion} (run: claude update)"
     }
 } else {
-    Write-Info "Claude Code CLI not found on PATH; skipping version check (need >= $MinClaudeVersion for the sonnet/opus aliases)."
+    Write-Info "Claude Code CLI not found on PATH; skipping version check (need >= $MinClaudeVersion for the sonnet/opus/haiku aliases)."
     $ClaudeVersionStatus = "claude CLI not found (version check skipped)"
 }
 
@@ -824,6 +824,12 @@ if ($providers.Count -eq 0) {
         $sonnetId = if ($env:CLAUDE_CODE_USE_BEDROCK) { "anthropic.claude-sonnet-5-5" } else { "claude-sonnet-5-5" }
         Write-Warn "Third-party provider detected ($($providers -join ', ')): 'sonnet' stays on an older Sonnet until pinned."
         Write-Info "Add: `$env:ANTHROPIC_DEFAULT_SONNET_MODEL = '$sonnetId'  (persist with: setx ANTHROPIC_DEFAULT_SONNET_MODEL $sonnetId)"
+        $pinMissing = $true
+    }
+    if (-not $env:ANTHROPIC_DEFAULT_HAIKU_MODEL) {
+        $haikuId = if ($env:CLAUDE_CODE_USE_BEDROCK) { "anthropic.claude-haiku-5-5" } else { "claude-haiku-5-5" }
+        Write-Warn "Third-party provider detected ($($providers -join ', ')): 'haiku' (council-of-experts, per-call model: haiku) stays on an older Haiku until pinned."
+        Write-Info "Add: `$env:ANTHROPIC_DEFAULT_HAIKU_MODEL = '$haikuId'  (persist with: setx ANTHROPIC_DEFAULT_HAIKU_MODEL $haikuId)"
         $pinMissing = $true
     }
     if ($env:CLAUDE_CODE_USE_FOUNDRY -and -not $env:ANTHROPIC_DEFAULT_OPUS_MODEL) {

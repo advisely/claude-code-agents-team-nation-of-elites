@@ -42,7 +42,23 @@
 
 **Orchestrators:**
 - `integration-specialist` → mcp-builder skill for external integrations
-- `chief-operations-orchestrator` → skill-creator for new capability development
+- `chief-operations-orchestrator` → skill-creator for new capability development; council-of-experts for complex or multi-artifact reviews
+
+**Council seats (council-of-experts):**
+- `functional-analyst` → scribe for spec, AC, and traceability questions
+- `code-reviewer` → gate seat when code is in scope
+- `cyber-sentinel` → gate seat when security is in scope
+
+## Workflow Skills
+
+34 custom skills ship in `skills/`. The workflow skills run in the main session and orchestrate agents rather than adding knowledge:
+
+| Skill | Use |
+|-------|-----|
+| `feature-workflow` | 7-phase feature build with quality gates |
+| `quick-fix` | 4-step diagnose, fix, test, output |
+| `pr-ready` | Quality checks, commit, push, PR, optional release |
+| `council-of-experts` | Standard way to convene a panel of experts: 3-5 roster agents chosen by artifact type, independent review, one cross-critique round, ranked verdict. Runs in the main session so the user can steer; an optional Haiku 5.5 pre-read gathers facts only, never a panel seat |
 
 ## Cross-Surface Availability
 

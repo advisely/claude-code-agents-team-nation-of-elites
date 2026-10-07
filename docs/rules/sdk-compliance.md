@@ -1,21 +1,24 @@
 # Claude Agent SDK Alignment (v2.0.0+)
 
-The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices. It tracks the current Opus model, **Claude Opus 5.5** (`claude-opus-5-5`, released 2026-09-22), for orchestration and hard reasoning, and the default workhorse, **Claude Sonnet 5.5** (`claude-sonnet-5-5`, released 2026-09-28), for everything else.
+The Nation of Elites achieves **complete alignment** with Anthropic's Claude Agent SDK best practices. It tracks the current Opus model, **Claude Opus 5.5** (`claude-opus-5-5`, released 2026-09-22), for orchestration and hard reasoning, and the default workhorse, **Claude Sonnet 5.5** (`claude-sonnet-5-5`, released 2026-09-28), for everything else. **Claude Haiku 5.5** (`claude-haiku-5-5`, released 2026-10-07) is a per-call tool, not a tier.
 
 ## Current Model Targets
 
 | Alias | Resolves To | Use |
 |-------|-------------|-----|
 | `opus` | `claude-opus-5-5` | Orchestration, complex reasoning, long-horizon agentic work, agentic coding. 1M context, 128K output, $4/$20 per Mtok (cache reads $0.20) |
-| `sonnet` | `claude-sonnet-5-5` | Default workhorse — tool use, framework specialists, well-scoped everyday work, fast read-only. 1M context, 128K output, $2/$10 per Mtok (cache reads $0.20), near-Opus quality at lower cost |
+| `sonnet` | `claude-sonnet-5-5` | Default workhorse — tool use, framework specialists, well-scoped everyday work, fast read-only. 1M context, 128K output, $2/$10 per Mtok (cache reads now $0.10 since the Haiku 5.5 launch), near-Opus quality at lower cost |
+| `haiku` | `claude-haiku-5-5` | **Per-invocation only** (`model: haiku` on the Agent call), never in frontmatter. Read-only sweeps, digests, bulk extraction. 1M context, 128K output, $0.10/$0.50 per Mtok at ≤100K prompts ($0.50/$2.50 above), cache reads $0.01 / $0.05. Claude Code ≥ v2.1.293, Anthropic API only |
 
 Agents use aliases — never hard-coded model IDs — so the harness tracks Anthropic releases automatically. The Opus 5 → Opus 5.5 move (like Opus 4.8 → Opus 5 before it) required **no frontmatter sweep**: all 25 `opus` agents at the time (21 since v4.2.0) inherited it on release day. The `opus` alias resolves to Opus 5.5 on the Anthropic API, Claude Platform on AWS, Bedrock, and Google Cloud. **On Microsoft Foundry it still resolves to Opus 4.6**; pin `ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5` there. Opus 5.5 needs Claude Code **v2.1.280+** and is now the `default` model on every plan (Pro and Team Standard included). Sonnet 5.5 needs Claude Code **v2.1.284+** for the `sonnet` alias to resolve to it on the Anthropic API. `opusplan` now plans on Opus 5.5 and executes on Sonnet 5.5.
 
-**Third-party providers: the `sonnet` alias does not move.** It resolves to Sonnet 4.6 on Claude Platform on AWS and to Sonnet 4.5 on Bedrock, Vertex, and Foundry. Pin `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5` on Vertex, Foundry, and Claude Platform on AWS, or `anthropic.claude-sonnet-5-5` on Bedrock. Foundry serves it Azure-hosted, Global Standard only.
+**Third-party providers: the `sonnet` alias does not move.** It resolves to Sonnet 4.6 on Claude Platform on AWS and to Sonnet 4.5 on Bedrock, Vertex, and Foundry. Pin `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5` on Vertex, Foundry, and Claude Platform on AWS, or `anthropic.claude-sonnet-5-5` on Bedrock. Foundry serves it Azure-hosted, Global Standard only. **The `haiku` alias is the same:** it resolves to Haiku 4.5 on Claude Platform on AWS, Bedrock, Vertex, and Foundry, so pin `ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5` (Bedrock `anthropic.claude-haiku-5-5`). That variable also sets the model for Claude Code background functionality.
 
 **No agent sets `effort:` in frontmatter, and that stays deliberate.** Every `opus` agent now runs at Opus 5.5's `medium` default, which matches or beats Opus 5 at `high`. Adding `effort: high` across the roster would *raise* spend over the Opus 5 baseline for little measured gain.
 
-**Haiku is not used in the Nation of Elites.** There is no `haiku` tier in the roster: every agent runs on `opus` or `sonnet`. With Sonnet 5.5 closing most of the quality gap at a lower price, `sonnet` is the correct floor for "lightweight" work — never drop to Haiku for cost. Do not add `model: haiku` to any agent. Haiku 5.5 is announced for "the coming weeks" but is not released, so the policy stands.
+**Haiku 5.5 is used per invocation only.** The roster stays **21 `opus` / 53 `sonnet` / 0 `haiku`**: no agent or skill sets `model: haiku` in frontmatter until the re-test criteria below are met. Skills declare no `model:` at all (a skill runs in the main session). Instead, a lead passes `model: haiku` on the Agent call (it wins over frontmatter and `CLAUDE_CODE_SUBAGENT_MODEL`) for narrowly scoped, high-volume, low-judgment work. The six per-invocation rules live in [orchestration.md](orchestration.md) → *Haiku 5.5 per-invocation*.
+
+**Re-test criteria to move a `sonnet` agent to `haiku` in frontmatter** (all must hold, with data recorded here *before* the frontmatter change): at least 20 real tasks re-run side by side reach at least 95% of Sonnet's pass rate under the same grader; zero safety, correctness, or security regressions; and call volume high enough to matter (Haiku is 20x cheaper per token (at ≤100K-token prompts) but emits about 30% more tokens per text). Re-test on each Haiku release that narrows the Terminal-Bench gap to under 10 points.
 
 **Rate limits: check your tier.** Opus 4.8/4.7/4.6/4.5 share one combined Opus pool, and Opus 5 has its own. Check your tier's Opus 5.5 limits before moving heavy orchestration volume, and don't assume it inherits Opus 5's headroom. Subscription plans got higher five-hour limits with the Opus 5.5 launch.
 
@@ -264,6 +267,18 @@ Anthropic's prompting guidance for Sonnet 5.5. Re-test each against your own eva
 
 Opus 5.5 steering above stays in place.
 
+### Claude Haiku 5.5 (per-invocation `haiku`)
+
+Released 2026-10-07; successor to Haiku 4.5. `haiku` resolves to it from Claude Code **v2.1.293** on the Anthropic API only.
+
+- **Price and size.** $0.10/$0.50 per Mtok at prompts up to 100K tokens, $0.50/$2.50 above; cache reads $0.01 / $0.05 (Haiku 4.5 was $1/$5). That is 20x cheaper than Sonnet 5.5 per token at up to 100K, but a new tokenizer yields about 30% more tokens for the same text. 1M context (was 200K), 128K output (was 64K), fastest Claude model at standard speed. Sonnet 5.5 cache reads dropped to $0.10 at the same launch.
+- **Benchmarks (Haiku 5.5 / Haiku 4.5 / Sonnet 5.5).** Terminal-Bench 4.0 **39.2 / 0.0 / 70.6**, OSWorld 2.1 72.4 / 15.7 / 83.9, GDPval-AA v2.1 1620 / 735 / 1840, HLE with tools 57.4 / 18.7 / 64.5. A huge jump over Haiku 4.5, but clearly below Sonnet 5.5 on agentic terminal coding and knowledge work, which is why it stays a narrow-task tool. Anthropic positions it for summaries, compaction, classification, routing, and extraction, and as a subagent alongside Opus 5.5 / Sonnet 5.5.
+- **Effort.** Default `medium` in Claude Code, the first Haiku with effort levels. Thinking can't be turned off in Claude Code.
+- **Five SDK breaking changes vs Haiku 4.5 (SDK users only):** (1) `budget_tokens` returns 400, adaptive thinking only, with `disabled` allowed only at effort `high` or below; (2) non-default `temperature` / `top_p` / `top_k` returns 400; (3) assistant prefill returns 400; (4) computer use needs `computer_toolset_20260801` on the Claude API and Google Cloud; (5) preserved thinking: editing earlier turns invalidates replayed thinking blocks (enforced for accounts created on or after 2026-08-31). Thinking is on by default and omitted from display by default, so size `max_tokens` for it.
+- **Differences from Opus/Sonnet 5.5.** Forced `tool_choice` **is accepted** (it skips thinking). `between_tools` is Sonnet-5.5-only and returns 400 here. Refusal categories are `cyber`, `bio`, `frontier_llm`, `general_harms`, with **no server-side fallback**: do not send `fallbacks`.
+- **Escalation.** Opus 5.5 and Sonnet 5.5 read Haiku 5.5 thinking blocks, so a Haiku-to-Sonnet/Opus handoff keeps its reasoning.
+- **Steering.** Same snippets as Sonnet 5.5 for early stopping at `low` and for skipped verification at `low`/`medium`. Give today's date with any search tool. Use `high` effort when instruction following matters most.
+
 ## Quality Metrics
 
 - **74 Total Agents** - Complete coverage across all organizational functions
@@ -272,7 +287,7 @@ Opus 5.5 steering above stays in place.
 - **Comprehensive Coverage** - From strategy to implementation to operations
 - **Automatic Documentation** - Self-maintaining project documentation and change tracking
 - **Complexity-Based Reasoning** - Tailored thinking budgets aligned with Opus 5.5 effort levels
-- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 5.5 + Sonnet 5.5)
+- **SDK Compliance Score** - 10/10 full alignment with Anthropic Claude Agent SDK best practices (Opus 5.5 + Sonnet 5.5; Haiku 5.5 per-invocation)
 
 ## Surface Coverage
 

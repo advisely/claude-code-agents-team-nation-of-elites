@@ -172,9 +172,22 @@ From Claude Code **v2.1.284** the `sonnet` alias resolves to `claude-sonnet-5-5`
 - **Search instead of recalling** — in knowledge work it sometimes answers from training data. Drop "minimize tool calls" / "only use tools when strictly necessary" from briefs. The research-facing BD agents carry a *Check Current Sources* heuristic
 - **Mid-turn messages in Agent Teams** — user text placed inside a `tool_result`, or harness text after every tool result, can read as prompt injection. Deliver mid-turn input as a user text block after the last `tool_result`, keep harness notices in a separate system message, and skip per-step countdowns in interactive sessions
 - **Third-party providers** — the `sonnet` alias does **not** move there: Claude Platform on AWS stays on Sonnet 4.6, Bedrock / Vertex / Foundry on Sonnet 4.5. Pin with `ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5` (Vertex, Foundry, Claude Platform on AWS) or `anthropic.claude-sonnet-5-5` (Bedrock)
-- **Haiku** — still unused. Haiku 5.5 is announced for the coming weeks and does not change the policy — `sonnet` stays the floor
+- **Haiku** — per-invocation only, never in frontmatter; see *Haiku 5.5 per-invocation* below
 
-## Claude Code Harness Changes (2.1.181 – 2.1.284)
+### Haiku 5.5 per-invocation
+
+`haiku` resolves to Claude Haiku 5.5 from v2.1.293 (Anthropic API). Pass `model: haiku` on the Agent call; it overrides frontmatter. Roster stays 21 `opus` / 53 `sonnet` / 0 `haiku`. Haiku 5.5 is 20x cheaper per token than Sonnet 5.5 (at ≤100K-token prompts) but scores 39.2 vs 70.6 on Terminal-Bench, so use it only for narrow, high-volume work:
+
+1. **Read-only sweeps** (find files, map usages, inventory): the tool set must exclude Write/Edit.
+2. **Digests** of logs, CI output, transcripts, and diffs, including compaction-style handoffs to a Sonnet/Opus lead.
+3. **Bulk extraction or classification** against a fixed schema (tagging tickets or leads, pulling fields, routing).
+4. **Council fact-gathering pre-reads.** Opinions, critique, and verdict stay on the members' own models.
+5. **Never** for anything that edits files, runs mutating commands, writes customer-facing text, or makes a security or architecture call. A decision fed by Haiku output belongs to a Sonnet/Opus agent.
+6. **Third-party providers:** pin `ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5` (Bedrock `anthropic.claude-haiku-5-5`), otherwise `haiku` is Haiku 4.5.
+
+Moving an agent's frontmatter to `haiku` needs the re-test data in [sdk-compliance.md](sdk-compliance.md) first. To convene a panel of experts, use the `council-of-experts` skill (`skills/council-of-experts/SKILL.md`), the standard way to run one.
+
+## Claude Code Harness Changes (2.1.181 – 2.1.293)
 
 The harness itself changed substantially alongside the model. These affect how the roster runs, independent of any agent file:
 
@@ -194,6 +207,7 @@ The harness itself changed substantially alongside the model. These affect how t
 | **Opus 5.5 is the default model (2.1.280)** | On every plan, Pro and Team Standard included. `opus` resolves to Opus 5.5 except on Microsoft Foundry (still Opus 4.6; set `ANTHROPIC_DEFAULT_OPUS_MODEL`). Effort starts at `medium` and is not carried over from Opus 5 |
 | **Thinking can't be turned off on Opus 5.5 or Sonnet 5.5** | The session toggle, `alwaysThinkingEnabled`, and `MAX_THINKING_TOKENS=0` have no effect. Control depth with the session effort level or `effort:` frontmatter instead |
 | **Sonnet 5.5 behind `sonnet` (2.1.284)** | Anthropic API only; pin third-party providers with `ANTHROPIC_DEFAULT_SONNET_MODEL`. `CLAUDE_CODE_SUBAGENT_MODEL` covers agents without an explicit `model:`; frontmatter wins unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set |
+| **Haiku 5.5 behind `haiku` (2.1.293)** | Anthropic API only; the alias stays Haiku 4.5 on Bedrock, Vertex, Foundry, and Claude Platform on AWS unless `ANTHROPIC_DEFAULT_HAIKU_MODEL` is pinned. Used per invocation only (see above) |
 | **Skill frontmatter tolerance** | `display-name`, `default-enabled`, `fallback`, `metadata.*` accept kebab-case, snake_case, **and** camelCase; a malformed `SKILL.md` now loads with empty metadata instead of failing outright |
 
 ## Dynamic Workflows
@@ -267,7 +281,7 @@ These overlap intentionally with Nation of Elites' own skills (e.g. `code-review
 | **Sub-agents** | ✅ | ✅ | ❌ greyed out |
 | **Hooks** | ✅ | ✅ | ❌ greyed out |
 
-Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 33 skills and slash commands still work.
+Sub-agents and hooks are the two components that **run only in Cowork and Claude Code**, never in plain chat. The full 74-agent roster is therefore available in Cowork and inert in chat — where the 34 skills and slash commands still work.
 
 ### Installing into Cowork
 

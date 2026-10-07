@@ -10,9 +10,12 @@ note() { printf '  %-5s %s\n' "$1" "$2"; }
 # and Cowork built-ins. CLAUDE.md says not to duplicate these.
 EXTERNAL='pdf|docx|pptx|xlsx|canvas-design|webapp-testing|artifacts-builder'
 
-# AC1 — exactly 33 skill directories, the two consolidated ones gone
+# AC1 — the two consolidated skills are gone and no skill was lost since v4.0.0
+# (33 at consolidation). The exact count is AC4's job: check-version-consistency
+# derives it from skills/ and asserts every doc agrees.
+SKILL_FLOOR=33
 n=$(find skills -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
-[ "$n" = "33" ] && note ok "AC1 skill count 33" || { note FAIL "AC1 skill count is $n, expected 33"; fail=1; }
+[ "$n" -ge "$SKILL_FLOOR" ] && note ok "AC1 skill count $n (>= $SKILL_FLOOR)" || { note FAIL "AC1 skill count is $n, below the v4.0.0 floor of $SKILL_FLOOR"; fail=1; }
 for d in pipeline-full-build pipeline-review; do
   [ -d "skills/$d" ] && { note FAIL "AC1 skills/$d still exists"; fail=1; } || note ok "AC1 skills/$d removed"
 done
